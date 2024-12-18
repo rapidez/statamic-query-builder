@@ -26,15 +26,10 @@ class ProductQueryBuilder extends Fieldtype
         ];
     }
 
-    public function preProcess($data)
-    {
-        return $data ?? $this->defaultValue();
-    }
-
     public function process($data)
     {
         $data['products'] = $this->getProducts($data, true);
-        
+
         return $data;
     }
 
@@ -45,7 +40,7 @@ class ProductQueryBuilder extends Fieldtype
         return $value;
     }
 
-    public function getProducts(array $data, bool $force = false)
+    public function getProducts(array $data, bool $force = false): array
     {
         if (isset($data['products'])) {
             unset($data['products']);
@@ -54,7 +49,7 @@ class ProductQueryBuilder extends Fieldtype
         $cacheKey = 'product-query-builder-' . config('rapidez.store') . '-' . md5(json_encode($data));
 
         if ($force && Cache::has($cacheKey)) {
-            return Cache::forget($cacheKey);
+            Cache::forget($cacheKey);
         }
 
         $data['products'] = Cache::remember($cacheKey, Carbon::now()->addDay(), function() use ($data) {
@@ -64,7 +59,7 @@ class ProductQueryBuilder extends Fieldtype
         return $data['products'];
     }
 
-    public function toSkus($data)
+    public function toSkus($data): array
     {
         $model = config('rapidez.models.product');
         $table = 'catalog_product_flat_' . config('rapidez.store');
@@ -100,10 +95,10 @@ class ProductQueryBuilder extends Fieldtype
         return $query->limit($data['limit'] ?? 100)->pluck($table . '.sku')->toArray();
     }
 
-    public function toSkusEav($data)
+    public function toSkusEav($data): array
     {
         $storeId = config('rapidez.store');
-        
+
         $innerQuery = DB::table('catalog_product_entity')
             ->select('catalog_product_entity.entity_id', 'catalog_product_entity.sku');
 
@@ -159,8 +154,8 @@ class ProductQueryBuilder extends Fieldtype
                 }
 
                 $innerQuery->selectRaw("COALESCE(
-                    (SELECT value FROM catalog_product_entity_{$backendType} 
-                     WHERE entity_id = catalog_product_entity.entity_id 
+                    (SELECT value FROM catalog_product_entity_{$backendType}
+                     WHERE entity_id = catalog_product_entity.entity_id
                      AND attribute_id = {$attributeId}
                      AND store_id = {$storeId}
                      LIMIT 1),
@@ -204,7 +199,7 @@ class ProductQueryBuilder extends Fieldtype
                             $customerGroupId = config('rapidez.customer_group', 0);
                             $websiteId = config('rapidez.website');
 
-                            $column = DB::raw("LEAST(inner_query.{$alias}_value, 
+                            $column = DB::raw("LEAST(inner_query.{$alias}_value,
                                 COALESCE((
                                     SELECT MIN(price)
                                     FROM catalog_product_entity_tier_price

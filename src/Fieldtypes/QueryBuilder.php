@@ -32,16 +32,6 @@ class QueryBuilder extends Fieldtype
         ];
     }
 
-    public function preProcess($data)
-    {
-        return $data ?? $this->defaultValue();
-    }
-
-    public function process($data)
-    {
-        return $data;
-    }
-
     public function preload()
     {
         return [
