@@ -1,0 +1,51 @@
+{
+    "name": "rapidez/statamic-query-builder",
+    "authors": [
+        {
+            "name": "Kevin Meijer",
+            "email": "kevin@justbetter.nl",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rapidez\\StatamicQueryBuilder\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rapidez\\StatamicQueryBuilder\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "statamic/cms": "^5.0",
+        "rapidez/statamic": "@dev"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0"
+    },
+    "repositories": {
+        "rapidez/statamic": {
+            "type": "path",
+            "url": "/Users/kevinmeijer/sites/statamic-packages/statamic"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Statamic Query Builder",
+            "description": "Statamic Query Builder addon"
+        },
+        "laravel": {
+            "providers": [
+                "Rapidez\\StatamicQueryBuilder\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
