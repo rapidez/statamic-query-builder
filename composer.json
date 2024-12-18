@@ -1,5 +1,12 @@
 {
     "name": "rapidez/statamic-query-builder",
+    "description": "Statamic Query Builder addon",
+    "keywords": [
+        "rapidez",
+        "statamic-query-builder"
+    ],
+    "homepage": "https://github.com/rapidez/statamic-query-builder",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Kevin Meijer",
@@ -31,6 +38,7 @@
         }
     },
     "config": {
+        "sort-packages": true,
         "allow-plugins": {
             "pixelfear/composer-dist-plugin": true
         }
