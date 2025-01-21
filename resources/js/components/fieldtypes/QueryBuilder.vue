@@ -1,14 +1,14 @@
 <template>
-    <div class="query-builder">
+    <div class="query-builder max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center justify-between w-full space-x-4">
                 <div class="flex items-center space-x-2" v-if="showLimit">
                     <label for="limit" class="text-sm">Limit results:</label>
-                    <input 
-                        type="number" 
-                        id="limit" 
-                        v-model="limit" 
-                        class="input-text w-24" 
+                    <input
+                        type="number"
+                        id="limit"
+                        v-model="limit"
+                        class="input-text w-24"
                         min="1"
                         @input="updateValue"
                     >
@@ -32,18 +32,18 @@
                     <div class="flex items-center space-x-2">
                         <button class="btn" @click="addConditionToGroup(groupIndex)">Add Condition</button>
                         <div class="flex items-center space-x-1">
-                            <button 
+                            <button
                                 v-if="groupIndex > 0"
-                                class="btn p-2" 
-                                @click="moveGroupUp(groupIndex)" 
+                                class="btn p-2"
+                                @click="moveGroupUp(groupIndex)"
                                 title="Move group up"
                             >
                                 ↑
                             </button>
-                            <button 
+                            <button
                                 v-if="groupIndex < groups.length - 1"
-                                class="btn p-2" 
-                                @click="moveGroupDown(groupIndex)" 
+                                class="btn p-2"
+                                @click="moveGroupDown(groupIndex)"
                                 title="Move group down"
                             >
                                 ↓
@@ -54,8 +54,8 @@
                 </div>
 
                 <div class="space-y-3">
-                    <div v-for="(condition, conditionIndex) in group.conditions" :key="conditionIndex" 
-                         class="flex items-center space-x-4 p-3 bg-gray-50 rounded-md">
+                    <div v-for="(condition, conditionIndex) in group.conditions" :key="conditionIndex"
+                         class="flex items-center space-x-4 p-3 rounded-md">
                         <v-select
                             v-model="condition.attribute"
                             :options="fields"
@@ -102,7 +102,7 @@
                             </template>
                             <template v-else-if="needsBetweenInput(condition.operator)">
                                 <div class="flex items-center space-x-2 flex-1">
-                                    <input 
+                                    <input
                                         type="text"
                                         v-model="getBetweenValue(condition).min"
                                         class="input-text flex-1"
@@ -110,7 +110,7 @@
                                         @input="updateBetweenValue(groupIndex, conditionIndex)"
                                     >
                                     <span>and</span>
-                                    <input 
+                                    <input
                                         type="text"
                                         v-model="getBetweenValue(condition).max"
                                         class="input-text flex-1"
@@ -121,7 +121,7 @@
                             </template>
                             <template v-else-if="needsDaysInput(condition.operator)">
                                 <div class="flex items-center space-x-2 flex-1">
-                                    <input 
+                                    <input
                                         type="number"
                                         v-model="condition.value"
                                         class="input-text flex-1"
@@ -133,7 +133,7 @@
                                 </div>
                             </template>
                             <template v-else>
-                                <input 
+                                <input
                                     type="text"
                                     v-model="condition.value"
                                     class="input-text flex-1"
@@ -143,8 +143,8 @@
                             </template>
                         </template>
 
-                        <button 
-                            class="btn-danger" 
+                        <button
+                            class="btn-danger"
                             @click="removeCondition(groupIndex, conditionIndex)"
                             title="Remove condition"
                         >
@@ -182,9 +182,9 @@ export default {
             type: Array,
             required: true,
             validator: (value) => {
-                return value.every(field => 
-                    'label' in field && 
-                    'value' in field && 
+                return value.every(field =>
+                    'label' in field &&
+                    'value' in field &&
                     'type' in field
                 );
             }
@@ -287,7 +287,7 @@ export default {
         addConditionToGroup(groupIndex) {
             const defaultOperator = this.getOperatorsForType(this.fields[0]?.value)[0]?.value || '=';
             const defaultValue = this.needsBetweenInput(defaultOperator) ? { min: '', max: '' } : '';
-            
+
             this.groups[groupIndex].conditions.push({
                 attribute: this.fields[0]?.value || '',
                 operator: defaultOperator,
@@ -301,7 +301,7 @@ export default {
         },
 
         getField(fieldValue) {
-            return this.fields.find(f => f.value === fieldValue);
+            return this.fields.find(field => field.value === fieldValue);
         },
 
         getFieldOperators(fieldType) {
@@ -309,17 +309,17 @@ export default {
         },
 
         getFieldOptions(fieldValue) {
-            const field = this.fields.find(f => f.value === fieldValue);
+            const field = this.fields.find(field => field.value === fieldValue);
             return field?.options || [];
         },
 
         isMultiSelectVisible(condition) {
-            const field = this.fields.find(f => f.value === condition.attribute);
+            const field = this.fields.find(field => field.value === condition.attribute);
             return field?.type === 'select' && ['IN', 'NOT IN'].includes(condition.operator);
         },
 
         isSingleSelectVisible(condition) {
-            const field = this.fields.find(f => f.value === condition.attribute);
+            const field = this.fields.find(field => field.value === condition.attribute);
             return field?.type === 'select' && !['IN', 'NOT IN'].includes(condition.operator);
         },
 
@@ -337,14 +337,14 @@ export default {
         },
 
         getOperatorsForType(fieldName) {
-            const field = this.fields.find(f => f.value === fieldName);
+            const field = this.fields.find(field => field.value === fieldName);
             return field ? this.operators[field.type] || [] : [];
         },
 
         updateCondition(groupIndex, conditionIndex) {
             const condition = this.groups[groupIndex].conditions[conditionIndex];
             const operator = condition.operator;
-            
+
             if (this.needsBetweenInput(operator)) {
                 condition.value = { min: '', max: '' };
             } else if (!this.needsValueInput(operator)) {
@@ -358,9 +358,9 @@ export default {
             if (!condition.value || typeof condition.value === 'string') {
                 this.$set(condition, 'value', { min: '', max: '' });
             } else if (Array.isArray(condition.value)) {
-                this.$set(condition, 'value', { 
-                    min: condition.value[0] || '', 
-                    max: condition.value[1] || '' 
+                this.$set(condition, 'value', {
+                    min: condition.value[0] || '',
+                    max: condition.value[1] || ''
                 });
             }
             return condition.value;
@@ -384,18 +384,18 @@ export default {
 
         moveGroupUp(groupIndex) {
             if (groupIndex > 0) {
-                const temp = this.groups[groupIndex];
+                const group = this.groups[groupIndex];
                 this.$set(this.groups, groupIndex, this.groups[groupIndex - 1]);
-                this.$set(this.groups, groupIndex - 1, temp);
+                this.$set(this.groups, groupIndex - 1, group);
                 this.updateValue();
             }
         },
 
         moveGroupDown(groupIndex) {
             if (groupIndex < this.groups.length - 1) {
-                const temp = this.groups[groupIndex];
+                const group = this.groups[groupIndex];
                 this.$set(this.groups, groupIndex, this.groups[groupIndex + 1]);
-                this.$set(this.groups, groupIndex + 1, temp);
+                this.$set(this.groups, groupIndex + 1, group);
                 this.updateValue();
             }
         }
@@ -409,9 +409,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.query-builder {
-    @apply max-w-4xl mx-auto;
-}
-</style>

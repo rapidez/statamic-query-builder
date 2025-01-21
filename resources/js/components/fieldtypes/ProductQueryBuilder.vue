@@ -56,7 +56,7 @@ export default {
         },
 
         mapAttributeOptions(options) {
-            if (!options) {
+            if (!options.length) {
                 return [];
             };
 
