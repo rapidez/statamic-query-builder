@@ -26,16 +26,10 @@
     },
     "require": {
         "statamic/cms": "^5.0",
-        "rapidez/statamic": "@dev"
+        "rapidez/statamic": "dev-master"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0"
-    },
-    "repositories": {
-        "rapidez/statamic": {
-            "type": "path",
-            "url": "/Users/kevinmeijer/sites/statamic-packages/statamic"
-        }
     },
     "config": {
         "sort-packages": true,
