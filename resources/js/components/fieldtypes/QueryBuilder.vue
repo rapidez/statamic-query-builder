@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center justify-between w-full space-x-4">
                 <div class="flex items-center space-x-2" v-if="showLimit">
-                    <label for="limit" class="text-sm">Limit results:</label>
+                    <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
                     <input
                         type="number"
                         id="limit"
@@ -13,7 +13,7 @@
                         @input="updateValue"
                     >
                 </div>
-                <button class="btn-primary" @click="addGroup">Add Group</button>
+                <button class="btn-primary" @click="addGroup">{{ __('Add Group') }}</button>
             </div>
         </div>
 
@@ -21,7 +21,7 @@
             <div v-for="(group, groupIndex) in groups" :key="groupIndex" class="border border-gray-300 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
                     <div class="flex items-center space-x-4">
-                        <h3 class="text-base font-bold">Group {{ groupIndex + 1 }}</h3>
+                        <h3 class="text-base font-bold">{{ __('Group') }} {{ groupIndex + 1 }}</h3>
                         <v-select
                             v-model="group.conjunction"
                             :options="logicalOperators"
@@ -30,13 +30,13 @@
                         />
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button class="btn" @click="addConditionToGroup(groupIndex)">Add Condition</button>
+                        <button class="btn" @click="addConditionToGroup(groupIndex)">{{ __('Add Condition') }}</button>
                         <div class="flex items-center space-x-1">
                             <button
                                 v-if="groupIndex > 0"
                                 class="btn p-2"
                                 @click="moveGroupUp(groupIndex)"
-                                title="Move group up"
+                                :title="__('Move group up')"
                             >
                                 ↑
                             </button>
@@ -44,12 +44,12 @@
                                 v-if="groupIndex < groups.length - 1"
                                 class="btn p-2"
                                 @click="moveGroupDown(groupIndex)"
-                                title="Move group down"
+                                :title="__('Move group down')"
                             >
                                 ↓
                             </button>
                         </div>
-                        <button class="btn-danger" @click="removeGroup(groupIndex)">Remove Group</button>
+                        <button class="btn-danger" @click="removeGroup(groupIndex)">{{ __('Remove Group') }}</button>
                     </div>
                 </div>
 
@@ -62,7 +62,7 @@
                             :reduce="field => field.value"
                             label="label"
                             class="w-1/3"
-                            placeholder="Select Field"
+                            :placeholder="__('Select Field')"
                             @input="updateCondition(groupIndex, conditionIndex)"
                         />
 
@@ -72,7 +72,7 @@
                             :reduce="op => op.value"
                             label="label"
                             class="w-1/4"
-                            placeholder="Select Operator"
+                            :placeholder="__('Select Operator')"
                             @input="updateCondition(groupIndex, conditionIndex)"
                         />
 
@@ -85,7 +85,7 @@
                                     label="label"
                                     multiple
                                     class="flex-1 min-w-0"
-                                    placeholder="Select Values"
+                                    :placeholder="__('Select Values')"
                                     @input="updateCondition(groupIndex, conditionIndex)"
                                 />
                             </template>
@@ -96,7 +96,7 @@
                                     :reduce="option => option.value"
                                     label="label"
                                     class="flex-1 min-w-0"
-                                    placeholder="Select Value"
+                                    :placeholder="__('Select Value')"
                                     @input="updateCondition(groupIndex, conditionIndex)"
                                 />
                             </template>
@@ -106,7 +106,7 @@
                                         type="text"
                                         v-model="getBetweenValue(condition).min"
                                         class="input-text flex-1"
-                                        :placeholder="'Min value'"
+                                        :placeholder="__('Min value')"
                                         @input="updateBetweenValue(groupIndex, conditionIndex)"
                                     >
                                     <span>and</span>
@@ -114,7 +114,7 @@
                                         type="text"
                                         v-model="getBetweenValue(condition).max"
                                         class="input-text flex-1"
-                                        :placeholder="'Max value'"
+                                        :placeholder="__('Max value')"
                                         @input="updateBetweenValue(groupIndex, conditionIndex)"
                                     >
                                 </div>
@@ -125,7 +125,7 @@
                                         type="number"
                                         v-model="condition.value"
                                         class="input-text flex-1"
-                                        placeholder="Number of days"
+                                        :placeholder="__('Number of days')"
                                         min="1"
                                         @input="updateCondition(groupIndex, conditionIndex)"
                                     >
@@ -137,7 +137,7 @@
                                     type="text"
                                     v-model="condition.value"
                                     class="input-text flex-1"
-                                    placeholder="Enter value"
+                                    :placeholder="__('Enter value')"
                                     @input="updateCondition(groupIndex, conditionIndex)"
                                 >
                             </template>
@@ -155,13 +155,13 @@
             </div>
 
             <div v-if="!groups.length" class="text-center py-8 bg-gray-50 rounded-lg">
-                <p class="text-gray-500 mb-4">No groups added yet. Click "Add Group" to start building your query.</p>
+                <p class="text-gray-500 mb-4">{{ __('No groups added yet. Click "Add Group" to start building your query.') }}</p>
             </div>
         </div>
 
         <div v-if="groups.length > 1" class="mt-6 pt-4 border-t border-gray-200">
             <div class="flex items-center space-x-4">
-                <label class="font-bold">Combine Groups with:</label>
+                <label class="font-bold">{{ __('Combine Groups with:') }}</label>
                 <v-select
                     v-model="globalConjunction"
                     :options="logicalOperators"
@@ -193,51 +193,51 @@ export default {
             type: Object,
             default: () => ({
                 text: [
-                    { value: '=', label: 'Is exactly' },
-                    { value: '!=', label: 'Is not' },
-                    { value: 'LIKE', label: 'Contains' },
-                    { value: 'NOT LIKE', label: 'Does not contain' },
-                    { value: 'STARTS_WITH', label: 'Starts with' },
-                    { value: 'ENDS_WITH', label: 'Ends with' },
-                    { value: 'IS_NULL', label: 'Is empty' },
-                    { value: 'IS_NOT_NULL', label: 'Is not empty' }
+                    { value: '=', label: __('Is exactly') },
+                    { value: '!=', label: __('Is not') },
+                    { value: 'LIKE', label: __('Contains') },
+                    { value: 'NOT LIKE', label: __('Does not contain') },
+                    { value: 'STARTS_WITH', label: __('Starts with') },
+                    { value: 'ENDS_WITH', label: __('Ends with') },
+                    { value: 'IS_NULL', label: __('Is empty') },
+                    { value: 'IS_NOT_NULL', label: __('Is not empty') }
                 ],
                 select: [
-                    { value: '=', label: 'Is' },
-                    { value: '!=', label: 'Is not' },
-                    { value: 'IN', label: 'Is any of' },
-                    { value: 'NOT IN', label: 'Is none of' },
-                    { value: 'IS_NULL', label: 'Nothing selected' },
-                    { value: 'IS_NOT_NULL', label: 'Has selection' }
+                    { value: '=', label: __('Is') },
+                    { value: '!=', label: __('Is not') },
+                    { value: 'IN', label: __('Is any of') },
+                    { value: 'NOT IN', label: __('Is none of') },
+                    { value: 'IS_NULL', label: __('Nothing selected') },
+                    { value: 'IS_NOT_NULL', label: __('Has selection') }
                 ],
                 number: [
-                    { value: '=', label: 'Equals' },
-                    { value: '!=', label: 'Does not equal' },
-                    { value: '>', label: 'Greater than' },
-                    { value: '<', label: 'Less than' },
-                    { value: '>=', label: 'Greater than or equal to' },
-                    { value: '<=', label: 'Less than or equal to' },
-                    { value: 'BETWEEN', label: 'Is between' },
-                    { value: 'NOT_BETWEEN', label: 'Is not between' },
-                    { value: 'IS_NULL', label: 'Is empty' },
-                    { value: 'IS_NOT_NULL', label: 'Is not empty' }
+                    { value: '=', label: __('Equals') },
+                    { value: '!=', label: __('Does not equal') },
+                    { value: '>', label: __('Greater than') },
+                    { value: '<', label: __('Less than') },
+                    { value: '>=', label: __('Greater than or equal to') },
+                    { value: '<=', label: __('Less than or equal to') },
+                    { value: 'BETWEEN', label: __('Is between') },
+                    { value: 'NOT_BETWEEN', label: __('Is not between') },
+                    { value: 'IS_NULL', label: __('Is empty') },
+                    { value: 'IS_NOT_NULL', label: __('Is not empty') }
                 ],
                 date: [
-                    { value: '=', label: 'Is on' },
-                    { value: '!=', label: 'Is not on' },
-                    { value: '>', label: 'Is after' },
-                    { value: '<', label: 'Is before' },
-                    { value: '>=', label: 'Is on or after' },
-                    { value: '<=', label: 'Is on or before' },
-                    { value: 'BETWEEN', label: 'Is between' },
-                    { value: 'NOT_BETWEEN', label: 'Is not between' },
-                    { value: 'LAST_X_DAYS', label: 'In the last days' },
-                    { value: 'NEXT_X_DAYS', label: 'In the next days' },
-                    { value: 'THIS_WEEK', label: 'This week' },
-                    { value: 'THIS_MONTH', label: 'This month' },
-                    { value: 'THIS_YEAR', label: 'This year' },
-                    { value: 'IS_NULL', label: 'No date set' },
-                    { value: 'IS_NOT_NULL', label: 'Has date' }
+                    { value: '=', label: __('Is on') },
+                    { value: '!=', label: __('Is not on') },
+                    { value: '>', label: __('Is after') },
+                    { value: '<', label: __('Is before') },
+                    { value: '>=', label: __('Is on or after') },
+                    { value: '<=', label: __('Is on or before') },
+                    { value: 'BETWEEN', label: __('Is between') },
+                    { value: 'NOT_BETWEEN', label: __('Is not between') },
+                    { value: 'LAST_X_DAYS', label: __('In the last days') },
+                    { value: 'NEXT_X_DAYS', label: __('In the next days') },
+                    { value: 'THIS_WEEK', label: __('This week') },
+                    { value: 'THIS_MONTH', label: __('This month') },
+                    { value: 'THIS_YEAR', label: __('This year') },
+                    { value: 'IS_NULL', label: __('No date set') },
+                    { value: 'IS_NOT_NULL', label: __('Has date') }
                 ]
             })
         },

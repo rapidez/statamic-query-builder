@@ -9,8 +9,7 @@ class ServiceProvider extends AddonServiceProvider
 {
     protected $vite = [
         'input' => [
-            'resources/js/statamic-query-builder.js',
-            'resources/css/statamic-query-builder.css'
+            'resources/js/statamic-query-builder.js'
         ],
         'publicDirectory' => 'resources/dist',
     ];

@@ -1,11 +1,6 @@
 {
-  "resources/css/statamic-query-builder.css": {
-    "file": "assets/statamic-query-builder-4ed993c7.js",
-    "isEntry": true,
-    "src": "resources/css/statamic-query-builder.css"
-  },
   "resources/js/statamic-query-builder.js": {
-    "file": "assets/statamic-query-builder-83e28270.js",
+    "file": "assets/statamic-query-builder-246c3c9a.js",
     "isEntry": true,
     "src": "resources/js/statamic-query-builder.js"
   }
