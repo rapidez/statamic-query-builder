@@ -4,7 +4,6 @@
         :default-limit="100"
         :show-limit="true"
         v-model="value"
-        @input="$emit('input', $event)"
     />
 </template>
 
