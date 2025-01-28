@@ -1,38 +1,53 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "rapidez/statamic-query-builder",
+    "description": "Statamic Query Builder addon",
     "keywords": [
         "rapidez",
-        ":package_slug"
+        "statamic-query-builder"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/rapidez/statamic-query-builder",
     "license": "GPL-3.0-or-later",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Kevin Meijer",
+            "email": "kevin@justbetter.nl",
             "role": "Developer"
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require": {
-        "php": "^8.1|^8.2",
-        "rapidez/core": "^2.0|^3.0"
-    },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src"
+            "Rapidez\\StatamicQueryBuilder\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rapidez\\StatamicQueryBuilder\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "statamic/cms": "^5.0",
+        "rapidez/statamic": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
+        }
     },
     "extra": {
+        "statamic": {
+            "name": "Statamic Query Builder",
+            "description": "Statamic Query Builder addon"
+        },
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Rapidez\\StatamicQueryBuilder\\ServiceProvider"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
