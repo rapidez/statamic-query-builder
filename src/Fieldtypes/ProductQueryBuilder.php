@@ -53,7 +53,7 @@ class ProductQueryBuilder extends Fieldtype
         }
 
         $data['products'] = Cache::remember($cacheKey, Carbon::now()->addDay(), function() use ($data) {
-            return $this->toSkusEav($data);
+            return $this->toSkus($data);
         });
 
         return $data['products'];
@@ -266,13 +266,13 @@ class ProductQueryBuilder extends Fieldtype
 
             case 'LAST_X_DAYS':
                 if (is_numeric($value)) {
-                    $query->$method($column, '>=', now()->subDays($value)->startOfDay());
+                    $query->$method($column, '>=', now()->subDays((int) $value)->startOfDay());
                 }
                 break;
 
             case 'NEXT_X_DAYS':
                 if (is_numeric($value)) {
-                    $query->$method($column, '<=', now()->addDays($value)->endOfDay());
+                    $query->$method($column, '<=', now()->addDays((int) $value)->endOfDay());
                 }
                 break;
 
