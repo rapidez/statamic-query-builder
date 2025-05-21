@@ -3,6 +3,8 @@
         :fields="attributes"
         :default-limit="100"
         :show-limit="true"
+        :builder-templates="templates"
+        :default-builder-template="'slider'"
         v-model="value"
     />
 </template>
@@ -19,7 +21,11 @@ export default {
 
     data() {
         return {
-            attributes: []
+            attributes: [],
+            templates: [
+                { label: 'Slider', value: 'slider' },
+                { label: 'Listing', value: 'listing' }
+            ]
         }
     },
 

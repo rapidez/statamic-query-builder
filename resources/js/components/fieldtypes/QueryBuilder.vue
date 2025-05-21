@@ -2,16 +2,30 @@
     <div class="query-builder max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center justify-between w-full space-x-4">
-                <div class="flex items-center space-x-2" v-if="showLimit">
-                    <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
-                    <input
-                        type="number"
-                        id="limit"
-                        v-model="limit"
-                        class="input-text w-24"
-                        min="1"
-                        @input="updateValue"
-                    >
+                <div class="flex gap-2">
+                    <div class="flex items-center space-x-2" v-if="showLimit">
+                        <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
+                        <input
+                            type="number"
+                            name="limit"
+                            id="limit"
+                            v-model="limit"
+                            class="input-text w-24"
+                            min="1"
+                            @input="updateSettingValues"
+                        >
+                    </div>
+                    <div class="flex items-center space-x-2" v-if="builderTemplates">
+                        <label for="template" class="text-sm">{{ __('Template') }}</label>
+                        <v-select
+                            name="builderTemplate"
+                            v-model="builderTemplate"
+                            :options="builderTemplates"
+                            :reduce="field => field.value"
+                            class="w-36"
+                            @input="updateSettingValues"
+                        />
+                    </div>
                 </div>
                 <button class="btn-primary" @click="addGroup">{{ __('Add Group') }}</button>
             </div>
@@ -189,6 +203,14 @@ export default {
                 );
             }
         },
+        defaultBuilderTemplate: {
+            type: String,
+            default: ''
+        },
+        builderTemplates: {
+            type: Array,
+            default: []
+        },
         operators: {
             type: Object,
             default: () => ({
@@ -254,7 +276,8 @@ export default {
     data() {
         return {
             groups: [],
-            limit: this.defaultLimit,
+            builderTemplate: '',
+            limit: 100,
             globalConjunction: 'AND',
             logicalOperators: ['AND', 'OR']
         }
@@ -269,6 +292,20 @@ export default {
                 conjunction: 'AND',
                 conditions: []
             }];
+        },
+
+        initializeLimit() {
+            if (this.value?.limit) {
+                return this.value.limit;
+            }
+            return this.defaultLimit;
+        },
+
+        initializeBuilderTemplate() {
+            if (this.value?.builderTemplate) {
+                return this.value.builderTemplate;
+            }
+            return this.defaultBuilderTemplate;
         },
 
         addGroup() {
@@ -378,8 +415,12 @@ export default {
             this.$emit('input', {
                 groups: this.groups,
                 globalConjunction: this.globalConjunction,
-                limit: parseInt(this.limit) || this.defaultLimit
             });
+        },
+
+        updateSettingValues() {
+            this.value.limit = parseInt(this.limit) || this.defaultLimit;
+            this.value.builderTemplate = this.builderTemplate || this.defaultBuilderTemplate;
         },
 
         moveGroupUp(groupIndex) {
@@ -403,9 +444,8 @@ export default {
 
     mounted() {
         this.groups = this.initializeGroups();
-        if (this.value && this.value.limit) {
-            this.limit = this.value.limit;
-        }
+        this.limit = this.initializeLimit();
+        this.builderTemplate = this.initializeBuilderTemplate();
     }
 }
 </script>
