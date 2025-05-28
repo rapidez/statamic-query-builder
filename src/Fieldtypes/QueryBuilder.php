@@ -28,7 +28,9 @@ class QueryBuilder extends Fieldtype
                 ]
             ],
             'globalConjunction' => 'AND',
-            'limit' => 100
+            'limit' => 100,
+            'sortField' => '',
+            'sortDirection' => ''
         ];
     }
 

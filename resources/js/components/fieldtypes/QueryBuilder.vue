@@ -1,7 +1,7 @@
 <template>
     <div class="query-builder max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center justify-between w-full space-x-4">
+            <div class="flex flex-col justify-between w-full space-x-4 gap-4">
                 <div class="flex gap-2">
                     <div class="flex items-center space-x-2" v-if="showLimit">
                         <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
@@ -27,8 +27,31 @@
                         />
                     </div>
                 </div>
-                <button class="btn-primary" @click="addGroup">{{ __('Add Group') }}</button>
+                <div class="flex gap-2">
+                    <div class="flex items-center space-x-2" v-if="sortFields">
+                        <label for="template" class="text-sm">{{ __('Sort') }}</label>
+                        <v-select
+                            name="sortField"
+                            v-model="sortField"
+                            :options="sortFields"
+                            :reduce="field => field.value"
+                            class="w-36"
+                            @input="updateSettingValues"
+                        />
+                    </div>
+                    <div class="flex items-center space-x-2" v-if="sortFields">
+                        <label for="template" class="text-sm">{{ __('Sort Direction') }}</label>
+                        <v-select
+                            name="sortDirection"
+                            v-model="sortDirection"
+                            :options="sortDirections"
+                            class="w-36"
+                            @input="updateSettingValues"
+                        />
+                    </div>
+                </div>
             </div>
+            <button class="btn-primary self-end" @click="addGroup">{{ __('Add Group') }}</button>
         </div>
 
         <div class="space-y-6">
@@ -203,6 +226,25 @@ export default {
                 );
             }
         },
+        sortFields: {
+            type: Array,
+            required: true,
+            validator: (value) => {
+                return value.every(field =>
+                    'label' in field &&
+                    'value' in field &&
+                    'type' in field
+                );
+            }
+        },
+        defaultSortField: {
+            type: String,
+            default: ''
+        },
+        defaultSortDirection: {
+            type: String,
+            default: 'desc'
+        },
         defaultBuilderTemplate: {
             type: String,
             default: ''
@@ -279,7 +321,10 @@ export default {
             builderTemplate: '',
             limit: 100,
             globalConjunction: 'AND',
-            logicalOperators: ['AND', 'OR']
+            logicalOperators: ['AND', 'OR'],
+            sortField: '',
+            sortDirection: '',
+            sortDirections: ['ASC', 'DESC'],
         }
     },
 
@@ -299,6 +344,20 @@ export default {
                 return this.value.limit;
             }
             return this.defaultLimit;
+        },
+
+        initializeSortField() {
+            if (this.value?.sortField) {
+                return this.value.sortField;
+            }
+            return this.defaultSortField;
+        },
+
+        initializeSortDirection() {
+            if (this.value?.sortDirection) {
+                return this.value.sortDirection;
+            }
+            return this.defaultSortDirection;
         },
 
         initializeBuilderTemplate() {
@@ -421,6 +480,8 @@ export default {
         updateSettingValues() {
             this.value.limit = parseInt(this.limit) || this.defaultLimit;
             this.value.builderTemplate = this.builderTemplate || this.defaultBuilderTemplate;
+            this.value.sortField = this.sortField || this.defaultSortField;
+            this.value.sortDirection = this.sortDirection || this.defaultSortDirection;
         },
 
         moveGroupUp(groupIndex) {
@@ -445,6 +506,8 @@ export default {
     mounted() {
         this.groups = this.initializeGroups();
         this.limit = this.initializeLimit();
+        this.sortField = this.initializeSortField();
+        this.sortDirection = this.initializeSortDirection();
         this.builderTemplate = this.initializeBuilderTemplate();
     }
 }

@@ -1,6 +1,8 @@
 <template>
     <query-builder
         :fields="attributes"
+        :sort-fields="attributes"
+        :default-sort-field="attributes[0].value"
         :default-limit="100"
         :show-limit="true"
         :builder-templates="templates"
