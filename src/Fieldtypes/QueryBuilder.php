@@ -15,6 +15,7 @@ class QueryBuilder extends Fieldtype
     public function setFields(array $fields): self
     {
         $this->fields = $fields;
+
         return $this;
     }
 
@@ -24,11 +25,11 @@ class QueryBuilder extends Fieldtype
             'groups' => [
                 [
                     'conjunction' => 'AND',
-                    'conditions' => []
-                ]
+                    'conditions' => [],
+                ],
             ],
             'globalConjunction' => 'AND',
-            'limit' => 100
+            'limit' => 100,
         ];
     }
 
@@ -40,7 +41,7 @@ class QueryBuilder extends Fieldtype
                 'text' => ['=', '!=', 'LIKE', 'NOT LIKE', 'STARTS_WITH', 'ENDS_WITH', 'IS_NULL', 'IS_NOT_NULL'],
                 'select' => ['=', '!=', 'IN', 'NOT IN', 'IS_NULL', 'IS_NOT_NULL'],
                 'number' => ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'IS_NULL', 'IS_NOT_NULL'],
-                'date' => ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'LAST_X_DAYS', 'NEXT_X_DAYS', 'THIS_WEEK', 'THIS_MONTH']
+                'date' => ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'LAST_X_DAYS', 'NEXT_X_DAYS', 'THIS_WEEK', 'THIS_MONTH'],
             ],
             'defaultLimit' => 100,
             'showLimit' => true,

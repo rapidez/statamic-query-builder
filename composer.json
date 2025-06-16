@@ -29,11 +29,13 @@
         "rapidez/statamic": "*"
     },
     "require-dev": {
+        "laravel/pint": "^1.22",
         "orchestra/testbench": "^9.0"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "php-http/discovery": true,
             "pixelfear/composer-dist-plugin": true
         }
     },
