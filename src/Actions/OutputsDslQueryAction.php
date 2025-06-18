@@ -8,6 +8,12 @@ use Rapidez\StatamicQueryBuilder\Parsers\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\NextXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisMonthParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisWeekParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisYearParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateParser;
 use Rapidez\StatamicQueryBuilder\Parsers\EndsWithParser;
 use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanOrEqualParser;
 use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanParser;
@@ -47,6 +53,10 @@ class OutputsDslQueryAction
         'NEXT_X_DAYS' => NextXDaysParser::class,
         'THIS_WEEK' => ThisWeekParser::class,
         'THIS_MONTH' => ThisMonthParser::class,
+        'THIS_YEAR' => ThisYearParser::class,
+        'TODAY' => TodayParser::class,
+        'TOMORROW' => TomorrowParser::class,
+        'YESTERDAY' => YesterdayParser::class,
     ];
 
     public function build(array $config): array
@@ -87,6 +97,10 @@ class OutputsDslQueryAction
         $field = $condition['attribute'];
         $value = $condition['value'] ?? null;
 
+        if (is_array($value) && isset($value['type'])) {
+            return $this->handleEnhancedDateValue($field, $operator, $value);
+        }
+
         if (! isset($this->operators[$operator])) {
             throw new Exception("Unsupported operator: {$operator}");
         }
@@ -95,5 +109,33 @@ class OutputsDslQueryAction
         $parser = new $parserClass;
 
         return $parser->parse($field, $value);
+    }
+
+    private function handleEnhancedDateValue(string $field, string $operator, array $value): array
+    {
+        if ($value['type'] === 'relative') {
+            if (isset($value['value'])) {
+                $relativeOperator = strtoupper($value['value']);
+
+                if (isset($this->operators[$relativeOperator])) {
+                    $parserClass = $this->operators[$relativeOperator];
+                    $parser = new $parserClass;
+                    return $parser->parse($field, ['operator' => $operator]);
+                }
+            } elseif (isset($value['base'], $value['offset'], $value['unit'])) {
+                $valueWithOperator = array_merge($value, ['operator' => $operator]);
+                $parser = new RelativeDateParser;
+                return $parser->parse($field, $valueWithOperator);
+            }
+        } elseif ($value['type'] === 'manual') {
+            $valueWithOperator = [
+                'date' => $value['value'],
+                'operator' => $operator
+            ];
+            $parser = new ManualDateParser;
+            return $parser->parse($field, $valueWithOperator);
+        }
+
+        return ['match_all' => []];
     }
 }

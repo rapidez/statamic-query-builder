@@ -132,6 +132,42 @@
                                     <span>days</span>
                                 </div>
                             </template>
+
+                            <template v-else-if="isDateField(condition.attribute)">
+                                <div class="flex items-center space-x-2 flex-1">
+                                    <v-select
+                                        :value="getDateValue(condition).selectedOption"
+                                        :options="getDateValueOptions()"
+                                        :reduce="option => option.value"
+                                        label="label"
+                                        class="flex-1"
+                                        :placeholder="__('Select date option')"
+                                        @input="onDateOptionChange(groupIndex, conditionIndex, $event)"
+                                    />
+
+                                    <template v-if="needsOffsetInput(getDateValue(condition).selectedOption)">
+                                        <input
+                                            type="number"
+                                            :value="getDateValue(condition).offset"
+                                            class="input-text w-20"
+                                            :placeholder="1"
+                                            min="1"
+                                            @input="updateDateOffset(groupIndex, conditionIndex, $event.target.value)"
+                                        >
+                                        <span class="text-sm font-medium text-gray-600">
+                                            {{ getOffsetLabel(getDateValue(condition).selectedOption) }}
+                                        </span>
+                                    </template>
+
+                                    <input
+                                        v-if="getDateValue(condition).selectedOption === 'OTHER'"
+                                        type="date"
+                                        :value="getDateValue(condition).manualDate"
+                                        class="input-text flex-1"
+                                        @input="updateManualDate(groupIndex, conditionIndex, $event.target.value)"
+                                    >
+                                </div>
+                            </template>
                             <template v-else>
                                 <input
                                     type="text"
@@ -285,11 +321,21 @@ export default {
         },
 
         addConditionToGroup(groupIndex) {
-            const defaultOperator = this.getOperatorsForType(this.fields[0]?.value)[0]?.value || '=';
-            const defaultValue = this.needsBetweenInput(defaultOperator) ? { min: '', max: '' } : '';
+            const firstField = this.fields[0];
+            const defaultOperator = this.getOperatorsForType(firstField?.value)[0]?.value || '=';
+            let defaultValue = '';
+
+            if (firstField?.type === 'date') {
+                defaultValue = {
+                    type: 'relative',
+                    value: 'TODAY'
+                };
+            } else if (this.needsBetweenInput(defaultOperator)) {
+                defaultValue = { min: '', max: '' };
+            }
 
             this.groups[groupIndex].conditions.push({
-                attribute: this.fields[0]?.value || '',
+                attribute: firstField?.value || '',
                 operator: defaultOperator,
                 value: defaultValue
             });
@@ -311,6 +357,11 @@ export default {
         getFieldOptions(fieldValue) {
             const field = this.fields.find(field => field.value === fieldValue);
             return field?.options || [];
+        },
+
+        isDateField(fieldValue) {
+            const field = this.fields.find(field => field.value === fieldValue);
+            return field?.type === 'date';
         },
 
         isMultiSelectVisible(condition) {
@@ -336,6 +387,143 @@ export default {
             return ['LAST_X_DAYS', 'NEXT_X_DAYS'].includes(operator);
         },
 
+        getDateValue(condition) {
+            if (!condition.value || typeof condition.value === 'string') {
+                this.$set(condition, 'value', {
+                    type: 'relative',
+                    value: 'TODAY'
+                });
+            }
+
+            const value = condition.value;
+
+            if (value.type === 'relative') {
+                if (value.value) {
+                    return {
+                        selectedOption: value.value,
+                        offset: 1,
+                        manualDate: ''
+                    };
+                } else if (value.base) {
+                    const direction = value.offset >= 0 ? 'PLUS' : 'MINUS';
+                    const selectedOption = `${value.base}_${direction}_${value.unit.toUpperCase()}`;
+                    return {
+                        selectedOption,
+                        offset: Math.abs(value.offset),
+                        manualDate: ''
+                    };
+                }
+            } else if (value.type === 'manual') {
+                return {
+                    selectedOption: 'OTHER',
+                    offset: 1,
+                    manualDate: value.value
+                };
+            }
+
+            // Fallback
+            return {
+                selectedOption: 'TODAY',
+                offset: 1,
+                manualDate: ''
+            };
+        },
+
+        needsOffsetInput(selectedOption) {
+            const offsetOptions = [
+                'TODAY_PLUS_DAYS', 'TODAY_PLUS_WEEKS', 'TODAY_PLUS_MONTHS', 'TODAY_PLUS_YEARS',
+                'TODAY_MINUS_DAYS', 'TODAY_MINUS_WEEKS', 'TODAY_MINUS_MONTHS', 'TODAY_MINUS_YEARS'
+            ];
+            return offsetOptions.includes(selectedOption);
+        },
+
+        getOffsetLabel(selectedOption) {
+            const labelMap = {
+                'TODAY_PLUS_DAYS': __('Days'),
+                'TODAY_MINUS_DAYS': __('Days'),
+                'TODAY_PLUS_WEEKS': __('Weeks'),
+                'TODAY_MINUS_WEEKS': __('Weeks'),
+                'TODAY_PLUS_MONTHS': __('Months'),
+                'TODAY_MINUS_MONTHS': __('Months'),
+                'TODAY_PLUS_YEARS': __('Years'),
+                'TODAY_MINUS_YEARS': __('Years')
+            };
+            return labelMap[selectedOption] || '';
+        },
+
+        getDateValueOptions() {
+            return [
+                { value: 'TODAY', label: this.__('Today'), group: this.__('Fixed Relatives') },
+                { value: 'TOMORROW', label: this.__('Tomorrow'), group: this.__('Fixed Relatives') },
+                { value: 'YESTERDAY', label: this.__('Yesterday'), group: this.__('Fixed Relatives') },
+
+                { value: 'TODAY_PLUS_DAYS', label: this.__('Today + X days'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_PLUS_WEEKS', label: this.__('Today + X weeks'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_PLUS_MONTHS', label: this.__('Today + X months'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_PLUS_YEARS', label: this.__('Today + X years'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_MINUS_DAYS', label: this.__('Today - X days'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_MINUS_WEEKS', label: this.__('Today - X weeks'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_MINUS_MONTHS', label: this.__('Today - X months'), group: this.__('Dynamic Relatives') },
+                { value: 'TODAY_MINUS_YEARS', label: this.__('Today - X years'), group: this.__('Dynamic Relatives') },
+
+                { value: 'OTHER', label: this.__('Other...'), group: this.__('Manual') }
+            ];
+        },
+
+        onDateOptionChange(groupIndex, conditionIndex, selectedOption) {
+            const condition = this.groups[groupIndex].conditions[conditionIndex];
+
+            if (['TODAY', 'TOMORROW', 'YESTERDAY'].includes(selectedOption)) {
+                condition.value = {
+                    type: 'relative',
+                    value: selectedOption
+                };
+            } else if (this.needsOffsetInput(selectedOption)) {
+                const parts = selectedOption.split('_');
+                const base = parts[0];
+                const direction = parts[1];
+                const unit = parts[2].toLowerCase();
+
+                condition.value = {
+                    type: 'relative',
+                    base: base,
+                    offset: direction === 'MINUS' ? -1 : 1,
+                    unit: unit
+                };
+            } else if (selectedOption === 'OTHER') {
+                condition.value = {
+                    type: 'manual',
+                    value: ''
+                };
+            }
+
+            this.updateValue();
+        },
+
+        updateDateOffset(groupIndex, conditionIndex, offset) {
+            const condition = this.groups[groupIndex].conditions[conditionIndex];
+            const currentValue = condition.value;
+
+            if (currentValue.type === 'relative' && currentValue.base) {
+                const direction = currentValue.offset >= 0 ? 1 : -1;
+                condition.value = {
+                    ...currentValue,
+                    offset: direction * Math.abs(parseInt(offset) || 1)
+                };
+                this.updateValue();
+            }
+        },
+
+        updateManualDate(groupIndex, conditionIndex, date) {
+            const condition = this.groups[groupIndex].conditions[conditionIndex];
+
+            condition.value = {
+                type: 'manual',
+                value: date
+            };
+            this.updateValue();
+        },
+
         getOperatorsForType(fieldName) {
             const field = this.fields.find(field => field.value === fieldName);
             return field ? this.operators[field.type] || [] : [];
@@ -349,6 +537,13 @@ export default {
                 condition.value = { min: '', max: '' };
             } else if (!this.needsValueInput(operator)) {
                 condition.value = null;
+            } else if (this.isDateField(condition.attribute)) {
+                condition.value = {
+                    type: 'relative',
+                    value: 'TODAY'
+                };
+            } else if (this.needsDaysInput(operator)) {
+                condition.value = condition.value || 1;
             }
 
             this.updateValue();
@@ -409,3 +604,22 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.form-select {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
+}
+
+optgroup {
+    font-weight: bold;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+optgroup option {
+    font-weight: normal;
+    color: #000;
+    padding-left: 16px;
+    background-color: white;
+}
+</style>
