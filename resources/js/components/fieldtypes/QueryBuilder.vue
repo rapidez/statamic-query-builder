@@ -421,7 +421,6 @@ export default {
                 };
             }
 
-            // Fallback
             return {
                 selectedOption: 'TODAY',
                 offset: 1,
