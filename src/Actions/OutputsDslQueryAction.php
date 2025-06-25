@@ -2,18 +2,42 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
-use Exception;
 use Rapidez\StatamicQueryBuilder\Parsers\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\NextXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisMonthParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisWeekParser;
 use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisYearParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateNotEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\EndsWithParser;
 use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanOrEqualParser;
 use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanParser;
@@ -54,9 +78,43 @@ class OutputsDslQueryAction
         'THIS_WEEK' => ThisWeekParser::class,
         'THIS_MONTH' => ThisMonthParser::class,
         'THIS_YEAR' => ThisYearParser::class,
-        'TODAY' => TodayParser::class,
-        'TOMORROW' => TomorrowParser::class,
-        'YESTERDAY' => YesterdayParser::class,
+    ];
+
+    protected array $dateParserMappings = [
+        'relative_TODAY_=' => TodayEqualsParser::class,
+        'relative_TODAY_>' => TodayAfterParser::class,
+        'relative_TODAY_>=' => TodayAfterOrEqualParser::class,
+        'relative_TODAY_<' => TodayBeforeParser::class,
+        'relative_TODAY_<=' => TodayBeforeOrEqualParser::class,
+        'relative_TODAY_!=' => TodayNotEqualsParser::class,
+
+        'relative_TOMORROW_=' => TomorrowEqualsParser::class,
+        'relative_TOMORROW_>' => TomorrowAfterParser::class,
+        'relative_TOMORROW_>=' => TomorrowAfterOrEqualParser::class,
+        'relative_TOMORROW_<' => TomorrowBeforeParser::class,
+        'relative_TOMORROW_<=' => TomorrowBeforeOrEqualParser::class,
+        'relative_TOMORROW_!=' => TomorrowNotEqualsParser::class,
+
+        'relative_YESTERDAY_=' => YesterdayEqualsParser::class,
+        'relative_YESTERDAY_>' => YesterdayAfterParser::class,
+        'relative_YESTERDAY_>=' => YesterdayAfterOrEqualParser::class,
+        'relative_YESTERDAY_<' => YesterdayBeforeParser::class,
+        'relative_YESTERDAY_<=' => YesterdayBeforeOrEqualParser::class,
+        'relative_YESTERDAY_!=' => YesterdayNotEqualsParser::class,
+
+        'relative_dynamic_=' => RelativeDateEqualsParser::class,
+        'relative_dynamic_>' => RelativeDateAfterParser::class,
+        'relative_dynamic_>=' => RelativeDateAfterOrEqualParser::class,
+        'relative_dynamic_<' => RelativeDateBeforeParser::class,
+        'relative_dynamic_<=' => RelativeDateBeforeOrEqualParser::class,
+        'relative_dynamic_!=' => RelativeDateNotEqualsParser::class,
+
+        'manual_=' => ManualDateEqualsParser::class,
+        'manual_>' => ManualDateAfterParser::class,
+        'manual_>=' => ManualDateAfterOrEqualParser::class,
+        'manual_<' => ManualDateBeforeParser::class,
+        'manual_<=' => ManualDateBeforeOrEqualParser::class,
+        'manual_!=' => ManualDateNotEqualsParser::class,
     ];
 
     public function build(array $config): array
@@ -98,11 +156,13 @@ class OutputsDslQueryAction
         $value = $condition['value'] ?? null;
 
         if (is_array($value) && isset($value['type'])) {
-            return $this->handleEnhancedDateValue($field, $operator, $value);
+            $parserClass = $this->getDateParserClass($value, $operator);
+            $parser = new $parserClass;
+            return $parser->parse($field, $value);
         }
 
         if (! isset($this->operators[$operator])) {
-            throw new Exception("Unsupported operator: {$operator}");
+            return ['match_all' => []];
         }
 
         $parserClass = $this->operators[$operator];
@@ -111,31 +171,21 @@ class OutputsDslQueryAction
         return $parser->parse($field, $value);
     }
 
-    private function handleEnhancedDateValue(string $field, string $operator, array $value): array
+    private function getDateParserClass(array $value, string $operator): string
     {
         if ($value['type'] === 'relative') {
             if (isset($value['value'])) {
-                $relativeOperator = strtoupper($value['value']);
-
-                if (isset($this->operators[$relativeOperator])) {
-                    $parserClass = $this->operators[$relativeOperator];
-                    $parser = new $parserClass;
-                    return $parser->parse($field, ['operator' => $operator]);
-                }
-            } elseif (isset($value['base'], $value['offset'], $value['unit'])) {
-                $valueWithOperator = array_merge($value, ['operator' => $operator]);
-                $parser = new RelativeDateParser;
-                return $parser->parse($field, $valueWithOperator);
+                $key = "relative_{$value['value']}_{$operator}";
+                return $this->dateParserMappings[$key] ?? TodayEqualsParser::class;
+            } else {
+                $key = "relative_dynamic_{$operator}";
+                return $this->dateParserMappings[$key] ?? RelativeDateEqualsParser::class;
             }
         } elseif ($value['type'] === 'manual') {
-            $valueWithOperator = [
-                'date' => $value['value'],
-                'operator' => $operator
-            ];
-            $parser = new ManualDateParser;
-            return $parser->parse($field, $valueWithOperator);
+            $key = "manual_{$operator}";
+            return $this->dateParserMappings[$key] ?? ManualDateEqualsParser::class;
         }
 
-        return ['match_all' => []];
+        return TodayEqualsParser::class;
     }
 }

@@ -2,22 +2,10 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\Dates;
 
-use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-
-class ThisYearParser implements ParsesOperator
+class ThisYearParser extends DateRangeParser
 {
-    public function parse(string $field, $value): array
+    protected function buildRange(string $value): array
     {
-        $startOfYear = now()->startOfYear()->format('Y-m-d\TH:i:s');
-        $endOfYear = now()->endOfYear()->format('Y-m-d\TH:i:s');
-
-        return [
-            'range' => [
-                $field => [
-                    'gte' => $startOfYear,
-                    'lte' => $endOfYear,
-                ]
-            ]
-        ];
+        return ['gte' => 'now/M', 'lt' => 'now+1y/M'];
     }
 }
