@@ -18,24 +18,49 @@
         </div>
 
         <div class="space-y-6">
-            <query-group
-                v-for="(group, groupIndex) in groups"
-                :key="groupIndex"
-                :group="group"
-                :group-index="groupIndex"
-                :fields="fields"
-                :operators="operators"
-                :can-move-up="groupIndex > 0"
-                :can-move-down="groupIndex < groups.length - 1"
-                :can-remove="groups.length > 1"
-                @update-group="updateGroup"
-                @remove-group="removeGroup"
-                @move-group-up="moveGroupUp"
-                @move-group-down="moveGroupDown"
-                @add-condition="addConditionToGroup"
-                @update-condition="updateCondition"
-                @remove-condition="removeCondition"
-            />
+            <div v-if="groups.length > 0" class="flex justify-center">
+                <button
+                    class="insert-group-btn"
+                    @click="insertGroupAt(0)"
+                    :title="__('Insert group here')"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <template v-for="(group, groupIndex) in groups">
+                <query-group
+                    :key="`group-${groupIndex}`"
+                    :group="group"
+                    :group-index="groupIndex"
+                    :fields="fields"
+                    :operators="operators"
+                    :can-move-up="groupIndex > 0"
+                    :can-move-down="groupIndex < groups.length - 1"
+                    :can-remove="groups.length > 1"
+                    @update-group="updateGroup"
+                    @remove-group="removeGroup"
+                    @move-group-up="moveGroupUp"
+                    @move-group-down="moveGroupDown"
+                    @add-condition="addConditionToGroup"
+                    @update-condition="updateCondition"
+                    @remove-condition="removeCondition"
+                />
+
+                <div v-if="groupIndex < groups.length - 1" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
+                    <button
+                        class="insert-group-btn"
+                        @click="insertGroupAt(groupIndex + 1)"
+                        :title="__('Insert group here')"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </button>
+                </div>
+            </template>
         </div>
 
         <div v-if="!groups.length" class="text-center py-8 bg-gray-50 rounded-lg">
@@ -159,6 +184,15 @@ export default {
             this.updateValue();
         },
 
+        insertGroupAt(index) {
+            const newGroup = {
+                conjunction: 'AND',
+                conditions: []
+            };
+            this.groups.splice(index, 0, newGroup);
+            this.updateValue();
+        },
+
         removeGroup(groupIndex) {
             this.groups.splice(groupIndex, 1);
             this.updateValue();
@@ -239,3 +273,13 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.insert-group-btn {
+    @apply flex items-center justify-center w-8 h-8 bg-blue-50 border-2 border-dashed border-blue-300 rounded-full text-blue-500 hover:bg-blue-100 hover:border-blue-400 transition-colors duration-200;
+}
+
+.insert-group-btn:hover {
+    @apply shadow-sm;
+}
+</style>
