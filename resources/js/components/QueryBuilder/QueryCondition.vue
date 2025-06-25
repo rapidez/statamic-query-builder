@@ -40,11 +40,11 @@
 </template>
 
 <script>
-import DateValueInput from './Inputs/DateValueInput.vue';
-import SelectValueInput from './Inputs/SelectValueInput.vue';
-import BetweenValueInput from './Inputs/BetweenValueInput.vue';
-import DaysValueInput from './Inputs/DaysValueInput.vue';
-import TextValueInput from './Inputs/TextValueInput.vue';
+import DateValueInput from './inputs/DateValueInput.vue';
+import SelectValueInput from './inputs/SelectValueInput.vue';
+import BetweenValueInput from './inputs/BetweenValueInput.vue';
+import DaysValueInput from './inputs/DaysValueInput.vue';
+import TextValueInput from './inputs/TextValueInput.vue';
 import FieldHelpers from '../../mixins/FieldHelpers.js';
 
 export default {
