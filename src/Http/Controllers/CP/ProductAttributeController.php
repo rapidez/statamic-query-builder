@@ -8,7 +8,7 @@ class ProductAttributeController extends CpController
 {
     public function index()
     {
-        $model = config('rapidez.query-builder.models.ProductAttribute');
+        $model = config('rapidez.query-builder.models.product_attribute');
 
         if (! $model) {
             return [];

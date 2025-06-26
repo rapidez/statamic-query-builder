@@ -2,6 +2,6 @@
 
 return [
     'models' => [
-        'ProductAttribute' => 'Rapidez\Statamic\Models\ProductAttribute',
+        'product_attribute' => 'Rapidez\Statamic\Models\ProductAttribute',
     ]
 ];
