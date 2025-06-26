@@ -23,7 +23,7 @@ class RelativeDateNotEqualsParser implements ParsesOperator
         ];
     }
 
-    private function buildDateExpression(array $value): string
+    protected function buildDateExpression(array $value): string
     {
         $offset = $value['offset'] ?? 0;
         $unit = $value['unit'] ?? 'days';

@@ -149,7 +149,7 @@ class OutputsDslQueryAction
         ];
     }
 
-    private function mapCondition(array $condition): array
+    protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
         $field = $condition['attribute'];
@@ -171,7 +171,7 @@ class OutputsDslQueryAction
         return $parser->parse($field, $value);
     }
 
-    private function getDateParserClass(array $value, string $operator): string
+    protected function getDateParserClass(array $value, string $operator): string
     {
         if ($value['type'] === 'relative') {
             if (isset($value['value'])) {
