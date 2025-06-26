@@ -33,7 +33,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/query-builder.php', 'query-builder');
         $this->publishes([
             __DIR__.'/../config/query-builder.php' => config_path('rapidez/query-builder.php'),
-        ], 'query-builder-config');
+        ], 'rapidez-query-builder-config');
 
         return $this;
     }
