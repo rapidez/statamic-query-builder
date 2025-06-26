@@ -37,4 +37,14 @@ class ServiceProvider extends AddonServiceProvider
 
         return $this;
     }
+
+    protected function bootViews(): self
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'rapidez-query-builder');
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/rapidez-query-builder'),
+        ], 'rapidez-query-builder-views');
+
+        return $this;
+    }
 }

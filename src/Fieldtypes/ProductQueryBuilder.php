@@ -5,6 +5,7 @@ namespace Rapidez\StatamicQueryBuilder\Fieldtypes;
 use Illuminate\Support\Facades\Cache;
 use Rapidez\StatamicQueryBuilder\Actions\OutputsDslQueryAction;
 use Statamic\Fields\Fieldtype;
+use Illuminate\View\View;
 
 class ProductQueryBuilder extends Fieldtype
 {
@@ -26,12 +27,15 @@ class ProductQueryBuilder extends Fieldtype
             'globalConjunction' => 'AND',
             'limit' => 100,
             'products' => [],
+            'sortField' => '',
+            'sortDirection' => '',
         ];
     }
 
     public function process($data)
     {
         $data['value'] = $this->getValue($data, true);
+        $data['template_html'] = $this->getTemplate($data);
 
         return $data;
     }
@@ -41,6 +45,7 @@ class ProductQueryBuilder extends Fieldtype
         unset($value['products']);
 
         $value['value'] = $this->getValue($value);
+        $value['template_html'] = $this->getTemplate($value);
 
         return $value;
     }
@@ -63,5 +68,28 @@ class ProductQueryBuilder extends Fieldtype
     public function getDsl(array $value)
     {
         return $this->outputsDslQueryAction->build($value);
+    }
+
+    public function getTemplate(array $value)
+    {
+        $template = $value['builderTemplate'];
+
+        if(! $template) {
+            return null;
+        }
+
+        $templatePath = 'rapidez-query-builder::templates.'.$template;
+
+        if (! view()->exists($templatePath)) {
+            return null;
+        }
+
+        /** @var View $view */
+        $view = view($templatePath)->with([
+            'value' => $value,
+            'query' => $value['value'],
+        ]);
+
+        return $view->render();
     }
 }
