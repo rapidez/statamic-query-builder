@@ -1,6 +1,6 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers\Dates;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 

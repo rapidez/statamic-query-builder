@@ -1,6 +1,6 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 

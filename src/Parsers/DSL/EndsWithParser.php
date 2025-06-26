@@ -1,6 +1,6 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 
@@ -10,7 +10,7 @@ class EndsWithParser implements ParsesOperator
     {
         return [
             'wildcard' => [
-                $field.'.keyword' => [
+                $field => [
                     'value' => "*{$value}",
                 ],
             ],

@@ -1,6 +1,6 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers\Dates;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
 class ThisWeekParser extends DateRangeParser
 {

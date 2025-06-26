@@ -3,26 +3,26 @@
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
 use Exception;
-use Rapidez\StatamicQueryBuilder\Parsers\BetweenParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\LastXDaysParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\NextXDaysParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisMonthParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisWeekParser;
-use Rapidez\StatamicQueryBuilder\Parsers\EndsWithParser;
-use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanParser;
-use Rapidez\StatamicQueryBuilder\Parsers\InParser;
-use Rapidez\StatamicQueryBuilder\Parsers\IsNotNullParser;
-use Rapidez\StatamicQueryBuilder\Parsers\IsNullParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LessThanOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LessThanParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LikeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotBetweenParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotInParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotLikeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotTermParser;
-use Rapidez\StatamicQueryBuilder\Parsers\StartsWithParser;
-use Rapidez\StatamicQueryBuilder\Parsers\TermParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisMonthParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisWeekParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\EndsWithParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\InParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\IsNotNullParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\IsNullParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LessThanOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LessThanParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LikeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotBetweenParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotInParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotLikeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotTermParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\StartsWithParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\TermParser;
 
 class OutputsDslQueryAction
 {
@@ -63,8 +63,8 @@ class OutputsDslQueryAction
             $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
             $conditions = [];
 
-            foreach ($group['conditions'] as $cond) {
-                $conditions[] = $this->mapCondition($cond);
+            foreach ($group['conditions'] as $condition) {
+                $conditions[] = $this->mapCondition($condition);
             }
 
             if (count($groups) === 1 && $groupKey === $globalKey) {
@@ -84,7 +84,7 @@ class OutputsDslQueryAction
     private function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = $condition['attribute'];
+        $field = is_numeric($condition['attribute']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
         $value = $condition['value'] ?? null;
 
         if (! isset($this->operators[$operator])) {

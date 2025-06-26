@@ -1,10 +1,10 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 
-class NotLikeParser implements ParsesOperator
+class NotTermParser implements ParsesOperator
 {
     public function parse(string $field, mixed $value): array
     {
@@ -12,10 +12,8 @@ class NotLikeParser implements ParsesOperator
             'bool' => [
                 'must_not' => [
                     [
-                        'wildcard' => [
-                            $field.'.keyword' => [
-                                'value' => "*{$value}*",
-                            ],
+                        'term' => [
+                            $field => $value,
                         ],
                     ],
                 ],
