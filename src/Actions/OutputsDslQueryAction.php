@@ -2,57 +2,57 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
-use Rapidez\StatamicQueryBuilder\Parsers\BetweenParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\LastXDaysParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\NextXDaysParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisMonthParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisWeekParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ThisYearParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TodayNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\TomorrowNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\YesterdayNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\RelativeDateNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\Dates\ManualDateNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\EndsWithParser;
-use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\GreaterThanParser;
-use Rapidez\StatamicQueryBuilder\Parsers\InParser;
-use Rapidez\StatamicQueryBuilder\Parsers\IsNotNullParser;
-use Rapidez\StatamicQueryBuilder\Parsers\IsNullParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LessThanOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LessThanParser;
-use Rapidez\StatamicQueryBuilder\Parsers\LikeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotBetweenParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotInParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotLikeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\NotTermParser;
-use Rapidez\StatamicQueryBuilder\Parsers\StartsWithParser;
-use Rapidez\StatamicQueryBuilder\Parsers\TermParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisMonthParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisWeekParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisYearParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\EndsWithParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\InParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\IsNotNullParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\IsNullParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LessThanOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LessThanParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\LikeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotBetweenParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotInParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotLikeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotTermParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\StartsWithParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\TermParser;
 
 class OutputsDslQueryAction
 {
@@ -131,8 +131,8 @@ class OutputsDslQueryAction
             $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
             $conditions = [];
 
-            foreach ($group['conditions'] as $cond) {
-                $conditions[] = $this->mapCondition($cond);
+            foreach ($group['conditions'] as $condition) {
+                $conditions[] = $this->mapCondition($condition);
             }
 
             if (count($groups) === 1 && $groupKey === $globalKey) {
@@ -152,7 +152,7 @@ class OutputsDslQueryAction
     protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = $condition['attribute'];
+        $field = is_numeric($condition['attribute']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
         $value = $condition['value'] ?? null;
 
         if (is_array($value) && isset($value['type'])) {
