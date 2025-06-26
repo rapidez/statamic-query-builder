@@ -43,7 +43,7 @@ export default {
 
         getOperatorsForType(fieldName) {
             const field = this.fields.find(field => field.value === fieldName);
-            return field ? this.operators[field.type] || [] : [];
+            return field ? (this.operators?.[field.type] || []) : [];
         },
 
         initializeGroups() {
