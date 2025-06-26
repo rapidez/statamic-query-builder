@@ -2,19 +2,20 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Carbon\Carbon;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\DateRangeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateParserTrait;
 
 class ManualDateEqualsParser extends DateRangeParser
 {
+    use ManualDateParserTrait;
+
     protected function buildRange($value): array
     {
-        $date = $value['date'] ?? '';
-        if (empty($date)) {
+        $parsedDate = $this->parseManualDate($value);
+        if ($parsedDate === null) {
             return ['gte' => 'now/d', 'lte' => 'now/d'];
         }
 
-        $parsedDate = Carbon::parse($date)->format('Y-m-d');
         return ['gte' => $parsedDate, 'lte' => $parsedDate];
     }
 }

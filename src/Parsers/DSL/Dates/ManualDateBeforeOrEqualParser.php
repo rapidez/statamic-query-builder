@@ -2,19 +2,20 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Carbon\Carbon;
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateParserTrait;
 
 class ManualDateBeforeOrEqualParser implements ParsesOperator
 {
+    use ManualDateParserTrait;
+
     public function parse(string $field, mixed $value): array
     {
-        $date = $value['date'] ?? '';
-        if (empty($date)) {
-            return ['match_all' => []];
+        $parsedDate = $this->parseManualDate($value);
+        if ($parsedDate === null) {
+            return $this->buildFallbackQuery();
         }
 
-        $parsedDate = Carbon::parse($date)->format('Y-m-d');
         return [
             'range' => [
                 $field => ['lte' => $parsedDate]
