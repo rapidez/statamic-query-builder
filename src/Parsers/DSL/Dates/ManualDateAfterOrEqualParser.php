@@ -3,7 +3,7 @@
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateParserTrait;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits\ManualDateParserTrait;
 
 class ManualDateAfterOrEqualParser implements ParsesOperator
 {

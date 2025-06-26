@@ -3,7 +3,7 @@
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateExpressionTrait;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits\RelativeDateExpressionTrait;
 
 class RelativeDateAfterOrEqualParser implements ParsesOperator
 {

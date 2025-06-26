@@ -4,7 +4,7 @@ namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
 use Carbon\Carbon;
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateParserTrait;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits\ManualDateParserTrait;
 
 class ManualDateAfterParser implements ParsesOperator
 {

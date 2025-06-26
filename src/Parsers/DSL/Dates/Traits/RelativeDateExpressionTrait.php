@@ -1,6 +1,6 @@
 <?php
 
-namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
+namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits;
 
 trait RelativeDateExpressionTrait
 {
