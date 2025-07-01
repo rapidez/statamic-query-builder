@@ -152,7 +152,7 @@ class OutputsDslQueryAction
     protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = is_numeric($condition['attribute']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
+        $field = is_numeric($condition['value']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
         $value = $condition['value'] ?? null;
 
         if (is_array($value) && isset($value['type'])) {

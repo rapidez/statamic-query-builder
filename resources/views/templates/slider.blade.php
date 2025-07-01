@@ -1,7 +1,7 @@
 @if($query ?? false)
-    <x-rapidez-query-builder::productlist
+    <x-rapidez::productlist
         :value="false"
         :limit="$value['limit'] ?? null"
-        :query="json_encode($query)"
+        :dslQuery="json_encode($query['query'])"
     />
 @endif
