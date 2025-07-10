@@ -78,9 +78,7 @@ class OutputsDslQueryAction
         'THIS_WEEK' => ThisWeekParser::class,
         'THIS_MONTH' => ThisMonthParser::class,
         'THIS_YEAR' => ThisYearParser::class,
-    ];
 
-    protected array $dateParserMappings = [
         'relative_TODAY_=' => TodayEqualsParser::class,
         'relative_TODAY_>' => TodayAfterParser::class,
         'relative_TODAY_>=' => TodayAfterOrEqualParser::class,
@@ -155,37 +153,21 @@ class OutputsDslQueryAction
         $field = is_numeric($condition['value']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
         $value = $condition['value'] ?? null;
 
-        if (is_array($value) && isset($value['type'])) {
-            $parserClass = $this->getDateParserClass($value, $operator);
-            $parser = new $parserClass;
-            return $parser->parse($field, $value);
-        }
+        $parser = isset($value['type'])
+            ? ($value['type'] === 'relative' && isset($value['base'])
+                ? "relative_dynamic_{$operator}"
+                : ($value['type'] === 'manual'
+                    ? "manual_{$operator}"
+                    : "{$value['type']}_{$value['value']}_{$operator}"))
+            : $operator;
 
-        if (! isset($this->operators[$operator])) {
+        if (! isset($this->operators[$parser])) {
             return ['match_all' => []];
         }
 
-        $parserClass = $this->operators[$operator];
-        $parser = new $parserClass;
+        $parserClass = $this->operators[$parser];
+        $parserInstance = new $parserClass;
 
-        return $parser->parse($field, $value);
-    }
-
-    protected function getDateParserClass(array $value, string $operator): string
-    {
-        if ($value['type'] === 'relative') {
-            if (isset($value['value'])) {
-                $key = "relative_{$value['value']}_{$operator}";
-                return $this->dateParserMappings[$key] ?? TodayEqualsParser::class;
-            } else {
-                $key = "relative_dynamic_{$operator}";
-                return $this->dateParserMappings[$key] ?? RelativeDateEqualsParser::class;
-            }
-        } elseif ($value['type'] === 'manual') {
-            $key = "manual_{$operator}";
-            return $this->dateParserMappings[$key] ?? ManualDateEqualsParser::class;
-        }
-
-        return TodayEqualsParser::class;
+        return $parserInstance->parse($field, $value);
     }
 }
