@@ -2,6 +2,9 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
+use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
@@ -115,6 +118,8 @@ class OutputsDslQueryAction
         'manual_!=' => ManualDateNotEqualsParser::class,
     ];
 
+    protected array $mappings;
+
     public function build(array $config): array
     {
         $groupConjunction = strtoupper($config['globalConjunction'] ?? 'AND');
@@ -122,6 +127,7 @@ class OutputsDslQueryAction
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
+        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
         $clauses = [];
 
         foreach ($groups as $group) {
@@ -150,7 +156,7 @@ class OutputsDslQueryAction
     protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = is_numeric($condition['value']) ? $condition['attribute'] : $condition['attribute'].'.keyword';
+        $field = $this->getQueryFieldName($condition['attribute']);
         $value = $condition['value'] ?? null;
 
         $parser = isset($value['type'])
@@ -169,5 +175,27 @@ class OutputsDslQueryAction
         $parserInstance = new $parserClass;
 
         return $parserInstance->parse($field, $value);
+    }
+
+    private function getMappings(): array
+    {
+        $indexName = config('rapidez.es_prefix').'_products_'.config('rapidez.store');
+        $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
+        $mappings = data_get($esMappings, '*.mappings.properties', []);
+
+        return Arr::last($mappings) ?? [];
+    }
+
+    private function getQueryFieldName(string $attribute): string
+    {
+        if (! isset($this->mappings[$attribute])) {
+            return $attribute;
+        }
+
+        $mapping = $this->mappings[$attribute];
+
+        $keyword = $mapping['type'] === 'text' && $mapping['fields']['keyword']['type'] === 'keyword';
+
+        return $keyword ? $attribute.'.keyword' : $attribute;
     }
 }
