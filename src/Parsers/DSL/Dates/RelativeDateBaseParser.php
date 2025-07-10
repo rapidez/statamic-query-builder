@@ -2,9 +2,10 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\DateRangeParser;
+use Carbon\Carbon;
+use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 
-class RelativeDateEqualsParser extends DateRangeParser
+abstract class RelativeDateBaseParser implements ParsesOperator
 {
     protected function buildDateExpression(array $value): string
     {
@@ -24,11 +25,5 @@ class RelativeDateEqualsParser extends DateRangeParser
         } else {
             return "now{$offset}{$unitChar}/d";
         }
-    }
-
-    protected function buildRange($value): array
-    {
-        $dateExpression = $this->buildDateExpression($value);
-        return ['gte' => $dateExpression, 'lte' => $dateExpression];
     }
 }

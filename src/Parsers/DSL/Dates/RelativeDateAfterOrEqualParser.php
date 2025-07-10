@@ -2,13 +2,10 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits\RelativeDateExpressionTrait;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBaseParser;
 
-class RelativeDateAfterOrEqualParser implements ParsesOperator
+class RelativeDateAfterOrEqualParser extends RelativeDateBaseParser
 {
-    use RelativeDateExpressionTrait;
-
     public function parse(string $field, mixed $value): array
     {
         $expression = $this->buildDateExpression($value);

@@ -2,14 +2,10 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Carbon\Carbon;
-use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\Traits\ManualDateParserTrait;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBaseParser;
 
-class ManualDateAfterParser implements ParsesOperator
+class ManualDateAfterParser extends ManualDateBaseParser
 {
-    use ManualDateParserTrait;
-
     public function parse(string $field, mixed $value): array
     {
         $parsedDate = $this->parseManualDate($value);
