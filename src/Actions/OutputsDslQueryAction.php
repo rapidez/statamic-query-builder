@@ -2,7 +2,6 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
-use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
@@ -11,6 +10,37 @@ use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisMonthParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisWeekParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisYearParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateNotEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateNotEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\EndsWithParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanOrEqualParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanParser;
@@ -50,6 +80,42 @@ class OutputsDslQueryAction
         'NEXT_X_DAYS' => NextXDaysParser::class,
         'THIS_WEEK' => ThisWeekParser::class,
         'THIS_MONTH' => ThisMonthParser::class,
+        'THIS_YEAR' => ThisYearParser::class,
+
+        'relative_TODAY_=' => TodayEqualsParser::class,
+        'relative_TODAY_>' => TodayAfterParser::class,
+        'relative_TODAY_>=' => TodayAfterOrEqualParser::class,
+        'relative_TODAY_<' => TodayBeforeParser::class,
+        'relative_TODAY_<=' => TodayBeforeOrEqualParser::class,
+        'relative_TODAY_!=' => TodayNotEqualsParser::class,
+
+        'relative_TOMORROW_=' => TomorrowEqualsParser::class,
+        'relative_TOMORROW_>' => TomorrowAfterParser::class,
+        'relative_TOMORROW_>=' => TomorrowAfterOrEqualParser::class,
+        'relative_TOMORROW_<' => TomorrowBeforeParser::class,
+        'relative_TOMORROW_<=' => TomorrowBeforeOrEqualParser::class,
+        'relative_TOMORROW_!=' => TomorrowNotEqualsParser::class,
+
+        'relative_YESTERDAY_=' => YesterdayEqualsParser::class,
+        'relative_YESTERDAY_>' => YesterdayAfterParser::class,
+        'relative_YESTERDAY_>=' => YesterdayAfterOrEqualParser::class,
+        'relative_YESTERDAY_<' => YesterdayBeforeParser::class,
+        'relative_YESTERDAY_<=' => YesterdayBeforeOrEqualParser::class,
+        'relative_YESTERDAY_!=' => YesterdayNotEqualsParser::class,
+
+        'relative_dynamic_=' => RelativeDateEqualsParser::class,
+        'relative_dynamic_>' => RelativeDateAfterParser::class,
+        'relative_dynamic_>=' => RelativeDateAfterOrEqualParser::class,
+        'relative_dynamic_<' => RelativeDateBeforeParser::class,
+        'relative_dynamic_<=' => RelativeDateBeforeOrEqualParser::class,
+        'relative_dynamic_!=' => RelativeDateNotEqualsParser::class,
+
+        'manual_=' => ManualDateEqualsParser::class,
+        'manual_>' => ManualDateAfterParser::class,
+        'manual_>=' => ManualDateAfterOrEqualParser::class,
+        'manual_<' => ManualDateBeforeParser::class,
+        'manual_<=' => ManualDateBeforeOrEqualParser::class,
+        'manual_!=' => ManualDateNotEqualsParser::class,
     ];
 
     protected array $mappings;
@@ -87,23 +153,31 @@ class OutputsDslQueryAction
         ];
     }
 
-    private function mapCondition(array $condition): array
+    protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
         $field = $this->getQueryFieldName($condition['attribute']);
         $value = $condition['value'] ?? null;
 
-        if (! isset($this->operators[$operator])) {
-            throw new Exception("Unsupported operator: {$operator}");
+        $parser = isset($value['type'])
+            ? ($value['type'] === 'relative' && isset($value['base'])
+                ? "relative_dynamic_{$operator}"
+                : ($value['type'] === 'manual'
+                    ? "manual_{$operator}"
+                    : "{$value['type']}_{$value['value']}_{$operator}"))
+            : $operator;
+
+        if (! isset($this->operators[$parser])) {
+            return ['match_all' => []];
         }
 
-        $parserClass = $this->operators[$operator];
-        $parser = new $parserClass;
+        $parserClass = $this->operators[$parser];
+        $parserInstance = new $parserClass;
 
-        return $parser->parse($field, $value);
+        return $parserInstance->parse($field, $value);
     }
 
-    private function getMappings(): array
+    protected function getMappings(): array
     {
         $indexName = config('rapidez.es_prefix').'_products_'.config('rapidez.store');
         $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
@@ -112,7 +186,7 @@ class OutputsDslQueryAction
         return Arr::last($mappings) ?? [];
     }
 
-    private function getQueryFieldName(string $attribute): string
+    protected function getQueryFieldName(string $attribute): string
     {
         if (! isset($this->mappings[$attribute])) {
             return $attribute;

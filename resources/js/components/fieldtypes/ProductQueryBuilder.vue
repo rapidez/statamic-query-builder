@@ -1,8 +1,12 @@
 <template>
     <query-builder
         :fields="attributes"
+        :sort-fields="attributes"
+        :default-sort-field="attributes[0].value"
         :default-limit="100"
         :show-limit="true"
+        :builder-templates="templates"
+        :default-builder-template="'slider'"
         v-model="value"
     />
 </template>
@@ -19,7 +23,11 @@ export default {
 
     data() {
         return {
-            attributes: []
+            attributes: [],
+            templates: [
+                { label: 'Slider', value: 'slider' },
+                { label: 'Listing', value: 'listing' }
+            ]
         }
     },
 

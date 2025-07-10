@@ -19,8 +19,32 @@ class ServiceProvider extends AddonServiceProvider
         ProductQueryBuilder::class,
     ];
 
-    public function bootAddon()
+    public function bootAddon(): void
     {
         $this->app->singleton(OutputsDslQueryAction::class);
+
+        $this->bootConfig();
+    }
+
+    protected function bootConfig(): self
+    {
+        parent::bootConfig();
+
+        $this->mergeConfigFrom(__DIR__.'/../config/query-builder.php', 'query-builder');
+        $this->publishes([
+            __DIR__.'/../config/query-builder.php' => config_path('rapidez/query-builder.php'),
+        ], 'rapidez-query-builder-config');
+
+        return $this;
+    }
+
+    protected function bootViews(): self
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'rapidez-query-builder');
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/rapidez-query-builder'),
+        ], 'rapidez-query-builder-views');
+
+        return $this;
     }
 }
