@@ -3,6 +3,7 @@
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
@@ -89,7 +90,7 @@ class OutputsDslQueryAction
     private function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = $this->getFieldMapping($condition['attribute']);
+        $field = $this->getQueryFieldName($condition['attribute']);
         $value = $condition['value'] ?? null;
 
         if (! isset($this->operators[$operator])) {
@@ -108,10 +109,10 @@ class OutputsDslQueryAction
         $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
         $mappings = data_get($esMappings, '*.mappings.properties', []);
 
-        return count($mappings) ? array_pop($mappings) : [];
+        return Arr::last($mappings) ?? [];
     }
 
-    private function getFieldMapping(string $attribute): string
+    private function getQueryFieldName(string $attribute): string
     {
         if (! isset($this->mappings[$attribute])) {
             return $attribute;
