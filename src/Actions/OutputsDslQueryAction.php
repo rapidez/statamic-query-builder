@@ -177,7 +177,7 @@ class OutputsDslQueryAction
         return $parserInstance->parse($field, $value);
     }
 
-    private function getMappings(): array
+    protected function getMappings(): array
     {
         $indexName = config('rapidez.es_prefix').'_products_'.config('rapidez.store');
         $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
@@ -186,7 +186,7 @@ class OutputsDslQueryAction
         return Arr::last($mappings) ?? [];
     }
 
-    private function getQueryFieldName(string $attribute): string
+    protected function getQueryFieldName(string $attribute): string
     {
         if (! isset($this->mappings[$attribute])) {
             return $attribute;
