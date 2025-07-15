@@ -56,9 +56,14 @@ use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotLikeParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotTermParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\StartsWithParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\TermParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\StockStatusParser;
 
 class OutputsDslQueryAction
 {
+    const ATTRIBUTE_PREFIX = 'attribute.';
+    const STOCK_STATUS_FIELD = 'stock_status';
+    const STOCK_STATUS_ES_FIELD = 'in_stock';
+
     protected array $operators = [
         '=' => TermParser::class,
         '!=' => NotTermParser::class,
@@ -81,6 +86,9 @@ class OutputsDslQueryAction
         'THIS_WEEK' => ThisWeekParser::class,
         'THIS_MONTH' => ThisMonthParser::class,
         'THIS_YEAR' => ThisYearParser::class,
+
+        'stock_status_=' => StockStatusParser::class,
+        'stock_status_!=' => StockStatusParser::class,
 
         'relative_TODAY_=' => TodayEqualsParser::class,
         'relative_TODAY_>' => TodayAfterParser::class,
@@ -156,8 +164,20 @@ class OutputsDslQueryAction
     protected function mapCondition(array $condition): array
     {
         $operator = strtoupper($condition['operator']);
-        $field = $this->getQueryFieldName($condition['attribute']);
+        $originalAttribute = $condition['attribute'];
+        $field = $this->getQueryFieldName($originalAttribute);
         $value = $condition['value'] ?? null;
+
+        if ($originalAttribute === self::STOCK_STATUS_FIELD) {
+            $parser = "stock_status_{$operator}";
+
+            if (isset($this->operators[$parser])) {
+                $parserClass = $this->operators[$parser];
+                $parserInstance = new $parserClass;
+
+                return $parserInstance->parse($field, $value, $operator);
+            }
+        }
 
         $parser = isset($value['type'])
             ? ($value['type'] === 'relative' && isset($value['base'])
@@ -188,6 +208,14 @@ class OutputsDslQueryAction
 
     protected function getQueryFieldName(string $attribute): string
     {
+        if (str_starts_with($attribute, self::ATTRIBUTE_PREFIX)) {
+            $attribute = substr($attribute, strlen(self::ATTRIBUTE_PREFIX));
+        }
+
+        if ($attribute === self::STOCK_STATUS_FIELD) {
+            return self::STOCK_STATUS_ES_FIELD;
+        }
+
         if (! isset($this->mappings[$attribute])) {
             return $attribute;
         }

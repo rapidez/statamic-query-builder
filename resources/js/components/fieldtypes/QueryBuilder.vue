@@ -72,7 +72,7 @@
                     :key="`group-${groupIndex}`"
                     :group="group"
                     :group-index="groupIndex"
-                    :fields="fields"
+                    :fields="flattenedFields"
                     :operators="operators"
                     :can-move-up="groupIndex > 0"
                     :can-move-down="groupIndex < groups.length - 1"
@@ -134,6 +134,22 @@ export default {
             type: Array,
             required: true,
             validator: (value) => {
+                if (value.length === 0) {
+                    return true
+                }
+
+                if (value[0].label && value[0].options) {
+                    return value.every(group =>
+                        'label' in group &&
+                        'options' in group &&
+                        group.options.every(field =>
+                            'label' in field &&
+                            'value' in field &&
+                            'type' in field
+                        )
+                    );
+                }
+
                 return value.every(field =>
                     'label' in field &&
                     'value' in field &&
@@ -243,6 +259,22 @@ export default {
         }
     },
 
+    computed: {
+        flattenedFields() {
+            if (this.fields.length === 0 || !this.fields[0].options) {
+                return this.fields;
+            }
+
+            const flattened = [];
+            this.fields.forEach(group => {
+                group.options.forEach(field => {
+                    flattened.push(field);
+                });
+            });
+            return flattened;
+        }
+    },
+
     methods: {
         initializeLimit() {
             if (this.value?.limit) {
@@ -316,7 +348,7 @@ export default {
         },
 
         createDefaultCondition() {
-            const firstField = this.fields[0];
+            const firstField = this.flattenedFields[0];
             const defaultOperator = this.getOperatorsForType(firstField?.value)[0]?.value || '=';
             let defaultValue = '';
 
