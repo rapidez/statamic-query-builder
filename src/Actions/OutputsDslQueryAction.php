@@ -168,33 +168,39 @@ class OutputsDslQueryAction
         $field = $this->getQueryFieldName($originalAttribute);
         $value = $condition['value'] ?? null;
 
-        if ($originalAttribute === self::STOCK_STATUS_FIELD) {
-            $parser = "stock_status_{$operator}";
+        $parser = $this->getParser($originalAttribute, $operator, $value);
 
-            if (isset($this->operators[$parser])) {
-                $parserClass = $this->operators[$parser];
-                $parserInstance = new $parserClass;
-
-                return $parserInstance->parse($field, $value, $operator);
-            }
-        }
-
-        $parser = isset($value['type'])
-            ? ($value['type'] === 'relative' && isset($value['base'])
-                ? "relative_dynamic_{$operator}"
-                : ($value['type'] === 'manual'
-                    ? "manual_{$operator}"
-                    : "{$value['type']}_{$value['value']}_{$operator}"))
-            : $operator;
-
-        if (! isset($this->operators[$parser])) {
+        if (!isset($this->operators[$parser])) {
             return ['match_all' => []];
         }
 
         $parserClass = $this->operators[$parser];
         $parserInstance = new $parserClass;
 
-        return $parserInstance->parse($field, $value);
+        return $originalAttribute === self::STOCK_STATUS_FIELD
+            ? $parserInstance->parse($field, $value, $operator)
+            : $parserInstance->parse($field, $value);
+    }
+
+    protected function getParser(string $attribute, string $operator, $value): string
+    {
+        if ($attribute === self::STOCK_STATUS_FIELD) {
+            return "stock_status_{$operator}";
+        }
+
+        if (!isset($value['type'])) {
+            return $operator;
+        }
+
+        if ($value['type'] === 'relative' && isset($value['base'])) {
+            return "relative_dynamic_{$operator}";
+        }
+
+        if ($value['type'] === 'manual') {
+            return "manual_{$operator}";
+        }
+
+        return "{$value['type']}_{$value['value']}_{$operator}";
     }
 
     protected function getMappings(): array
