@@ -80,15 +80,15 @@ export default {
                         label: group.label,
                         options: this.attributes
                     };
-                } else {
-                    return {
-                        label: group.label,
-                        options: group.fields.map(field => ({
-                            ...field,
-                            value: group.prefix ? `${group.prefix}${field.value}` : field.value
-                        }))
-                    };
                 }
+                
+                return {
+                    label: group.label,
+                    options: group.fields.map(field => ({
+                        ...field,
+                        value: group.prefix ? `${group.prefix}${field.value}` : field.value
+                    }))
+                };
             });
         },
 
