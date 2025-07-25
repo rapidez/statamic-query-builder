@@ -104,9 +104,9 @@ export default {
             const field = this.getCurrentField();
 
             if (field && field.operators) {
-                return field.operators.map(op => ({
-                    value: op,
-                    label: this.getOperatorLabel(op)
+                return field.operators.map(operator => ({
+                    value: operator,
+                    label: this.getOperatorLabel(operator)
                 }));
             }
 
