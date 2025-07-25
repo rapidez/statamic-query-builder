@@ -86,7 +86,7 @@
                     @remove-condition="removeCondition"
                 />
 
-                <div v-if="groupIndex < groups.length - 1" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
+                <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
                     <button
                         class="insert-group-btn"
                         @click="insertGroupAt(groupIndex + 1)"
@@ -261,17 +261,11 @@ export default {
 
     computed: {
         flattenedFields() {
-            if (this.fields.length === 0 || !this.fields[0].options) {
+            if (!this.fields[0]?.options) {
                 return this.fields;
             }
 
-            const flattened = [];
-            this.fields.forEach(group => {
-                group.options.forEach(field => {
-                    flattened.push(field);
-                });
-            });
-            return flattened;
+            return this.fields.flatMap(group => group.options);
         }
     },
 

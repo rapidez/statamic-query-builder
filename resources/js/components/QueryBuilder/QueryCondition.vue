@@ -125,7 +125,7 @@ export default {
                 ...this.operators.date
             ];
 
-            const found = allOperators.find(op => op.value === operator);
+            const found = allOperators.find(operatorObject => operatorObject.value === operator);
             return found ? found.label : operator;
         },
 
