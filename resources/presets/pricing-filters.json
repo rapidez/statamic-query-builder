@@ -1,0 +1,66 @@
+{
+    "category": {
+        "key": "pricing_filters",
+        "label": "Pricing Filters"
+    },
+    "presets": [
+        {
+            "key": "sale_products",
+            "name": "Sale Products",
+            "description": "Products currently on sale with special pricing",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "attribute.special_price",
+                                "operator": "IS_NOT_NULL",
+                                "value": null
+                            },
+                            {
+                                "type": "group",
+                                "conjunction": "OR",
+                                "conditions": [
+                                    {
+                                        "attribute": "attribute.special_from_date",
+                                        "operator": "<=",
+                                        "value": {
+                                            "type": "relative",
+                                            "value": "TODAY"
+                                        }
+                                    },
+                                    {
+                                        "attribute": "attribute.special_from_date",
+                                        "operator": "IS_NULL",
+                                        "value": null
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "group",
+                                "conjunction": "OR",
+                                "conditions": [
+                                    {
+                                        "attribute": "attribute.special_to_date",
+                                        "operator": ">=",
+                                        "value": {
+                                            "type": "relative",
+                                            "value": "TODAY"
+                                        }
+                                    },
+                                    {
+                                        "attribute": "attribute.special_to_date",
+                                        "operator": "IS_NULL",
+                                        "value": null
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        }
+    ]
+}
