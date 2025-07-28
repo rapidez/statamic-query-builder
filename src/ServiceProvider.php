@@ -5,6 +5,8 @@ namespace Rapidez\StatamicQueryBuilder;
 use Rapidez\StatamicQueryBuilder\Actions\OutputsDslQueryAction;
 use Rapidez\StatamicQueryBuilder\Fieldtypes\ProductQueryBuilder;
 use Statamic\Providers\AddonServiceProvider;
+use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
+use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -23,7 +25,8 @@ class ServiceProvider extends AddonServiceProvider
     {
         $this->app->singleton(OutputsDslQueryAction::class);
 
-        $this->bootConfig();
+        $this->bootConfig()
+            ->bootModels();
     }
 
     protected function bootConfig(): self
@@ -44,6 +47,16 @@ class ServiceProvider extends AddonServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/rapidez-query-builder'),
         ], 'rapidez-query-builder-views');
+
+        return $this;
+    }
+
+    protected function bootModels(): self
+    {
+        config(['runway.resources' => array_merge(
+            config('query-builder.models') ?? [],
+            config('runway.resources') ?? []
+        )]);
 
         return $this;
     }
