@@ -1,8 +1,8 @@
 <template>
     <query-builder
-        :fields="attributes"
+        :fields="groupedFields"
         :sort-fields="attributes"
-        :default-sort-field="attributes[0].value"
+        :default-sort-field="attributes[0]?.value"
         :default-limit="100"
         :show-limit="true"
         :builder-templates="templates"
@@ -24,9 +24,34 @@ export default {
     data() {
         return {
             attributes: [],
+            groupedFields: [],
             templates: [
                 { label: 'Slider', value: 'slider' },
                 { label: 'Listing', value: 'listing' }
+            ],
+            fieldGroups: [
+                {
+                    key: 'attribute',
+                    label: 'Attributes',
+                    prefix: 'attribute.'
+                },
+                {
+                    key: 'stock',
+                    label: 'Stock',
+                    prefix: '',
+                    fields: [
+                        {
+                            label: 'Stock Status',
+                            value: 'stock_status',
+                            type: 'select',
+                            operators: ['=', '!='],
+                            options: [
+                                { label: 'In Stock', value: 'in_stock' },
+                                { label: 'Out of Stock', value: 'out_of_stock' }
+                            ]
+                        }
+                    ]
+                }
             ]
         }
     },
@@ -37,13 +62,34 @@ export default {
                 const response = await this.$axios.get('/cp/rapidez/product-attributes');
                 this.attributes = response.data.map(attr => ({
                     label: attr.store_frontend_label ? (attr.store_frontend_label + (` (${attr.attribute_code})`)) : attr.attribute_code,
-                    value: attr.attribute_code,
+                    value: `attribute.${attr.attribute_code}`,
                     type: this.mapAttributeType(attr.frontend_input),
                     options: this.mapAttributeOptions(attr.attribute_options)
                 }));
+
+                this.buildGroupedFields();
             } catch (error) {
                 console.error('Error fetching attributes:', error);
             }
+        },
+
+        buildGroupedFields() {
+            this.groupedFields = this.fieldGroups.map(group => {
+                if (group.key === 'attribute') {
+                    return {
+                        label: group.label,
+                        options: this.attributes
+                    };
+                }
+                
+                return {
+                    label: group.label,
+                    options: group.fields.map(field => ({
+                        ...field,
+                        value: group.prefix ? `${group.prefix}${field.value}` : field.value
+                    }))
+                };
+            });
         },
 
         mapAttributeType(frontendInput) {
