@@ -3,12 +3,17 @@
 namespace Rapidez\StatamicQueryBuilder\Http\Controllers\CP;
 
 use Statamic\Http\Controllers\CP\CpController;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
 
 class ProductAttributeController extends CpController
 {
     public function index()
     {
-        return ProductAttribute::with('attributeOptions')->get();
+        $model = config('rapidez.query-builder.default_models.product_attribute');
+
+        if (! $model) {
+            return [];
+        }
+
+        return $model::with('attributeOptions')->get();
     }
 }

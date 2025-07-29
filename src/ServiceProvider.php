@@ -33,7 +33,7 @@ class ServiceProvider extends AddonServiceProvider
     {
         parent::bootConfig();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/query-builder.php', 'query-builder');
+        $this->mergeConfigFrom(__DIR__.'/../config/query-builder.php', 'rapidez.query-builder');
         $this->publishes([
             __DIR__.'/../config/query-builder.php' => config_path('rapidez/query-builder.php'),
         ], 'rapidez-query-builder-config');
@@ -54,7 +54,7 @@ class ServiceProvider extends AddonServiceProvider
     protected function bootModels(): self
     {
         config(['runway.resources' => array_merge(
-            config('query-builder.models') ?? [],
+            config('rapidez.query-builder.models') ?? [],
             config('runway.resources') ?? []
         )]);
 

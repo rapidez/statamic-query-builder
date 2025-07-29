@@ -4,12 +4,15 @@ use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
 use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
 
 return [
+    'default_models' => [
+        'product_attribute' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttribute',
+        'product_attribute_option' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption',
+    ],
     'models' => [
         ProductAttribute::class => [
             'name' => 'Product Attributes',
             'read_only' => true,
             'title_field' => 'frontend_label',
-            'cp_icon' => 'tags',
             'listing' => [
                 'columns' => [
                     'attribute_code',
@@ -38,7 +41,6 @@ return [
             'name' => 'Product Attribute Options',
             'read_only' => true,
             'title_field' => 'display_value',
-            'cp_icon' => 'list-bullets',
             'listing' => [
                 'columns' => [
                     'option_id',
