@@ -100,6 +100,35 @@ export default {
             return this.fields.find(field => field.value === this.condition.attribute);
         },
 
+        getOperatorsForType(fieldValue) {
+            const field = this.getCurrentField();
+
+            if (field && field.operators) {
+                return field.operators.map(operator => ({
+                    value: operator,
+                    label: this.getOperatorLabel(operator)
+                }));
+            }
+
+            if (field) {
+                return this.operators[field.type] || this.operators.text;
+            }
+
+            return this.operators.text;
+        },
+
+        getOperatorLabel(operator) {
+            const allOperators = [
+                ...this.operators.text,
+                ...this.operators.select,
+                ...this.operators.number,
+                ...this.operators.date
+            ];
+
+            const found = allOperators.find(operatorObject => operatorObject.value === operator);
+            return found ? found.label : operator;
+        },
+
         updateAttribute(attribute) {
             const updatedCondition = {
                 ...this.condition,
