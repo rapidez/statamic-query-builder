@@ -139,18 +139,16 @@ class OutputsDslQueryAction
         $clauses = [];
 
         foreach ($groups as $group) {
-            $groupConjunction = strtoupper($group['conjunction'] ?? 'AND');
-            $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
-            $conditions = [];
+            $groupClause = $this->processGroup($group);
 
-            foreach ($group['conditions'] as $condition) {
-                $conditions[] = $this->mapCondition($condition);
-            }
-
-            if (count($groups) === 1 && $groupKey === $globalKey) {
-                $clauses = array_merge($clauses, $conditions);
-            } else {
-                $clauses[] = ['bool' => [$groupKey => $conditions]];
+            if (count($groups) === 1 && $groupClause !== null) {
+                if (isset($groupClause['bool'])) {
+                    $clauses = array_merge($clauses, array_values($groupClause['bool'])[0]);
+                } else {
+                    $clauses[] = $groupClause;
+                }
+            } elseif ($groupClause !== null) {
+                $clauses[] = $groupClause;
             }
         }
 
@@ -159,6 +157,36 @@ class OutputsDslQueryAction
             'size' => $limit,
             'from' => 0,
         ];
+    }
+
+    protected function processGroup(array $group): ?array
+    {
+        $groupConjunction = strtoupper($group['conjunction'] ?? 'AND');
+        $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
+        $conditions = [];
+
+        foreach ($group['conditions'] as $condition) {
+            if (isset($condition['type']) && $condition['type'] === 'group') {
+                $nestedGroupClause = $this->processGroup($condition);
+                if ($nestedGroupClause !== null) {
+                    $conditions[] = $nestedGroupClause;
+                }
+            } else {
+                if (isset($condition['operator'])) {
+                    $conditions[] = $this->mapCondition($condition);
+                }
+            }
+        }
+
+        if (empty($conditions)) {
+            return null;
+        }
+
+        if (count($conditions) === 1) {
+            return $conditions[0];
+        }
+
+        return ['bool' => [$groupKey => $conditions]];
     }
 
     protected function mapCondition(array $condition): array
