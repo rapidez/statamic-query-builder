@@ -36,10 +36,10 @@ export default {
             try {
                 const response = await this.$axios.get('/cp/rapidez/product-attributes');
                 this.attributes = response.data.map(attr => ({
-                    label: attr.store_frontend_label ? (attr.store_frontend_label + (` (${attr.attribute_code})`)) : attr.attribute_code,
-                    value: attr.attribute_code,
-                    type: this.mapAttributeType(attr.frontend_input),
-                    options: this.mapAttributeOptions(attr.attribute_options)
+                    label: attr.frontend_label ? (attr.frontend_label + (` (${attr.code})`)) : attr.code,
+                    value: attr.code,
+                    type: this.mapAttributeType(attr.input),
+                    options: this.mapAttributeOptions(attr.options)
                 }));
             } catch (error) {
                 console.error('Error fetching attributes:', error);

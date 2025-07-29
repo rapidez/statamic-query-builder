@@ -4,24 +4,16 @@ namespace Rapidez\StatamicQueryBuilder\Models;
 
 use StatamicRadPack\Runway\Traits\HasRunwayResource;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Statamic\Facades\Site;
-use Statamic\Statamic;
+use Rapidez\Core\Models\Attribute as CoreAttribute;
 
 #[ObservedBy(ProductAttributeObserver::class)]
-class ProductAttribute extends Model
+class ProductAttribute extends CoreAttribute
 {
     use HasRunwayResource;
-
-    protected $table = 'eav_attribute';
-
-    protected $primaryKey = 'attribute_id';
 
     protected $appends = [
         'options',
@@ -43,136 +35,168 @@ class ProductAttribute extends Model
         'swatch_text' => 'Text Swatch',
     ];
 
-    protected static function booting()
+    protected const ATTRIBUTE_MAP = [
+        'attribute_id' => 'id',
+        'frontend_label' => 'name',
+        'attribute_code' => 'code',
+        'backend_type' => 'type',
+        'frontend_input' => 'input',
+        'is_searchable' => 'search',
+        'is_filterable' => 'filter',
+        'is_comparable' => 'compare',
+        'used_in_product_listing' => 'listing',
+        'used_for_sort_by' => 'sorting',
+        'is_visible_on_front' => 'productpage',
+        'is_html_allowed_on_front' => 'html',
+    ];
+
+    protected const BOOLEAN_FIELDS = [
+        'search', 'filter', 'compare', 'listing', 'sorting',
+        'productpage', 'html', 'flat', 'super', 'text_swatch',
+        'visual_swatch', 'update_image', 'is_required', 'is_comparable',
+        'used_in_product_listing', 'used_for_sort_by',
+        'is_visible_on_front', 'is_html_allowed_on_front'
+    ];
+
+    protected static function booting(): void
     {
-        static::addGlobalScope(function (Builder $builder) {
-            $builder->where('entity_type_id', function ($query) {
-                $query->select('entity_type_id')
-                    ->from('eav_entity_type')
-                    ->where('entity_type_code', 'catalog_product');
-            });
+        parent::booting();
 
-            $builder->leftJoin('eav_attribute_label', function ($join) {
-                $join->on('eav_attribute.attribute_id', '=', 'eav_attribute_label.attribute_id')
-                    ->where('eav_attribute_label.store_id', self::getCurrentStoreId());
-            });
-
-            $builder->leftJoin('eav_attribute_option', 'eav_attribute.attribute_id', '=', 'eav_attribute_option.attribute_id')
-                ->leftJoin('eav_attribute_option_value as admin_value', function ($join) {
-                    $join->on('eav_attribute_option.option_id', '=', 'admin_value.option_id')
-                        ->where('admin_value.store_id', 0);
-                })
-                ->leftJoin('eav_attribute_option_value as store_value', function ($join) {
-                    $join->on('store_value.option_id', '=', 'eav_attribute_option.option_id')
-                        ->where('store_value.store_id', self::getCurrentStoreId());
-                });
-
-            $builder->select([
-                'eav_attribute.*',
-                'eav_attribute_label.value as store_frontend_label',
-                DB::raw('GROUP_CONCAT(DISTINCT COALESCE(store_value.value, admin_value.value)) as option_values'),
-                DB::raw('GROUP_CONCAT(DISTINCT eav_attribute_option.option_id) as option_ids')
-            ])
-            ->groupBy([
-                'eav_attribute.attribute_id',
-                'eav_attribute.attribute_code',
-                'eav_attribute.frontend_input',
-                'eav_attribute.frontend_label',
-                'eav_attribute_label.value'
+        static::addGlobalScope('add_missing_columns', function ($builder) {
+            $builder->addSelect([
+                'eav_attribute.attribute_id as attribute_id_qualified',
+                'catalog_eav_attribute.is_comparable',
+                'catalog_eav_attribute.used_in_product_listing',
+                'catalog_eav_attribute.used_for_sort_by',
+                'catalog_eav_attribute.is_visible_on_front',
+                'catalog_eav_attribute.is_html_allowed_on_front',
+                'eav_attribute.is_required',
             ]);
         });
     }
 
-    protected static function getCurrentStoreId(): string
+    public function newEloquentBuilder($query)
     {
-        return once(fn () => (Statamic::isCpRoute()
-            ? (Site::selected()->attributes['magento_store_id'] ?? '1')
-            : (Site::current()->attributes['magento_store_id'] ?? '1')
-        ));
+        return new class($query) extends \Illuminate\Database\Eloquent\Builder {
+            public function orderBy($column, $direction = 'asc')
+            {
+                if ($column === 'attribute_id') {
+                    $column = 'eav_attribute.attribute_id';
+                }
+                return parent::orderBy($column, $direction);
+            }
+        };
+    }
+
+    public function getQualifiedKeyName(): string
+    {
+        return 'eav_attribute.attribute_id';
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
+
+    public function getAttribute($key)
+    {
+        if (isset(self::ATTRIBUTE_MAP[$key])) {
+            $value = parent::getAttribute(self::ATTRIBUTE_MAP[$key]);
+            if ($value === null && $key !== self::ATTRIBUTE_MAP[$key]) {
+                $value = parent::getAttribute($key);
+            }
+        } else {
+            $value = parent::getAttribute($key);
+        }
+
+        if (in_array($key, self::BOOLEAN_FIELDS) && $value !== null) {
+            return (bool) $value;
+        }
+
+        return $value;
+    }
+
+    public function toArray(): array
+    {
+        $array = parent::toArray();
+
+        if (isset($array['id']) && !isset($array['attribute_id'])) {
+            $array['attribute_id'] = $array['id'];
+        }
+        if (isset($array['name']) && !isset($array['frontend_label'])) {
+            $array['frontend_label'] = $array['name'];
+        }
+
+        foreach (self::BOOLEAN_FIELDS as $field) {
+            if (isset($array[$field])) {
+                $array[$field] = (bool) $array[$field];
+            }
+        }
+
+        return $array;
+    }
+
+    public function getCacheKey(): string
+    {
+        return "product_attribute_{$this->attribute_id}_store_" . config('rapidez.store');
+    }
+
+    public function frontendLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->store_frontend_label ?? $this->attributes['name'] ?? ''
+        );
     }
 
     public function options(): Attribute
     {
         return Attribute::make(
-            get: fn () => collect([$this->option_ids, $this->option_values])
-                ->map(fn($value) => collect(explode(',', $value))->filter())
-                ->pipe(function (Collection $collections) {
-                    $optionIds = $collections[0];
-                    $optionValues = $collections[1];
+            get: function () {
+                if (!isset($this->attributes['option_ids']) || !isset($this->attributes['option_values'])) {
+                    $this->loadOptions();
+                }
 
-                    if ($optionIds->count() === $optionValues->count()) {
-                        return $optionIds->combine($optionValues);
-                    }
+                $optionIds = $this->attributes['option_ids'] ?? '';
+                $optionValues = $this->attributes['option_values'] ?? '';
 
-                    return [];
-                })
+                return collect([$optionIds, $optionValues])
+                    ->map(fn($value) => collect(explode(',', $value))->filter())
+                    ->pipe(function (Collection $collections) {
+                        $optionIds = $collections[0];
+                        $optionValues = $collections[1];
+
+                        if ($optionIds->count() === $optionValues->count()) {
+                            return $optionIds->combine($optionValues);
+                        }
+
+                        return [];
+                    });
+            }
         );
     }
 
-   public function formattedOptions(): Attribute
-   {
-       return Attribute::make(
-           get: fn () => empty($this->options) ? '' :
-               collect($this->options)
-                   ->map(fn($value, $id) => "{$value} (ID: {$id})")
-                   ->join(', ')
-       );
-   }
-
-   public function frontendLabel(): Attribute
-   {
-       return Attribute::make(
-           get: fn () => $this->store_frontend_label ?? $this->attributes['frontend_label'] ?? ''
-       );
-   }
-
-    public function getCacheKey(): string
+    protected function loadOptions(): void
     {
-        return "product_attribute_{$this->attribute_id}_store_" . self::getCurrentStoreId();
+        $options = \Illuminate\Support\Facades\DB::table('eav_attribute_option')
+            ->join('eav_attribute_option_value', 'eav_attribute_option.option_id', '=', 'eav_attribute_option_value.option_id')
+            ->where('eav_attribute_option.attribute_id', $this->getAttribute('id'))
+            ->where('eav_attribute_option_value.store_id', 0)
+            ->orderBy('eav_attribute_option.sort_order')
+            ->select('eav_attribute_option.option_id', 'eav_attribute_option_value.value')
+            ->get();
+
+        $this->attributes['option_ids'] = $options->pluck('option_id')->join(',');
+        $this->attributes['option_values'] = $options->pluck('value')->join(',');
     }
 
-    public function scopeVisible($query): void
+    public function formattedOptions(): Attribute
     {
-        $query->where('is_visible', 1);
-    }
-
-    public function scopeVisibleOnFront($query): void
-    {
-        $query->where('is_visible_on_front', 1);
-    }
-
-    public function scopeFilterable($query): void
-    {
-        $query->where('is_filterable', 1);
-    }
-
-    public function scopeFilterableInSearch($query): void
-    {
-        $query->where('is_filterable_in_search', 1);
-    }
-
-    public function scopeSearchable($query): void
-    {
-        $query->where('is_searchable', 1);
-    }
-
-    public function scopeUsedInProductListing($query): void
-    {
-        $query->where('used_in_product_listing', 1);
-    }
-
-    public function scopeWithOptions($query): void
-    {
-        $query->whereIn('frontend_input', ['select', 'multiselect', 'swatch_visual', 'swatch_text']);
-    }
-
-    public function scopeByInputType($query, $type): void
-    {
-        if (!isset(static::$inputTypes[$type])) {
-            return;
-        }
-
-        $query->where('frontend_input', $type);
+        return Attribute::make(
+            get: fn () => empty($this->options) ? '' :
+                collect($this->options)
+                    ->map(fn($value, $id) => "{$value} (ID: {$id})")
+                    ->join(', ')
+        );
     }
 
     public function attributeOptions(): HasMany
