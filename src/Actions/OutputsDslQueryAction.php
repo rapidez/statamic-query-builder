@@ -130,27 +130,13 @@ class OutputsDslQueryAction
 
     public function build(array $config): array
     {
-        $groupConjunction = strtoupper($config['globalConjunction'] ?? 'AND');
-        $globalKey = $groupConjunction === 'OR' ? 'should' : 'must';
+        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
+
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
-        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
-        $clauses = [];
-
-        foreach ($groups as $group) {
-            $groupClause = $this->processGroup($group);
-
-            if (count($groups) === 1 && $groupClause !== null) {
-                if (isset($groupClause['bool'])) {
-                    $clauses = array_merge($clauses, array_values($groupClause['bool'])[0]);
-                } else {
-                    $clauses[] = $groupClause;
-                }
-            } elseif ($groupClause !== null) {
-                $clauses[] = $groupClause;
-            }
-        }
+        $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');
+        $globalKey = strtoupper($config['globalConjunction'] ?? 'AND') === 'OR' ? 'should' : 'must';
 
         return [
             'query' => ['bool' => [$globalKey => $clauses]],
@@ -159,34 +145,63 @@ class OutputsDslQueryAction
         ];
     }
 
+    protected function buildQueryClauses(array $groups, string $globalConjunction): array
+    {
+        return collect($groups)
+            ->map(fn($group) => $this->processGroup($group))
+            ->filter()
+            ->when(
+                count($groups) === 1,
+                fn($collection) => $this->flattenSingleGroupClauses($collection)
+            )
+            ->values()
+            ->all();
+    }
+
+    protected function flattenSingleGroupClauses($collection): \Illuminate\Support\Collection
+    {
+        return $collection->flatMap(function ($groupClause) {
+            if (isset($groupClause['bool'])) {
+                return array_values($groupClause['bool'])[0];
+            }
+            return [$groupClause];
+        });
+    }
+
     protected function processGroup(array $group): ?array
     {
         $groupConjunction = strtoupper($group['conjunction'] ?? 'AND');
         $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
-        $conditions = [];
 
-        foreach ($group['conditions'] as $condition) {
-            if (isset($condition['type']) && $condition['type'] === 'group') {
-                $nestedGroupClause = $this->processGroup($condition);
-                if ($nestedGroupClause !== null) {
-                    $conditions[] = $nestedGroupClause;
-                }
-            } else {
-                if (isset($condition['operator'])) {
-                    $conditions[] = $this->mapCondition($condition);
-                }
-            }
+        $conditions = collect($group['conditions'])
+            ->map(fn($condition) => $this->processCondition($condition))
+            ->filter()
+            ->values()
+            ->all();
+
+        return match (count($conditions)) {
+            0 => null,
+            1 => $conditions[0],
+            default => ['bool' => [$groupKey => $conditions]]
+        };
+    }
+
+    protected function processCondition(array $condition): ?array
+    {
+        if ($this->isNestedGroup($condition)) {
+            return $this->processGroup($condition);
         }
 
-        if (empty($conditions)) {
-            return null;
+        if (isset($condition['operator'])) {
+            return $this->mapCondition($condition);
         }
 
-        if (count($conditions) === 1) {
-            return $conditions[0];
-        }
+        return null;
+    }
 
-        return ['bool' => [$groupKey => $conditions]];
+    protected function isNestedGroup(array $condition): bool
+    {
+        return isset($condition['type']) && $condition['type'] === 'group';
     }
 
     protected function mapCondition(array $condition): array

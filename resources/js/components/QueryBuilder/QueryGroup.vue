@@ -102,10 +102,10 @@
                     @remove-group="removeNestedGroup"
                     @move-group-up="moveNestedGroupUp"
                     @move-group-down="moveNestedGroupDown"
-                    @add-condition="addConditionToNestedGroup"
-                    @add-nested-group="addNestedGroupToNestedGroup"
-                    @update-condition="updateNestedCondition"
-                    @remove-condition="removeNestedCondition"
+                    @add-condition="emitEvent('add-condition-to-nested', $event)"
+                    @add-nested-group="emitEvent('add-nested-group-to-nested', $event)"
+                    @update-condition="emitEvent('update-nested-condition', $event)"
+                    @remove-condition="emitEvent('remove-nested-condition', $event)"
                 />
             </template>
         </div>
@@ -194,11 +194,7 @@ export default {
 
     methods: {
         handleAddSelection(value) {
-            if (value === 'condition') {
-                this.$emit('add-condition', this.groupIndex);
-            } else if (value === 'nested-group') {
-                this.$emit('add-nested-group', this.groupIndex);
-            }
+            this.$emit(value === 'condition' ? 'add-condition' : 'add-nested-group', this.groupIndex);
         },
 
         toggleCollapsed() {
@@ -282,21 +278,9 @@ export default {
             }
         },
 
-        addConditionToNestedGroup(nestedGroupIndex) {
-            this.$emit('add-condition-to-nested', this.groupIndex, nestedGroupIndex);
+        emitEvent(eventName, ...args) {
+            this.$emit(eventName, this.groupIndex, ...args);
         },
-
-        addNestedGroupToNestedGroup(nestedGroupIndex) {
-            this.$emit('add-nested-group-to-nested', this.groupIndex, nestedGroupIndex);
-        },
-
-        updateNestedCondition(nestedGroupIndex, conditionIndex, condition) {
-            this.$emit('update-nested-condition', this.groupIndex, nestedGroupIndex, conditionIndex, condition);
-        },
-
-        removeNestedCondition(nestedGroupIndex, conditionIndex) {
-            this.$emit('remove-nested-condition', this.groupIndex, nestedGroupIndex, conditionIndex);
-        }
     }
 }
 </script>
