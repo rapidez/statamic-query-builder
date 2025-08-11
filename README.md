@@ -1,64 +1,92 @@
 # Statamic Query Builder
 
-A flexible and reusable query builder component for Statamic that allows you to create complex queries for any type of data.
+<a href="https://github.com/rapidez/statamic-query-builder" title="JustBetter">
+    <img src="./art/banner-query-builder.png" alt="Banner">
+</a>
+
+A sophisticated visual query builder for Statamic CMS that generates Elasticsearch DSL queries for complex product filtering and search. Built specifically for e-commerce applications using the Rapidez framework.
 
 ## Features
 
-- Generic query builder component that can be used with any data type
-- Support for multiple field types (text, select, number, date)
-- Customizable operators per field type
-- Group conditions with AND/OR logic
-- Limit results
-- Easy to extend for specific data types
+### Visual Query Building
+- **Drag & drop interface** - Build complex queries without writing code
+- **Nested group logic** - Create groups within groups with AND/OR operators
+- **Collapsible groups** - Manage complex queries with expandable sections
+- **Visual condition builder** - Point-and-click interface for all query operations
+
+### E-commerce Focused
+- **Product attribute integration** - Automatically fetches and maps product attributes
+- **Stock status queries** - Built-in support for inventory filtering
+- **Elasticsearch DSL generation** - Converts visual queries to optimized search syntax
+- **Performance caching** - Cached query generation for better performance
+
+### Advanced Field Types
+- **Text fields** - String operations (contains, starts with, ends with, etc.)
+- **Select fields** - Single and multi-select with custom options
+- **Number fields** - Numeric comparisons and ranges
+- **Date fields** - Advanced date filtering with relative and absolute dates
+- **Stock status** - Specialized e-commerce inventory filtering
+
+### Powerful Date Operations
+- **Relative dates** - TODAY, TOMORROW, YESTERDAY
+- **Dynamic ranges** - LAST_X_DAYS, NEXT_X_DAYS with custom offsets
+- **Period filters** - THIS_WEEK, THIS_MONTH, THIS_YEAR
+- **Manual dates** - Custom date picker for specific dates
+- **Offset calculations** - Today ± X days/weeks/months/years
+
+### Query Management
+- **Query presets** - Save and load common filtering scenarios
+- **Template system** - Multiple output formats (slider, listing, etc.)
+- **Import/export** - Share query configurations
+- **Validation** - Automatic validation and correction of imported queries
+
+### Professional Features
+- **Unlimited nesting** - Groups within groups with no limits
+- **Reorderable conditions** - Drag conditions and groups to reorder
+- **Duplicate functionality** - Clone groups and conditions
+- **Conflict resolution** - Smart handling of preset merging vs overriding
 
 ## Installation
 
-You can install this addon via Composer:
+Install via Composer:
 
 ```bash
 composer require rapidez/statamic-query-builder
 ```
 
-## Usage
+Publish the configuration and views:
 
-### Basic Usage
-
-The query builder comes with a base component that can be used with any data type. Here's how to use it:
-
-```vue
-<query-builder
-    :fields="[
-        {
-            label: 'Name',
-            value: 'name',
-            type: 'text'
-        },
-        {
-            label: 'Status',
-            value: 'status',
-            type: 'select',
-            options: [
-                { label: 'Active', value: 'active' },
-                { label: 'Inactive', value: 'inactive' }
-            ]
-        }
-    ]"
-    v-model="queryValue"
-/>
+```bash
+php artisan vendor:publish --provider="Rapidez\StatamicQueryBuilder\ServiceProvider"
 ```
 
-### Creating a Custom Query Builder
+## Quick Start
 
-To create a query builder for your specific data type, extend the base component. Here's an example:
+### Basic Product Query Builder
+
+The addon comes with a pre-configured `ProductQueryBuilder` fieldtype for immediate use:
+
+```yaml
+# In your blueprint
+fields:
+  product_filter:
+    type: product_query_builder
+    display: Product Filter
+    instructions: Build complex product queries visually
+```
+
+### Custom Query Builder
+
+Create a custom query builder for your specific needs:
 
 ```vue
-<!-- CustomQueryBuilder.vue -->
 <template>
     <query-builder
-        :fields="fields"
-        :operators="operators"
-        :default-limit="100"
+        :fields="groupedFields"
+        :sort-fields="sortFields"
+        :default-limit="50"
         :show-limit="true"
+        :builder-templates="templates"
         v-model="value"
         @input="$emit('input', $event)"
     />
@@ -68,124 +96,179 @@ To create a query builder for your specific data type, extend the base component
 import QueryBuilder from './QueryBuilder.vue';
 
 export default {
-    components: {
-        QueryBuilder
-    },
-
+    components: { QueryBuilder },
     mixins: [Fieldtype],
-
+    
     data() {
         return {
-            fields: [],
-            operators: {
-                text: ['=', '!=', 'LIKE', 'NOT LIKE', 'STARTS_WITH', 'ENDS_WITH', 'IS_NULL', 'IS_NOT_NULL'],
-                select: ['=', '!=', 'IN', 'NOT IN', 'IS_NULL', 'IS_NOT_NULL'],
-                number: ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'IS_NULL', 'IS_NOT_NULL'],
-                date: ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'LAST_X_DAYS', 'NEXT_X_DAYS', 'THIS_WEEK', 'THIS_MONTH', 'THIS_YEAR', 'IS_NULL', 'IS_NOT_NULL']
-            }
-        }
-    },
-
-    methods: {
-        async fetchFields() {
-            // Implement your field fetching logic here
-            this.fields = [
+            groupedFields: [
                 {
-                    label: 'Name',
-                    value: 'name',
-                    type: 'text'
+                    label: 'Product Attributes',
+                    options: [
+                        {
+                            label: 'Product Name',
+                            value: 'name',
+                            type: 'text'
+                        },
+                        {
+                            label: 'Category',
+                            value: 'category',
+                            type: 'select',
+                            options: [
+                                { label: 'Electronics', value: 'electronics' },
+                                { label: 'Clothing', value: 'clothing' }
+                            ]
+                        },
+                        {
+                            label: 'Price',
+                            value: 'price',
+                            type: 'number'
+                        },
+                        {
+                            label: 'Created Date',
+                            value: 'created_at',
+                            type: 'date'
+                        }
+                    ]
                 },
-                // ... more fields
-            ];
+                {
+                    label: 'Stock Information',
+                    options: [
+                        {
+                            label: 'Stock Status',
+                            value: 'stock_status',
+                            type: 'select',
+                            operators: ['=', '!='],
+                            options: [
+                                { label: 'In Stock', value: 'in_stock' },
+                                { label: 'Out of Stock', value: 'out_of_stock' }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            templates: [
+                { label: 'Product Slider', value: 'slider' },
+                { label: 'Product Grid', value: 'listing' }
+            ]
         }
-    },
-
-    mounted() {
-        this.fetchFields();
     }
 }
 </script>
 ```
 
-### Field Configuration
+## Supported Field Types & Operators
 
-Each field in the fields array should have the following structure:
+### Text Fields
+- `=` - Exactly equals
+- `!=` - Does not equal
+- `LIKE` - Contains text
+- `NOT LIKE` - Does not contain
+- `STARTS_WITH` - Begins with
+- `ENDS_WITH` - Ends with
+- `IS_NULL` - Field is empty
+- `IS_NOT_NULL` - Field has value
 
-```typescript
-interface Field {
-    label: string;      // Display name
-    value: string;      // Internal identifier
-    type: string;       // Field type (text, select, number, date)
-    options?: Option[]; // Required for select fields
-}
+### Select Fields
+- `=` - Equals selected value
+- `!=` - Does not equal
+- `IN` - Is any of (multiple selection)
+- `NOT IN` - Is none of (multiple selection)
+- `IS_NULL` - Nothing selected
+- `IS_NOT_NULL` - Has selection
 
-interface Option {
-    label: string;
-    value: string | number;
+### Number Fields
+- `=`, `!=` - Equality comparisons
+- `>`, `<`, `>=`, `<=` - Numeric comparisons
+- `BETWEEN` - Value within range
+- `NOT_BETWEEN` - Value outside range
+- `IS_NULL`, `IS_NOT_NULL` - Empty/has value
+
+### Date Fields
+- `=`, `!=`, `>`, `<`, `>=`, `<=` - Date comparisons
+- `BETWEEN`, `NOT_BETWEEN` - Date ranges
+- `LAST_X_DAYS`, `NEXT_X_DAYS` - Relative ranges
+- `THIS_WEEK`, `THIS_MONTH`, `THIS_YEAR` - Period filters
+- `IS_NULL`, `IS_NOT_NULL` - Date set/not set
+
+## Advanced Date Filtering
+
+The query builder includes sophisticated date handling:
+
+### Relative Dates
+```javascript
+// Simple relative dates
+{ type: 'relative', value: 'TODAY' }
+{ type: 'relative', value: 'YESTERDAY' }
+{ type: 'relative', value: 'TOMORROW' }
+
+// Dynamic relative dates with offsets
+{
+    type: 'relative',
+    base: 'TODAY',
+    offset: -7,
+    unit: 'days'
 }
 ```
 
-### Supported Field Types
+### Manual Dates
+```javascript
+{
+    type: 'manual',
+    value: '2024-01-15'
+}
+```
 
-- `text`: Text input with string operations
-- `select`: Single/multi-select with options
-- `number`: Numeric input with comparison operations
-- `date`: Date input with date-specific operations
+## Query Presets
 
-### Available Operators
+Create reusable query templates:
 
-The component supports different operators based on field type:
+```json
+{
+    "category": {
+        "key": "products",
+        "label": "Product Queries"
+    },
+    "presets": [
+        {
+            "key": "featured_products",
+            "name": "Featured Products",
+            "description": "Products marked as featured",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "featured",
+                                "operator": "=",
+                                "value": "1"
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        }
+    ]
+}
+```
 
-- Text:
-  - `=`: Equals
-  - `!=`: Not equals
-  - `LIKE`: Contains
-  - `NOT LIKE`: Does not contain
-  - `STARTS_WITH`: Begins with text
-  - `ENDS_WITH`: Ends with text
-  - `IS_NULL`: Field is empty
-  - `IS_NOT_NULL`: Field is not empty
+Configure preset files in your config:
 
-- Select:
-  - `=`: Equals
-  - `!=`: Not equals
-  - `IN`: In list
-  - `NOT IN`: Not in list
-  - `IS_NULL`: No option selected
-  - `IS_NOT_NULL`: Has option selected
-
-- Number:
-  - `=`: Equals
-  - `!=`: Not equals
-  - `>`: Greater than
-  - `<`: Less than
-  - `>=`: Greater than or equal
-  - `<=`: Less than or equal
-  - `BETWEEN`: Value is between two numbers
-  - `NOT_BETWEEN`: Value is not between two numbers
-  - `IS_NULL`: Field is empty
-  - `IS_NOT_NULL`: Field is not empty
-
-- Date:
-  - `=`: Equals
-  - `!=`: Not equals
-  - `>`: After
-  - `<`: Before
-  - `>=`: After or on
-  - `<=`: Before or on
-  - `BETWEEN`: Date is between two dates
-  - `NOT_BETWEEN`: Date is not between two dates
-  - `LAST_X_DAYS`: Within the last X days
-  - `NEXT_X_DAYS`: Within the next X days
-  - `THIS_WEEK`: Current week
-  - `THIS_MONTH`: Current month
-  - `THIS_YEAR`: Current year
-  - `IS_NULL`: Date is not set
-  - `IS_NOT_NULL`: Date is set
+```php
+// config/rapidez/query-builder.php
+return [
+    'preset_files' => [
+        'resources/query-presets/products.json',
+        'resources/query-presets/categories.json',
+    ]
+];
+```
 
 ## Output Format
 
-The query builder outputs data in the following format:
+The query builder generates structured output perfect for Elasticsearch:
 
 ```json
 {
@@ -194,13 +277,98 @@ The query builder outputs data in the following format:
             "conjunction": "AND",
             "conditions": [
                 {
-                    "attribute": "status",
-                    "operator": "=",
-                    "value": "active"
+                    "attribute": "attribute.brand",
+                    "operator": "IN",
+                    "value": ["nike", "adidas"]
+                },
+                {
+                    "attribute": "price",
+                    "operator": "BETWEEN",
+                    "value": ["100", "500"]
                 }
             ]
         }
     ],
     "globalConjunction": "AND",
-    "limit": 100
+    "limit": 50,
+    "sortField": "created_at",
+    "sortDirection": "DESC",
+    "builderTemplate": "listing"
 }
+```
+
+This gets automatically converted to Elasticsearch DSL:
+
+```json
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "terms": {
+                        "attribute.brand.keyword": ["nike", "adidas"]
+                    }
+                },
+                {
+                    "range": {
+                        "price": {
+                            "gte": 100,
+                            "lte": 500
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "size": 50,
+    "from": 0
+}
+```
+
+## Templates
+
+The chosen template is used to render the results of the query.
+You can access the html of this template by accessing the `template_html` key of the value.
+
+```blade
+{!! $product_query_builder->value()['template_html'] !!}
+```
+
+## Configuration
+
+### Product Attribute Model
+
+Configure your product attribute model:
+
+```php
+// config/rapidez/query-builder.php
+return [
+    'models' => [
+        'product_attribute' => App\Models\ProductAttribute::class,
+    ]
+];
+```
+
+### Field Mappings
+
+The addon automatically maps Elasticsearch field types:
+
+- `text` fields → `.keyword` for exact matches
+- `stock_status` → `in_stock` in Elasticsearch
+- Attribute fields → `attribute.{attribute_code}` prefix
+
+## Requirements
+
+- PHP ^8.0
+- Laravel ^9.0|^10.0|^11.0
+- Statamic ^4.0|^5.0
+- Rapidez framework
+- Elasticsearch (via MailerLite Laravel Elasticsearch package)
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## License
+
+This package is open-sourced software licensed under the [MIT license](LICENSE.md).
