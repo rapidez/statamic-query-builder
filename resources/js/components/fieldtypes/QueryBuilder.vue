@@ -105,6 +105,7 @@
                     :can-remove="groups.length > 1"
                     @update-group="updateGroup"
                     @remove-group="removeGroup"
+                    @duplicate-group="duplicateGroup"
                     @move-group-up="moveGroupUp"
                     @move-group-down="moveGroupDown"
                     @add-condition="addConditionToGroup"
@@ -555,6 +556,12 @@ export default {
                 conditions: []
             };
             this.groups.splice(index, 0, newGroup);
+            this.updateValue();
+        },
+
+        duplicateGroup(groupIndex) {
+            const group = this.groups[groupIndex];
+            this.groups.splice(groupIndex + 1, 0, { ...group });
             this.updateValue();
         },
 
