@@ -25,9 +25,9 @@
         }
     },
     "require": {
-        "rapidez/core": "^2.25.0|^3.10.0",
-        "rapidez/statamic": "^4.0",
-        "mailerlite/laravel-elasticsearch": "^11.2",
+        "rapidez/core": "^4.0",
+        "rapidez/statamic": "^5.0",
+        "laravel/scout": "^10.14",
         "statamic/cms": "^5.0"
     },
     "require-dev": {

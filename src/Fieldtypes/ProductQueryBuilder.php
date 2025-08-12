@@ -72,7 +72,7 @@ class ProductQueryBuilder extends Fieldtype
 
     public function getTemplate(array $value)
     {
-        $template = $value['builderTemplate'];
+        $template = $value['builderTemplate'] ?? null;
 
         if(! $template) {
             return null;

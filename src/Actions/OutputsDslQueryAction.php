@@ -4,7 +4,8 @@ namespace Rapidez\StatamicQueryBuilder\Actions;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
+use Elastic\Elasticsearch\Client as Elasticsearch;
+use Elastic\Elasticsearch\ClientBuilder;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
@@ -135,7 +136,7 @@ class OutputsDslQueryAction
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
-        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
+        $this->mappings = $this->getMappings(); //Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
         $clauses = [];
 
         foreach ($groups as $group) {
@@ -205,8 +206,10 @@ class OutputsDslQueryAction
 
     protected function getMappings(): array
     {
-        $indexName = config('rapidez.es_prefix').'_products_'.config('rapidez.store');
-        $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
+        $indexName = config('scout.prefix').'_products_'.config('rapidez.store');
+
+        $client = ClientBuilder::create()->build();
+        $esMappings = $client->indices()->getMapping(['index' => $indexName])->asArray();
         $mappings = data_get($esMappings, '*.mappings.properties', []);
 
         return Arr::last($mappings) ?? [];
