@@ -1,9 +1,5 @@
 # Statamic Query Builder
 
-<a href="https://github.com/rapidez/statamic-query-builder" title="JustBetter">
-    <img src="./art/banner-query-builder.png" alt="Banner">
-</a>
-
 A sophisticated visual query builder for Statamic CMS that generates Elasticsearch DSL queries for complex product filtering and search. Built specifically for e-commerce applications using the Rapidez framework.
 
 ## Features
