@@ -110,11 +110,7 @@ export default {
                 }));
             }
 
-            if (field) {
-                return this.operators[field.type] || this.operators.text;
-            }
-
-            return this.operators.text;
+            return field && this.operators[field.type] ? this.operators[field.type] : this.operators.text;
         },
 
         getOperatorLabel(operator) {
@@ -124,8 +120,8 @@ export default {
                 ...this.operators.number,
                 ...this.operators.date
             ];
-
             const found = allOperators.find(operatorObject => operatorObject.value === operator);
+
             return found ? found.label : operator;
         },
 

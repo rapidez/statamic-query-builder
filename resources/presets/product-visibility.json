@@ -1,0 +1,48 @@
+{
+    "category": {
+        "key": "product_visibility",
+        "label": "Product Visibility"
+    },
+    "presets": [
+        {
+            "key": "published_only",
+            "name": "Published Only",
+            "description": "Shows only published and visible products",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "attribute.visibility",
+                                "operator": "!=",
+                                "value": "1"
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        },
+        {
+            "key": "new_products",
+            "name": "New Products",
+            "description": "Recently added products within the last 30 days",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "attribute.created_at",
+                                "operator": "LAST_X_DAYS",
+                                "value": "30"
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        }
+    ]
+}

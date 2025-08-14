@@ -7,7 +7,8 @@
         :show-limit="true"
         :builder-templates="templates"
         :default-builder-template="'slider'"
-        v-model="value"
+        :value="value"
+        @input="$emit('input', $event)"
     />
 </template>
 
