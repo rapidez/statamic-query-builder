@@ -1,13 +1,13 @@
 {
   "resources/js/statamic-query-builder.css": {
-    "file": "assets/statamic-query-builder-f6aca2dd.css",
+    "file": "assets/statamic-query-builder-3b5b497b.css",
     "src": "resources/js/statamic-query-builder.css"
   },
   "resources/js/statamic-query-builder.js": {
     "css": [
-      "assets/statamic-query-builder-f6aca2dd.css"
+      "assets/statamic-query-builder-3b5b497b.css"
     ],
-    "file": "assets/statamic-query-builder-77618c6c.js",
+    "file": "assets/statamic-query-builder-47499c59.js",
     "isEntry": true,
     "src": "resources/js/statamic-query-builder.js"
   }
