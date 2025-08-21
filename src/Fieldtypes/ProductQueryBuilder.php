@@ -50,9 +50,7 @@ class ProductQueryBuilder extends Fieldtype
             $value['value'] = $this->getValue($value);
         }
 
-        if (!isset($value['template_html'])) {
-            $value['template_html'] = $this->getTemplate($value);
-        }
+        $value['template_html'] = $this->getTemplate($value);
 
         return $value;
     }

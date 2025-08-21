@@ -138,11 +138,19 @@ class OutputsDslQueryAction
         $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');
         $globalKey = strtoupper($config['globalConjunction'] ?? 'AND') === 'OR' ? 'should' : 'must';
 
-        return [
+        $query = [
             'query' => ['bool' => [$globalKey => $clauses]],
             'size' => $limit,
             'from' => 0,
         ];
+
+        if (!empty($config['sortField']) && !empty($config['sortDirection'])) {
+            $sortField = $this->getQueryFieldName($config['sortField']);
+            $sortDirection = strtolower($config['sortDirection']);
+            $query['sort'] = [[$sortField => ['order' => $sortDirection]]];
+        }
+
+        return $query;
     }
 
     protected function buildQueryClauses(array $groups, string $globalConjunction): array
