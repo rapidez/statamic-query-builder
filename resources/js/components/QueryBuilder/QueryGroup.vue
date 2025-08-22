@@ -11,10 +11,15 @@
                         'font-bold',
                         isNested ? 'text-sm text-blue-700' : 'text-base'
                     ]">
-                        {{ isNested ? __('Nested Group') : __('Group') }} {{ displayIndex }}
+                        <input
+                            type="text"
+                            v-model="group.name"
+                            class="input-text"
+                            :placeholder="(isNested ? __('Nested Group') : __('Group')) + ' ' + displayIndex"
+                        />
                     </h3>
                     <button
-                        v-if="isNested && hasConditions"
+                        v-if="hasConditions"
                         @click="toggleCollapsed"
                         class="text-blue-600 hover:text-blue-800"
                         :title="isCollapsed ? __('Expand') : __('Collapse')"
