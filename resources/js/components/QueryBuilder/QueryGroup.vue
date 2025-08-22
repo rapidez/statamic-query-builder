@@ -13,9 +13,8 @@
                     ]">
                         <input
                             type="text"
-                            v-model="groupName"
+                            v-model="group.name"
                             class="input-text"
-                            @input="updateGroupName"
                             :placeholder="(isNested ? __('Nested Group') : __('Group')) + ' ' + displayIndex"
                         />
                     </h3>
@@ -177,7 +176,6 @@ export default {
     data() {
         return {
             logicalOperators: ['AND', 'OR'],
-            groupName: this.group.name,
             isCollapsed: false
         }
     },
@@ -238,10 +236,6 @@ export default {
                 }
             }
             return nestedGroupCount;
-        },
-
-        updateGroupName() {
-            this.$emit('update-group', this.groupIndex, { ...this.group, name: this.groupName });
         },
 
         updateConjunction(conjunction) {
