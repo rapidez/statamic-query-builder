@@ -11,10 +11,16 @@
                         'font-bold',
                         isNested ? 'text-sm text-blue-700' : 'text-base'
                     ]">
-                        {{ isNested ? __('Nested Group') : __('Group') }} {{ displayIndex }}
+                        <input
+                            type="text"
+                            v-model="groupName"
+                            class="input-text"
+                            @input="updateGroupName"
+                            :placeholder="(isNested ? __('Nested Group') : __('Group')) + ' ' + displayIndex"
+                        />
                     </h3>
                     <button
-                        v-if="isNested && hasConditions"
+                        v-if="hasConditions"
                         @click="toggleCollapsed"
                         class="text-blue-600 hover:text-blue-800"
                         :title="isCollapsed ? __('Expand') : __('Collapse')"
@@ -171,6 +177,7 @@ export default {
     data() {
         return {
             logicalOperators: ['AND', 'OR'],
+            groupName: this.group.name,
             isCollapsed: false
         }
     },
@@ -231,6 +238,10 @@ export default {
                 }
             }
             return nestedGroupCount;
+        },
+
+        updateGroupName() {
+            this.$emit('update-group', this.groupIndex, { ...this.group, name: this.groupName });
         },
 
         updateConjunction(conjunction) {

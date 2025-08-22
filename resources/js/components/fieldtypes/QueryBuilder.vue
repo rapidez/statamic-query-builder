@@ -541,20 +541,21 @@ export default {
             return this.defaultBuilderTemplate;
         },
 
-        addGroup() {
-            this.groups.push({
+        createDefaultGroup() {
+            return {
+                name: '',
                 conjunction: 'AND',
                 conditions: []
-            });
+            };
+        },
+
+        addGroup() {
+            this.groups.push(this.createDefaultGroup());
             this.updateValue();
         },
 
         insertGroupAt(index) {
-            const newGroup = {
-                conjunction: 'AND',
-                conditions: []
-            };
-            this.groups.splice(index, 0, newGroup);
+            this.groups.splice(index, 0, this.createDefaultGroup());
             this.updateValue();
         },
 
@@ -605,8 +606,7 @@ export default {
         addNestedGroupToGroup(groupIndex) {
             const nestedGroup = {
                 type: 'group',
-                conjunction: 'AND',
-                conditions: []
+                ...this.createDefaultGroup()
             };
             this.groups[groupIndex].conditions.push(nestedGroup);
             this.updateValue();
@@ -621,8 +621,7 @@ export default {
         addNestedGroupToNestedGroup(groupIndex, nestedGroupIndex) {
             const nestedGroup = {
                 type: 'group',
-                conjunction: 'AND',
-                conditions: []
+                ...this.createDefaultGroup()
             };
             this.groups[groupIndex].conditions[nestedGroupIndex].conditions.push(nestedGroup);
             this.updateValue();
