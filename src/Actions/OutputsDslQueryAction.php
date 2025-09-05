@@ -155,11 +155,7 @@ class OutputsDslQueryAction
             }
         }
 
-        return [
-            'query' => ['bool' => [$globalKey => $clauses]],
-            'size' => $limit,
-            'from' => 0,
-        ];
+        return ['bool' => [$globalKey => $clauses]];
     }
 
     protected function mapCondition(array $condition): array

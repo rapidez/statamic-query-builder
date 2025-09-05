@@ -88,6 +88,7 @@ class ProductQueryBuilder extends Fieldtype
         $view = view($templatePath)->with([
             'value' => $value,
             'query' => $value['value'],
+            'queryHash' => md5(json_encode($value['value'])),
         ]);
 
         return $view->render();
