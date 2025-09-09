@@ -1,10 +1,8 @@
-@if($query ?? false)
-    <script>window['{{ $queryHash }}'] = @json($query)</script>
-    {{-- A limit doesn't make sense here as there is a ais-sort-by component --}}
+@if($product_query_builder->value()['hash'])
     <x-rapidez::listing
-        item_list_id="query-builder-{{ $queryHash }}"
-        v-bind:base-filters="() => [window['{{ $queryHash }}']]"
-        {{-- But a default sorting could be set: --}}
-        index="rapidez_products_1_price_desc"
+        item_list_id="query_builder_"
+        item_list_name="query_builder_"
+        v-bind:base-filters="() => [window.config.productlist['{{ $product_query_builder->value()['hash'] }}']]"
+        index="{{ $product_query_builder->value()['index'] }}"
     />
 @endif

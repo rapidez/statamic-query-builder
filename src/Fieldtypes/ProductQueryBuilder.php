@@ -35,41 +35,28 @@ class ProductQueryBuilder extends Fieldtype
     public function process($data)
     {
         $originalData = $data;
+        $originalData['value'] = $this->getDsl($data);
 
-        $originalData['value'] = $this->getValue($data, true);
-        $originalData['template_html'] = $this->getTemplate($originalData);
-
+        $queryHash = md5(json_encode($originalData['value']));
+        config(['frontend.productlist.' . $queryHash => $originalData['value']]);
+        
         return $originalData;
     }
 
     public function augment($value)
     {
-        unset($value['products']);
-
         if (!isset($value['value'])) {
-            $value['value'] = $this->getValue($value);
+            $value['value'] = $this->getDsl($value);
         }
 
-        if (!isset($value['template_html'])) {
-            $value['template_html'] = $this->getTemplate($value);
+        if (isset($value['value'])) {
+            $value['hash'] = md5(json_encode($value['value']));
+            config(['frontend.productlist.' . $value['hash'] => $value['value']]);
         }
+
+        $value['index'] = config('scout.prefix') . '_products_' . config('rapidez.store');
 
         return $value;
-    }
-
-    public function getValue(array $value, bool $force = false)
-    {
-        $cacheKey = 'product-query-builder-'.config('rapidez.store').'-'.md5(json_encode($value));
-
-        if ($force && Cache::has($cacheKey)) {
-            return Cache::forget($cacheKey);
-        }
-
-        if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
-        }
-
-        return Cache::remember($cacheKey, now()->addDay(), fn () => $this->getDsl($value));
     }
 
     public function getDsl(array $value)
@@ -91,13 +78,18 @@ class ProductQueryBuilder extends Fieldtype
             return null;
         }
 
-        $query = $value['value'] ?? $this->getDsl($value);
+        $query = $this->getDsl($value);
+        $indexName = config('scout.prefix') . '_products_' . config('rapidez.store');
+        $queryHash = md5(json_encode($query));
+        config(['frontend.productlist.' . $queryHash => $query]);
+        
 
         /** @var View $view */
         $view = view($templatePath)->with([
             'value' => $value,
             'query' => $query,
-            'queryHash' => md5(json_encode($value['value'])),
+            'index' => $indexName,
+            'queryHash' => $queryHash,
         ]);
 
         return $view->render();

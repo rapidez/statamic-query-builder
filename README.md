@@ -327,7 +327,7 @@ The chosen template is used to render the results of the query.
 You can access the html of this template by accessing the `template_html` key of the value.
 
 ```blade
-{!! $product_query_builder->value()['template_html'] !!}
+@include('rapidez-query-builder::templates.'.$product_query_builder->value()['builderTemplate'], $product_query_builder->value())
 ```
 
 ## Configuration

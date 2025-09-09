@@ -136,7 +136,7 @@ class OutputsDslQueryAction
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
-        $this->mappings = $this->getMappings(); //Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
+        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn(): array => $this->getMappings());
         $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');
         $globalKey = strtoupper($config['globalConjunction'] ?? 'AND') === 'OR' ? 'should' : 'must';
 
