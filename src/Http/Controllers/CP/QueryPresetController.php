@@ -2,11 +2,11 @@
 
 namespace Rapidez\StatamicQueryBuilder\Http\Controllers\CP;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class QueryPresetController extends Controller
 {
@@ -19,8 +19,9 @@ class QueryPresetController extends Controller
             foreach ($presetFiles as $filePath) {
                 $fullPath = base_path($filePath);
 
-                if (!File::exists($fullPath)) {
+                if (! File::exists($fullPath)) {
                     Log::warning("Query preset file not found: {$fullPath}");
+
                     continue;
                 }
 
@@ -28,21 +29,23 @@ class QueryPresetController extends Controller
                 $data = json_decode($content, true);
 
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    Log::error("Invalid JSON in preset file: {$filePath} - " . json_last_error_msg());
+                    Log::error("Invalid JSON in preset file: {$filePath} - ".json_last_error_msg());
+
                     continue;
                 }
 
-                if (!$this->isValidPresetStructure($data)) {
+                if (! $this->isValidPresetStructure($data)) {
                     Log::error("Invalid preset structure in file: {$filePath}");
+
                     continue;
                 }
 
                 $categoryKey = $data['category']['key'];
 
-                if (!isset($categorizedPresets[$categoryKey])) {
+                if (! isset($categorizedPresets[$categoryKey])) {
                     $categorizedPresets[$categoryKey] = [
                         'label' => $data['category']['label'],
-                        'presets' => []
+                        'presets' => [],
                     ];
                 }
 
@@ -51,46 +54,46 @@ class QueryPresetController extends Controller
                         'key' => $preset['key'],
                         'name' => $preset['name'],
                         'description' => $preset['description'] ?? '',
-                        'query' => $preset['query']
+                        'query' => $preset['query'],
                     ];
                 }
             }
 
             return response()->json([
                 'success' => true,
-                'categories' => $categorizedPresets
+                'categories' => $categorizedPresets,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error loading query presets: ' . $e->getMessage());
+            Log::error('Error loading query presets: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load query presets'
+                'message' => 'Failed to load query presets',
             ], 500);
         }
     }
 
     private function isValidPresetStructure(array $data): bool
     {
-        if (!isset($data['category']) || !isset($data['presets'])) {
+        if (! isset($data['category']) || ! isset($data['presets'])) {
             return false;
         }
 
-        if (!isset($data['category']['key']) || !isset($data['category']['label'])) {
+        if (! isset($data['category']['key']) || ! isset($data['category']['label'])) {
             return false;
         }
 
-        if (!is_array($data['presets'])) {
+        if (! is_array($data['presets'])) {
             return false;
         }
 
         foreach ($data['presets'] as $preset) {
-            if (!isset($preset['key']) || !isset($preset['name']) || !isset($preset['query'])) {
+            if (! isset($preset['key']) || ! isset($preset['name']) || ! isset($preset['query'])) {
                 return false;
             }
 
-            if (!isset($preset['query']['groups']) || !isset($preset['query']['globalConjunction'])) {
+            if (! isset($preset['query']['groups']) || ! isset($preset['query']['globalConjunction'])) {
                 return false;
             }
         }

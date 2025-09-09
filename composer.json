@@ -25,9 +25,9 @@
         }
     },
     "require": {
+        "elasticsearch/elasticsearch": "^8.19",
         "rapidez/core": "^4.0",
         "rapidez/statamic": "^5.0",
-        "laravel/scout": "^10.14",
         "statamic/cms": "^5.0"
     },
     "require-dev": {

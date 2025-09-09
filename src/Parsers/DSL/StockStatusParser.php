@@ -5,8 +5,11 @@ namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 class StockStatusParser
 {
     const FIELD_STOCK_STATUS = 'stock_status';
+
     const FIELD_IN_STOCK = 'in_stock';
+
     const VALUE_IN_STOCK = 'in_stock';
+
     const VALUE_OUT_OF_STOCK = 'out_of_stock';
 
     public function parse(string $field, $value, string $operator = '='): array
@@ -17,14 +20,14 @@ class StockStatusParser
             return [
                 'bool' => [
                     'must_not' => [
-                        'term' => [self::FIELD_IN_STOCK => $stockValue]
-                    ]
-                ]
+                        'term' => [self::FIELD_IN_STOCK => $stockValue],
+                    ],
+                ],
             ];
         }
 
         return [
-            'term' => [self::FIELD_IN_STOCK => $stockValue]
+            'term' => [self::FIELD_IN_STOCK => $stockValue],
         ];
     }
 

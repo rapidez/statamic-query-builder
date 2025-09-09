@@ -14,11 +14,11 @@ class TomorrowNotEqualsParser implements ParsesOperator
                     'range' => [
                         $field => [
                             'gte' => 'now+1d/d',
-                            'lte' => 'now+1d/d'
-                        ]
-                    ]
-                ]
-            ]
+                            'lte' => 'now+1d/d',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

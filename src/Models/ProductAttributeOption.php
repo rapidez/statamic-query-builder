@@ -3,14 +3,14 @@
 namespace Rapidez\StatamicQueryBuilder\Models;
 
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use StatamicRadPack\Runway\Traits\HasRunwayResource;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
 use Statamic\Facades\Site;
 use Statamic\Statamic;
+use StatamicRadPack\Runway\Traits\HasRunwayResource;
 
 #[ObservedBy(ProductAttributeObserver::class)]
 class ProductAttributeOption extends Model
@@ -96,7 +96,7 @@ class ProductAttributeOption extends Model
 
     public function getCacheKey(): string
     {
-        return "product_attribute_option_{$this->option_id}_store_" . self::getCurrentStoreId();
+        return "product_attribute_option_{$this->option_id}_store_".self::getCurrentStoreId();
     }
 
     public function scopeRunwaySearch(Builder $query, string $search)

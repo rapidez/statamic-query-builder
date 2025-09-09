@@ -2,8 +2,6 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBaseParser;
-
 class ManualDateNotEqualsParser extends ManualDateBaseParser
 {
     public function parse(string $field, mixed $value): array
@@ -19,11 +17,11 @@ class ManualDateNotEqualsParser extends ManualDateBaseParser
                     'range' => [
                         $field => [
                             'gte' => $parsedDate,
-                            'lte' => $parsedDate
-                        ]
-                    ]
-                ]
-            ]
+                            'lte' => $parsedDate,
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }

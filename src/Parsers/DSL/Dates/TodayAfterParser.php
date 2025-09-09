@@ -10,8 +10,8 @@ class TodayAfterParser implements ParsesOperator
     {
         return [
             'range' => [
-                $field => ['gt' => 'now/d']
-            ]
+                $field => ['gt' => 'now/d'],
+            ],
         ];
     }
 }

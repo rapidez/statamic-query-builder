@@ -10,8 +10,8 @@ class TodayBeforeOrEqualParser implements ParsesOperator
     {
         return [
             'range' => [
-                $field => ['lte' => 'now/d']
-            ]
+                $field => ['lte' => 'now/d'],
+            ],
         ];
     }
 }
