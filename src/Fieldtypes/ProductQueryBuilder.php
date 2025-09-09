@@ -34,18 +34,25 @@ class ProductQueryBuilder extends Fieldtype
 
     public function process($data)
     {
-        $data['value'] = $this->getValue($data, true);
-        $data['template_html'] = $this->getTemplate($data);
+        $originalData = $data;
 
-        return $data;
+        $originalData['value'] = $this->getValue($data, true);
+        $originalData['template_html'] = $this->getTemplate($originalData);
+
+        return $originalData;
     }
 
     public function augment($value)
     {
         unset($value['products']);
 
-        $value['value'] = $this->getValue($value);
-        $value['template_html'] = $this->getTemplate($value);
+        if (!isset($value['value'])) {
+            $value['value'] = $this->getValue($value);
+        }
+
+        if (!isset($value['template_html'])) {
+            $value['template_html'] = $this->getTemplate($value);
+        }
 
         return $value;
     }
@@ -84,10 +91,12 @@ class ProductQueryBuilder extends Fieldtype
             return null;
         }
 
+        $query = $value['value'] ?? $this->getDsl($value);
+
         /** @var View $view */
         $view = view($templatePath)->with([
             'value' => $value,
-            'query' => $value['value'],
+            'query' => $query,
             'queryHash' => md5(json_encode($value['value'])),
         ]);
 

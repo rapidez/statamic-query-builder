@@ -51,7 +51,32 @@
                     </div>
                 </div>
             </div>
-            <button class="btn-primary self-start" @click="addGroup">{{ __('Add Group') }}</button>
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2" v-if="groupedPresets.length > 0">
+                    <label class="text-sm">{{ __('Presets') }}</label>
+                    <v-select
+                        :options="groupedPresets"
+                        :reduce="preset => preset"
+                        label="name"
+                        :placeholder="__('Select Preset')"
+                        class="w-48"
+                        @input="handlePresetSelection"
+                    >
+                        <template #option="option">
+                            <div v-if="option.isHeader" class="font-semibold text-gray-600 px-2 py-1 bg-gray-50 border-b">
+                                {{ option.name }}
+                            </div>
+                            <div v-else class="px-4 py-2 hover:bg-blue-50">
+                                <div class="font-medium">{{ option.name }}</div>
+                                <div v-if="option.description" class="text-sm text-gray-500 mt-1">
+                                    {{ option.description }}
+                                </div>
+                            </div>
+                        </template>
+                    </v-select>
+                </div>
+                <button class="btn-primary self-start" @click="addGroup">{{ __('Add Group') }}</button>
+            </div>
         </div>
 
         <div class="space-y-6">
@@ -74,16 +99,23 @@
                     :group-index="groupIndex"
                     :fields="flattenedFields"
                     :operators="operators"
+                    :display-index="groupIndex + 1"
                     :can-move-up="groupIndex > 0"
                     :can-move-down="groupIndex < groups.length - 1"
                     :can-remove="groups.length > 1"
                     @update-group="updateGroup"
                     @remove-group="removeGroup"
+                    @duplicate-group="duplicateGroup"
                     @move-group-up="moveGroupUp"
                     @move-group-down="moveGroupDown"
                     @add-condition="addConditionToGroup"
+                    @add-nested-group="addNestedGroupToGroup"
+                    @add-condition-to-nested="addConditionToNestedGroup"
+                    @add-nested-group-to-nested="addNestedGroupToNestedGroup"
                     @update-condition="updateCondition"
+                    @update-nested-condition="updateNestedCondition"
                     @remove-condition="removeCondition"
+                    @remove-nested-condition="removeNestedCondition"
                 />
 
                 <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
@@ -113,6 +145,35 @@
                     class="w-32"
                     @input="updateValue"
                 />
+            </div>
+        </div>
+
+        <div v-if="showConflictModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                <h3 class="text-lg font-semibold mb-4">{{ __('Apply Preset') }}</h3>
+                <p class="text-gray-600 mb-6">
+                    {{ __('You have an existing query. How would you like to apply this preset?') }}
+                </p>
+                <div class="flex space-x-3">
+                    <button
+                        class="btn flex-1"
+                        @click="applyPreset('merge')"
+                    >
+                        {{ __('Merge') }}
+                    </button>
+                    <button
+                        class="btn-primary flex-1"
+                        @click="applyPreset('override')"
+                    >
+                        {{ __('Override') }}
+                    </button>
+                    <button
+                        class="btn flex-1"
+                        @click="cancelPresetApplication"
+                    >
+                        {{ __('Cancel') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -256,6 +317,9 @@ export default {
             sortField: '',
             sortDirection: '',
             sortDirections: ['ASC', 'DESC'],
+            presets: [],
+            showConflictModal: false,
+            pendingPreset: null,
         }
     },
 
@@ -266,10 +330,190 @@ export default {
             }
 
             return this.fields.flatMap(group => group.options);
+        },
+
+        groupedPresets() {
+            const grouped = [];
+
+            Object.keys(this.presets).forEach(categoryKey => {
+                const category = this.presets[categoryKey];
+
+                grouped.push({
+                    name: category.label,
+                    category: category.label,
+                    disabled: true,
+                    isHeader: true
+                });
+
+                category.presets.forEach(preset => {
+                    grouped.push({
+                        ...preset,
+                        categoryKey,
+                        isHeader: false
+                    });
+                });
+            });
+
+            return grouped;
         }
     },
 
     methods: {
+        async fetchPresets() {
+            try {
+                const response = await this.$axios.get('/cp/rapidez/query-presets');
+                if (response.data.success) {
+                    this.presets = response.data.categories;
+                } else {
+                    this.$toast.error(__('Failed to load query presets'));
+                }
+            } catch (error) {
+                console.error('Error fetching presets:', error);
+                this.$toast.error(__('Error loading presets'));
+            }
+        },
+
+        handlePresetSelection(preset) {
+            if (!preset || preset.disabled || preset.isHeader) return;
+
+            if (this.groups.length > 0) {
+                this.pendingPreset = preset;
+                this.showConflictModal = true;
+            } else {
+                this.applyPresetDirectly(preset);
+            }
+        },
+
+        applyPreset(action) {
+            this.showConflictModal = false;
+
+            if (action === 'override') {
+                this.groups = [];
+                this.applyPresetDirectly(this.pendingPreset);
+            } else if (action === 'merge') {
+                this.applyPresetDirectly(this.pendingPreset, true);
+            }
+
+            this.pendingPreset = null;
+        },
+
+        cancelPresetApplication() {
+            this.showConflictModal = false;
+            this.pendingPreset = null;
+        },
+
+        applyPresetDirectly(preset, merge = false) {
+            const validatedQuery = this.validateAndCorrectPreset(preset.query);
+
+            if (merge) {
+                this.groups.push(...validatedQuery.groups);
+            } else {
+                this.groups = validatedQuery.groups;
+                this.globalConjunction = validatedQuery.globalConjunction;
+            }
+
+            this.updateValue();
+        },
+
+        validateAndCorrectPreset(query) {
+            const validatedQuery = {
+                groups: [],
+                globalConjunction: query.globalConjunction || 'AND'
+            };
+
+            const validationIssues = [];
+
+            query.groups.forEach((group, groupIndex) => {
+                const validatedGroup = this.validateGroup(group, validationIssues);
+                if (validatedGroup.conditions.length > 0) {
+                    validatedQuery.groups.push(validatedGroup);
+                }
+            });
+
+            if (validationIssues.length > 0) {
+                validationIssues.forEach(issue => {
+                    this.$toast.info(issue);
+                });
+            }
+
+            return validatedQuery;
+        },
+
+        validateGroup(group, validationIssues) {
+            const validatedGroup = {
+                conjunction: group.conjunction || 'AND',
+                conditions: []
+            };
+
+            group.conditions.forEach((item) => {
+                if (item.type === 'group') {
+                    const nestedGroup = this.validateGroup(item, validationIssues);
+                    if (nestedGroup.conditions.length > 0) {
+                        validatedGroup.conditions.push({
+                            ...nestedGroup,
+                            type: 'group'
+                        });
+                    }
+                } else {
+                    const validatedCondition = this.validateCondition(item, validationIssues);
+                    if (validatedCondition) {
+                        validatedGroup.conditions.push(validatedCondition);
+                    }
+                }
+            });
+
+            return validatedGroup;
+        },
+
+        validateCondition(condition, validationIssues) {
+            const field = this.flattenedFields.find(f => f.value === condition.attribute);
+
+            if (!field) {
+                validationIssues.push(`Field "${condition.attribute}" not found - skipping condition`);
+                return null;
+            }
+
+            const validatedCondition = { ...condition };
+
+            const fieldOperators = this.getOperatorsForField(field);
+            const operatorExists = fieldOperators.some(op => op.value === condition.operator);
+
+            if (!operatorExists) {
+                const fallbackOperator = fieldOperators[0]?.value || '=';
+                validationIssues.push(`Operator "${condition.operator}" not valid for field "${field.label}" - using "${fallbackOperator}"`);
+                validatedCondition.operator = fallbackOperator;
+            }
+
+            return validatedCondition;
+        },
+
+        getOperatorsForField(field) {
+            if (field && field.operators) {
+                return field.operators.map(op => ({
+                    value: op,
+                    label: this.getOperatorLabel(op)
+                }));
+            }
+
+            if (field) {
+                return this.operators[field.type] || this.operators.text;
+            }
+
+            return this.operators.text;
+        },
+
+        getOperatorLabel(operator) {
+            const allOperators = [
+                ...this.operators.text,
+                ...this.operators.select,
+                ...this.operators.number,
+                ...this.operators.date
+            ];
+
+            const found = allOperators.find(operatorObject => operatorObject.value === operator);
+            return found ? found.label : operator;
+        },
+
         initializeLimit() {
             if (this.value?.limit) {
                 return this.value.limit;
@@ -298,20 +542,27 @@ export default {
             return this.defaultBuilderTemplate;
         },
 
-        addGroup() {
-            this.groups.push({
+        createDefaultGroup() {
+            return {
+                name: '',
                 conjunction: 'AND',
                 conditions: []
-            });
+            };
+        },
+
+        addGroup() {
+            this.groups.push(this.createDefaultGroup());
             this.updateValue();
         },
 
         insertGroupAt(index) {
-            const newGroup = {
-                conjunction: 'AND',
-                conditions: []
-            };
-            this.groups.splice(index, 0, newGroup);
+            this.groups.splice(index, 0, this.createDefaultGroup());
+            this.updateValue();
+        },
+
+        duplicateGroup(groupIndex) {
+            const group = this.groups[groupIndex];
+            this.groups.splice(groupIndex + 1, 0, { ...group });
             this.updateValue();
         },
 
@@ -323,41 +574,6 @@ export default {
         updateGroup(groupIndex, group) {
             this.$set(this.groups, groupIndex, group);
             this.updateValue();
-        },
-
-        addConditionToGroup(groupIndex) {
-            const condition = this.createDefaultCondition();
-            this.groups[groupIndex].conditions.push(condition);
-            this.updateValue();
-        },
-
-        updateCondition(groupIndex, conditionIndex, condition) {
-            this.$set(this.groups[groupIndex].conditions, conditionIndex, condition);
-            this.updateValue();
-        },
-
-        removeCondition(groupIndex, conditionIndex) {
-            this.groups[groupIndex].conditions.splice(conditionIndex, 1);
-            this.updateValue();
-        },
-
-        createDefaultCondition() {
-            const firstField = this.flattenedFields[0];
-            const defaultOperator = this.getOperatorsForType(firstField?.value)[0]?.value || '=';
-            let defaultValue = '';
-
-            if (firstField?.type === 'date') {
-                defaultValue = {
-                    type: 'relative',
-                    value: 'TODAY'
-                };
-            }
-
-            return {
-                attribute: firstField?.value || '',
-                operator: defaultOperator,
-                value: defaultValue
-            };
         },
 
         moveGroupUp(groupIndex) {
@@ -378,11 +594,85 @@ export default {
             }
         },
 
+        addConditionToGroup(groupIndex) {
+            const condition = this.createDefaultCondition();
+            this.groups[groupIndex].conditions.push(condition);
+            this.updateValue();
+        },
+
+        updateCondition(groupIndex, conditionIndex, condition) {
+            this.$set(this.groups[groupIndex].conditions, conditionIndex, condition);
+            this.updateValue();
+        },
+
+        removeCondition(groupIndex, conditionIndex) {
+            this.groups[groupIndex].conditions.splice(conditionIndex, 1);
+            this.updateValue();
+        },
+
+        addNestedGroupToGroup(groupIndex) {
+            const nestedGroup = {
+                type: 'group',
+                ...this.createDefaultGroup()
+            };
+            this.groups[groupIndex].conditions.push(nestedGroup);
+            this.updateValue();
+        },
+
+        addConditionToNestedGroup(groupIndex, nestedGroupIndex) {
+            const condition = this.createDefaultCondition();
+            this.groups[groupIndex].conditions[nestedGroupIndex].conditions.push(condition);
+            this.updateValue();
+        },
+
+        addNestedGroupToNestedGroup(groupIndex, nestedGroupIndex) {
+            const nestedGroup = {
+                type: 'group',
+                ...this.createDefaultGroup()
+            };
+            this.groups[groupIndex].conditions[nestedGroupIndex].conditions.push(nestedGroup);
+            this.updateValue();
+        },
+
+        updateNestedCondition(groupIndex, nestedGroupIndex, conditionIndex, condition) {
+            this.$set(this.groups[groupIndex].conditions[nestedGroupIndex].conditions, conditionIndex, condition);
+            this.updateValue();
+        },
+
+        removeNestedCondition(groupIndex, nestedGroupIndex, conditionIndex) {
+            this.groups[groupIndex].conditions[nestedGroupIndex].conditions.splice(conditionIndex, 1);
+            this.updateValue();
+        },
+
+        createDefaultCondition() {
+            const firstField = this.flattenedFields[0];
+            const defaultOperator = this.getOperatorsForField(firstField)[0]?.value || '=';
+            let defaultValue = '';
+
+            if (firstField?.type === 'date') {
+                defaultValue = {
+                    type: 'relative',
+                    value: 'TODAY'
+                };
+            }
+
+            return {
+                attribute: firstField?.value || '',
+                operator: defaultOperator,
+                value: defaultValue
+            };
+        },
+
         updateValue() {
-            this.$emit('input', {
+            const payload = {
                 groups: this.groups,
                 globalConjunction: this.globalConjunction,
-            });
+                limit: this.limit,
+                builderTemplate: this.builderTemplate,
+                sortField: this.sortField,
+                sortDirection: this.sortDirection,
+            };
+            this.$emit('input', payload);
         },
 
         updateSettingValues() {
@@ -399,6 +689,7 @@ export default {
         this.sortField = this.initializeSortField();
         this.sortDirection = this.initializeSortDirection();
         this.builderTemplate = this.initializeBuilderTemplate();
+        this.fetchPresets();
     }
 }
 </script>

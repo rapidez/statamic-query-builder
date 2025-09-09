@@ -1,0 +1,48 @@
+{
+    "category": {
+        "key": "stock_management",
+        "label": "Stock Management"
+    },
+    "presets": [
+        {
+            "key": "in_stock_only",
+            "name": "In Stock Only",
+            "description": "Shows only products that are currently in stock",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "stock_status",
+                                "operator": "=",
+                                "value": "in_stock"
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        },
+        {
+            "key": "out_of_stock",
+            "name": "Out of Stock",
+            "description": "Shows products that are currently out of stock",
+            "query": {
+                "groups": [
+                    {
+                        "conjunction": "AND",
+                        "conditions": [
+                            {
+                                "attribute": "stock_status",
+                                "operator": "=",
+                                "value": "out_of_stock"
+                            }
+                        ]
+                    }
+                ],
+                "globalConjunction": "AND"
+            }
+        }
+    ]
+}
