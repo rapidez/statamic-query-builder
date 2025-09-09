@@ -264,7 +264,8 @@ class OutputsDslQueryAction
 
     protected function getMappings(): array
     {
-        $indexName = config('scout.prefix').'_products_'.config('rapidez.store');
+        $model = config('rapidez.models.product');
+        $indexName = (new $model)->searchableAs();
 
         $client = ClientBuilder::create()->build();
         $esMappings = $client->indices()->getMapping(['index' => $indexName])->asArray();

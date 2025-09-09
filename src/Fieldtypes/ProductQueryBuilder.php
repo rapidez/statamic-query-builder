@@ -53,7 +53,8 @@ class ProductQueryBuilder extends Fieldtype
             config(['frontend.productlist.'.$value['hash'] => $value['value']]);
         }
 
-        $value['index'] = config('scout.prefix').'_products_'.config('rapidez.store');
+        $model = config('rapidez.models.product');
+        $value['index'] = (new $model)->searchableAs();
 
         return $value;
     }
@@ -78,7 +79,8 @@ class ProductQueryBuilder extends Fieldtype
         }
 
         $query = $this->getDsl($value);
-        $indexName = config('scout.prefix').'_products_'.config('rapidez.store');
+        $model = config('rapidez.models.product');
+        $indexName = (new $model)->searchableAs();
         $queryHash = md5(json_encode($query));
         config(['frontend.productlist.'.$queryHash => $query]);
 
