@@ -1,6 +1,22 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/1.0.1...1.0.1)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/1.1.0...1.1.0)
+## [1.1.0](https://github.com/rapidez/statamic-query-builder/releases/tag/1.1.0) - 2025-08-26
+
+### Added
+
+- Added additional date parsers (#5)
+- Stock status option (#7)
+- Attribute + attribute option models (#8)
+- Query presets + nested queries (#9)
+- Group duplication (#10)
+- Group names (#11)
+
+### Changed
+
+- Dynamic DSL queries instead of product ID's (#4)
+- Read the field mappings from Elasticsearch (#6)
+
 ## [1.0.1](https://github.com/rapidez/statamic-query-builder/releases/tag/1.0.1) - 2025-03-14
 
 ### Fixed
