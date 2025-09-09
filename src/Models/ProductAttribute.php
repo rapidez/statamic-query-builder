@@ -2,13 +2,13 @@
 
 namespace Rapidez\StatamicQueryBuilder\Models;
 
-use StatamicRadPack\Runway\Traits\HasRunwayResource;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Rapidez\Core\Models\Attribute as CoreAttribute;
+use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
+use StatamicRadPack\Runway\Traits\HasRunwayResource;
 
 #[ObservedBy(ProductAttributeObserver::class)]
 class ProductAttribute extends CoreAttribute
@@ -18,7 +18,7 @@ class ProductAttribute extends CoreAttribute
     protected $appends = [
         'options',
         'frontend_label',
-        'formatted_options'
+        'formatted_options',
     ];
 
     public static $inputTypes = [
@@ -55,7 +55,7 @@ class ProductAttribute extends CoreAttribute
         'productpage', 'html', 'flat', 'super', 'text_swatch',
         'visual_swatch', 'update_image', 'is_required', 'is_comparable',
         'used_in_product_listing', 'used_for_sort_by',
-        'is_visible_on_front', 'is_html_allowed_on_front'
+        'is_visible_on_front', 'is_html_allowed_on_front',
     ];
 
     protected static function booting(): void
@@ -77,12 +77,14 @@ class ProductAttribute extends CoreAttribute
 
     public function newEloquentBuilder($query)
     {
-        return new class($query) extends \Illuminate\Database\Eloquent\Builder {
+        return new class($query) extends \Illuminate\Database\Eloquent\Builder
+        {
             public function orderBy($column, $direction = 'asc')
             {
                 if ($column === 'attribute_id') {
                     $column = 'eav_attribute.attribute_id';
                 }
+
                 return parent::orderBy($column, $direction);
             }
         };
@@ -120,10 +122,10 @@ class ProductAttribute extends CoreAttribute
     {
         $array = parent::toArray();
 
-        if (isset($array['id']) && !isset($array['attribute_id'])) {
+        if (isset($array['id']) && ! isset($array['attribute_id'])) {
             $array['attribute_id'] = $array['id'];
         }
-        if (isset($array['name']) && !isset($array['frontend_label'])) {
+        if (isset($array['name']) && ! isset($array['frontend_label'])) {
             $array['frontend_label'] = $array['name'];
         }
 
@@ -138,7 +140,7 @@ class ProductAttribute extends CoreAttribute
 
     public function getCacheKey(): string
     {
-        return "product_attribute_{$this->attribute_id}_store_" . config('rapidez.store');
+        return "product_attribute_{$this->attribute_id}_store_".config('rapidez.store');
     }
 
     public function frontendLabel(): Attribute
@@ -152,7 +154,7 @@ class ProductAttribute extends CoreAttribute
     {
         return Attribute::make(
             get: function () {
-                if (!isset($this->attributes['option_ids']) || !isset($this->attributes['option_values'])) {
+                if (! isset($this->attributes['option_ids']) || ! isset($this->attributes['option_values'])) {
                     $this->loadOptions();
                 }
 
@@ -160,7 +162,7 @@ class ProductAttribute extends CoreAttribute
                 $optionValues = $this->attributes['option_values'] ?? '';
 
                 return collect([$optionIds, $optionValues])
-                    ->map(fn($value) => collect(explode(',', $value))->filter())
+                    ->map(fn ($value) => collect(explode(',', $value))->filter())
                     ->pipe(function (Collection $collections) {
                         $optionIds = $collections[0];
                         $optionValues = $collections[1];
@@ -194,7 +196,7 @@ class ProductAttribute extends CoreAttribute
         return Attribute::make(
             get: fn () => empty($this->options) ? '' :
                 collect($this->options)
-                    ->map(fn($value, $id) => "{$value} (ID: {$id})")
+                    ->map(fn ($value, $id) => "{$value} (ID: {$id})")
                     ->join(', ')
         );
     }

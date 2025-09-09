@@ -10,8 +10,8 @@ class TomorrowAfterOrEqualParser implements ParsesOperator
     {
         return [
             'range' => [
-                $field => ['gte' => 'now+1d/d']
-            ]
+                $field => ['gte' => 'now+1d/d'],
+            ],
         ];
     }
 }

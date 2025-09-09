@@ -323,11 +323,9 @@ This gets automatically converted to Elasticsearch DSL:
 
 ## Templates
 
-The chosen template is used to render the results of the query.
-You can access the html of this template by accessing the `template_html` key of the value.
-
+The chosen template is used to render the results of the query. You can include the right template in the blade template of your page builder item:
 ```blade
-{!! $product_query_builder->value()['template_html'] !!}
+@include('rapidez-query-builder::templates.'. $product_query_builder->value()['builderTemplate'], $product_query_builder->value())
 ```
 
 ## Configuration

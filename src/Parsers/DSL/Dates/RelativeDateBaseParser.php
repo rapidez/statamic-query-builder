@@ -2,7 +2,6 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Carbon\Carbon;
 use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
 
 abstract class RelativeDateBaseParser implements ParsesOperator
@@ -12,7 +11,7 @@ abstract class RelativeDateBaseParser implements ParsesOperator
         $offset = $value['offset'] ?? 0;
         $unit = $value['unit'] ?? 'days';
 
-        $unitChar = match($unit) {
+        $unitChar = match ($unit) {
             'days' => 'd',
             'weeks' => 'w',
             'months' => 'M',

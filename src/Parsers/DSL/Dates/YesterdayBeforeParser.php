@@ -10,8 +10,8 @@ class YesterdayBeforeParser implements ParsesOperator
     {
         return [
             'range' => [
-                $field => ['lt' => 'now-1d/d']
-            ]
+                $field => ['lt' => 'now-1d/d'],
+            ],
         ];
     }
 }

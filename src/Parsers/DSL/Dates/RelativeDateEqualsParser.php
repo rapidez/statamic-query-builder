@@ -2,8 +2,6 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates;
 
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\DateRangeParser;
-
 class RelativeDateEqualsParser extends DateRangeParser
 {
     protected function buildDateExpression(array $value): string
@@ -11,7 +9,7 @@ class RelativeDateEqualsParser extends DateRangeParser
         $offset = $value['offset'] ?? 0;
         $unit = $value['unit'] ?? 'days';
 
-        $unitChar = match($unit) {
+        $unitChar = match ($unit) {
             'days' => 'd',
             'weeks' => 'w',
             'months' => 'M',
@@ -29,6 +27,7 @@ class RelativeDateEqualsParser extends DateRangeParser
     protected function buildRange($value): array
     {
         $dateExpression = $this->buildDateExpression($value);
+
         return ['gte' => $dateExpression, 'lte' => $dateExpression];
     }
 }

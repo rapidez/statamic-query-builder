@@ -5,8 +5,6 @@ namespace Rapidez\StatamicQueryBuilder;
 use Rapidez\StatamicQueryBuilder\Actions\OutputsDslQueryAction;
 use Rapidez\StatamicQueryBuilder\Fieldtypes\ProductQueryBuilder;
 use Statamic\Providers\AddonServiceProvider;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
 
 class ServiceProvider extends AddonServiceProvider
 {

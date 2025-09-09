@@ -2,45 +2,45 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
+use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use MailerLite\LaravelElasticsearch\Facade as Elasticsearch;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateNotEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\NextXDaysParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateEqualsParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateNotEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisMonthParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisWeekParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ThisYearParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayBeforeParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TodayNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowBeforeParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\TomorrowNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayAfterParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeOrEqualParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayBeforeParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\YesterdayNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\RelativeDateNotEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateBeforeOrEqualParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateEqualsParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateNotEqualsParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\EndsWithParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanOrEqualParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\GreaterThanParser;
@@ -55,13 +55,15 @@ use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotInParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotLikeParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\NotTermParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\StartsWithParser;
-use Rapidez\StatamicQueryBuilder\Parsers\DSL\TermParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\StockStatusParser;
+use Rapidez\StatamicQueryBuilder\Parsers\DSL\TermParser;
 
 class OutputsDslQueryAction
 {
     const ATTRIBUTE_PREFIX = 'attribute.';
+
     const STOCK_STATUS_FIELD = 'stock_status';
+
     const STOCK_STATUS_ES_FIELD = 'in_stock';
 
     protected array $operators = [
@@ -135,24 +137,37 @@ class OutputsDslQueryAction
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
+        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
         $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');
         $globalKey = strtoupper($config['globalConjunction'] ?? 'AND') === 'OR' ? 'should' : 'must';
 
-        return [
-            'query' => ['bool' => [$globalKey => $clauses]],
-            'size' => $limit,
-            'from' => 0,
-        ];
+        foreach ($groups as $group) {
+            $groupConjunction = strtoupper($group['conjunction'] ?? 'AND');
+            $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
+            $conditions = [];
+
+            foreach ($group['conditions'] as $condition) {
+                $conditions[] = $this->mapCondition($condition);
+            }
+
+            if (count($groups) === 1 && $groupKey === $globalKey) {
+                $clauses = array_merge($clauses, $conditions);
+            } else {
+                $clauses[] = ['bool' => [$groupKey => $conditions]];
+            }
+        }
+
+        return ['bool' => [$globalKey => $clauses]];
     }
 
     protected function buildQueryClauses(array $groups, string $globalConjunction): array
     {
         return collect($groups)
-            ->map(fn($group) => $this->processGroup($group))
+            ->map(fn ($group) => $this->processGroup($group))
             ->filter()
             ->when(
                 count($groups) === 1,
-                fn($collection) => $this->flattenSingleGroupClauses($collection)
+                fn ($collection) => $this->flattenSingleGroupClauses($collection)
             )
             ->values()
             ->all();
@@ -164,6 +179,7 @@ class OutputsDslQueryAction
             if (isset($groupClause['bool'])) {
                 return array_values($groupClause['bool'])[0];
             }
+
             return [$groupClause];
         });
     }
@@ -174,7 +190,7 @@ class OutputsDslQueryAction
         $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
 
         $conditions = collect($group['conditions'])
-            ->map(fn($condition) => $this->processCondition($condition))
+            ->map(fn ($condition) => $this->processCondition($condition))
             ->filter()
             ->values()
             ->all();
@@ -213,7 +229,7 @@ class OutputsDslQueryAction
 
         $parser = $this->getParser($originalAttribute, $operator, $value);
 
-        if (!isset($this->operators[$parser])) {
+        if (! isset($this->operators[$parser])) {
             return ['match_all' => []];
         }
 
@@ -231,7 +247,7 @@ class OutputsDslQueryAction
             return "stock_status_{$operator}";
         }
 
-        if (!isset($value['type'])) {
+        if (! isset($value['type'])) {
             return $operator;
         }
 
@@ -248,8 +264,11 @@ class OutputsDslQueryAction
 
     protected function getMappings(): array
     {
-        $indexName = config('rapidez.es_prefix').'_products_'.config('rapidez.store');
-        $esMappings = ElasticSearch::indices()->getMapping(['index' => $indexName]);
+        $model = config('rapidez.models.product');
+        $indexName = (new $model)->searchableAs();
+
+        $client = ClientBuilder::create()->build();
+        $esMappings = $client->indices()->getMapping(['index' => $indexName])->asArray();
         $mappings = data_get($esMappings, '*.mappings.properties', []);
 
         return Arr::last($mappings) ?? [];
