@@ -1,6 +1,11 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.0.0...2.0.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.0...2.1.0)
+## [2.1.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.0) - 2025-09-23
+
+### Added
+* rapidez/statamic v6 support (#13)
+
 ## [2.0.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.0.0) - 2025-09-09
 
 ### Added
