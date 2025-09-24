@@ -13,7 +13,7 @@ class QueryPresetController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $presetFiles = config('query-builder.preset_files', []);
+            $presetFiles = config('rapidez.query-builder.preset_files', []);
             $categorizedPresets = [];
 
             foreach ($presetFiles as $filePath) {
