@@ -1,6 +1,12 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.0...2.1.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.1...2.1.1)
+## [2.1.1](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.1) - 2025-09-24
+
+### Fixed
+
+- Preset files config fix (#14)
+
 ## [2.1.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.0) - 2025-09-23
 
 ### Added
