@@ -1,6 +1,12 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.1...2.1.1)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.2...2.1.2)
+## [2.1.2](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.2) - 2025-09-24
+
+### Fixed
+
+- Select correct attribute options (#15)
+
 ## [2.1.1](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.1) - 2025-09-24
 
 ### Fixed
