@@ -65,7 +65,7 @@ export default {
                     label: attr.frontend_label ? (attr.frontend_label + (` (${attr.code})`)) : attr.code,
                     value: `attribute.${attr.code}`,
                     type: this.mapAttributeType(attr.input),
-                    options: this.mapAttributeOptions(attr.options)
+                    options: this.mapAttributeOptions(attr.attribute_options)
                 }));
 
                 this.buildGroupedFields();
