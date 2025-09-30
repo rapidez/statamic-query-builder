@@ -209,8 +209,8 @@ class ProductAttribute extends CoreAttribute
 
     public function scopeRunwaySearch(Builder $query, string $search): Builder
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('eav_attribute.attribute_id', 'LIKE', "%{$search}%")
+        return $query->where(function ($query) use ($search) {
+            $query->where('eav_attribute.attribute_id', 'LIKE', "%{$search}%")
                 ->orWhere('eav_attribute.attribute_code', 'LIKE', "%{$search}%")
                 ->orWhere('eav_attribute.frontend_label', 'LIKE', "%{$search}%")
                 ->orWhere('eav_attribute.frontend_input', 'LIKE', "%{$search}%");
