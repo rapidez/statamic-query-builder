@@ -1,6 +1,12 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.2...2.1.2)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.3...2.1.3)
+## [2.1.3](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.3) - 2025-09-30
+
+### Fixed
+
+- Product attribute model search fix (#16)
+
 ## [2.1.2](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.2) - 2025-09-24
 
 ### Fixed
