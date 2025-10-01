@@ -3,6 +3,7 @@
 namespace Rapidez\StatamicQueryBuilder\Models;
 
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
@@ -204,5 +205,15 @@ class ProductAttribute extends CoreAttribute
     public function attributeOptions(): HasMany
     {
         return $this->hasMany(ProductAttributeOption::class, 'attribute_id', 'attribute_id');
+    }
+
+    public function scopeRunwaySearch(Builder $query, string $search): Builder
+    {
+        return $query->where(function ($query) use ($search) {
+            $query->where('eav_attribute.attribute_id', 'LIKE', "%{$search}%")
+                ->orWhere('eav_attribute.attribute_code', 'LIKE', "%{$search}%")
+                ->orWhere('eav_attribute.frontend_label', 'LIKE', "%{$search}%")
+                ->orWhere('eav_attribute.frontend_input', 'LIKE', "%{$search}%");
+        });
     }
 }
