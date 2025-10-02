@@ -120,7 +120,7 @@ export default {
 
             return options.map(option => ({
                 label: option.store_value || option.option_id,
-                value: option.option_id
+                value: option.store_value || option.option_id
             }));
         }
     },
