@@ -24,7 +24,7 @@ class RelativeDateEqualsParser extends DateRangeParser
         }
     }
 
-    protected function buildRange($value): array
+    protected function buildRange(mixed $value): array
     {
         $dateExpression = $this->buildDateExpression($value);
 

@@ -8,13 +8,14 @@ use Statamic\Fields\Fieldtype;
 
 class ProductQueryBuilder extends Fieldtype
 {
+    /** @var string */
     protected $icon = 'filter';
 
     public function __construct(
         protected OutputsDslQueryAction $outputsDslQueryAction
     ) {}
 
-    public function defaultValue()
+    public function defaultValue(): array
     {
         return [
             'groups' => [
@@ -31,40 +32,42 @@ class ProductQueryBuilder extends Fieldtype
         ];
     }
 
-    public function process($data)
+    public function process(mixed $data): array
     {
         $originalData = $data;
         $originalData['value'] = $this->getDsl($data);
 
-        $queryHash = md5(json_encode($originalData['value']));
+        $queryHash = md5(json_encode($originalData['value']) ?: '');
         config(['frontend.productlist.'.$queryHash => $originalData['value']]);
 
         return $originalData;
     }
 
-    public function augment($value)
+    public function augment(mixed $value): array
     {
         if (! isset($value['value'])) {
             $value['value'] = $this->getDsl($value);
         }
 
         if (isset($value['value'])) {
-            $value['hash'] = md5(json_encode($value['value']));
+            $value['hash'] = md5(json_encode($value['value']) ?: '');
             config(['frontend.productlist.'.$value['hash'] => $value['value']]);
         }
 
         $model = config('rapidez.models.product');
-        $value['index'] = (new $model)->searchableAs();
+        /** @var object $modelInstance */
+        $modelInstance = new $model;
+        $value['index'] = method_exists($modelInstance, 'searchableAs') ? $modelInstance->searchableAs() : 'products';
 
         return $value;
     }
 
-    public function getDsl(array $value)
+    public function getDsl(array $value): array
     {
         return $this->outputsDslQueryAction->build($value);
     }
 
-    public function getTemplate(array $value)
+    public function getTemplate(array $value): ?string
     {
         $template = $value['builderTemplate'] ?? null;
 
@@ -80,8 +83,10 @@ class ProductQueryBuilder extends Fieldtype
 
         $query = $this->getDsl($value);
         $model = config('rapidez.models.product');
-        $indexName = (new $model)->searchableAs();
-        $queryHash = md5(json_encode($query));
+        /** @var object $modelInstance */
+        $modelInstance = new $model;
+        $indexName = method_exists($modelInstance, 'searchableAs') ? $modelInstance->searchableAs() : 'products';
+        $queryHash = md5(json_encode($query) ?: '');
         config(['frontend.productlist.'.$queryHash => $query]);
 
         /** @var View $view */

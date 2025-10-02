@@ -147,7 +147,10 @@ class OutputsDslQueryAction
             $conditions = [];
 
             foreach ($group['conditions'] as $condition) {
-                $conditions[] = $this->mapCondition($condition);
+                $processedCondition = $this->processCondition($condition);
+                if ($processedCondition) {
+                    $conditions[] = $processedCondition;
+                }
             }
 
             if (count($groups) === 1 && $groupKey === $globalKey) {
@@ -163,25 +166,32 @@ class OutputsDslQueryAction
     protected function buildQueryClauses(array $groups, string $globalConjunction): array
     {
         return collect($groups)
-            ->map(fn ($group) => $this->processGroup($group))
+            ->map(fn (array $group): ?array => $this->processGroup($group))
             ->filter()
             ->when(
                 count($groups) === 1,
-                fn ($collection) => $this->flattenSingleGroupClauses($collection)
+                fn (\Illuminate\Support\Collection $collection): \Illuminate\Support\Collection => $this->flattenSingleGroupClauses($collection)
             )
             ->values()
             ->all();
     }
 
-    protected function flattenSingleGroupClauses($collection): \Illuminate\Support\Collection
+    /**
+     * @param \Illuminate\Support\Collection<int|string, non-empty-array> $collection
+     * @return \Illuminate\Support\Collection<int, array>
+     */
+    protected function flattenSingleGroupClauses(\Illuminate\Support\Collection $collection): \Illuminate\Support\Collection
     {
-        return $collection->flatMap(function ($groupClause) {
+        /** @var \Illuminate\Support\Collection<int, array> $result */
+        $result = $collection->flatMap(function (array $groupClause): array {
             if (isset($groupClause['bool'])) {
                 return array_values($groupClause['bool'])[0];
             }
 
             return [$groupClause];
         });
+
+        return $result;
     }
 
     protected function processGroup(array $group): ?array
@@ -189,11 +199,13 @@ class OutputsDslQueryAction
         $groupConjunction = strtoupper($group['conjunction'] ?? 'AND');
         $groupKey = $groupConjunction === 'OR' ? 'should' : 'must';
 
-        $conditions = collect($group['conditions'])
-            ->map(fn ($condition) => $this->processCondition($condition))
-            ->filter()
-            ->values()
-            ->all();
+        $conditions = array_values(array_filter(
+            array_map(
+                fn (array $condition): ?array => $this->processCondition($condition),
+                $group['conditions']
+            ),
+            fn ($condition): bool => $condition !== null
+        ));
 
         return match (count($conditions)) {
             0 => null,
@@ -234,14 +246,19 @@ class OutputsDslQueryAction
         }
 
         $parserClass = $this->operators[$parser];
+        /** @var \Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator $parserInstance */
         $parserInstance = new $parserClass;
 
-        return $originalAttribute === self::STOCK_STATUS_FIELD
-            ? $parserInstance->parse($field, $value, $operator)
-            : $parserInstance->parse($field, $value);
+        if ($originalAttribute === self::STOCK_STATUS_FIELD) {
+            // For stock status, we need to pass the operator as part of the value
+            $valueWithOperator = array_merge((array) $value, ['operator' => $operator]);
+            return $parserInstance->parse($field, $valueWithOperator);
+        }
+
+        return $parserInstance->parse($field, $value);
     }
 
-    protected function getParser(string $attribute, string $operator, $value): string
+    protected function getParser(string $attribute, string $operator, mixed $value): string
     {
         if ($attribute === self::STOCK_STATUS_FIELD) {
             return "stock_status_{$operator}";
@@ -265,13 +282,19 @@ class OutputsDslQueryAction
     protected function getMappings(): array
     {
         $model = config('rapidez.models.product');
-        $indexName = (new $model)->searchableAs();
+        /** @var object $modelInstance */
+        $modelInstance = new $model;
+        $indexName = method_exists($modelInstance, 'searchableAs') ? $modelInstance->searchableAs() : 'products';
 
         $client = ClientBuilder::create()->build();
-        $esMappings = $client->indices()->getMapping(['index' => $indexName])->asArray();
+        $response = $client->indices()->getMapping(['index' => $indexName]);
+        $esMappings = method_exists($response, 'asArray') ? $response->asArray() : [];
         $mappings = data_get($esMappings, '*.mappings.properties', []);
 
-        return Arr::last($mappings) ?? [];
+        if (empty($mappings)) {
+            return [];
+        }
+        return end($mappings) ?: [];
     }
 
     protected function getQueryFieldName(string $attribute): string

@@ -68,11 +68,17 @@ class ProductAttributeOption extends Model
         ));
     }
 
+    /**
+     * @return BelongsTo<ProductAttribute, $this>
+     */
     public function attribute(): BelongsTo
     {
         return $this->belongsTo(ProductAttribute::class, 'attribute_id', 'attribute_id');
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     public function adminValue(): Attribute
     {
         return Attribute::make(
@@ -80,17 +86,23 @@ class ProductAttributeOption extends Model
         );
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     public function storeValue(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->attributes['store_value'] ?? $this->admin_value
+            get: fn () => $this->attributes['store_value'] ?? $this->attributes['admin_value']
         );
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     public function displayValue(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->store_value ?: $this->admin_value
+            get: fn () => $this->attributes['store_value'] ?: $this->attributes['admin_value']
         );
     }
 
@@ -99,7 +111,11 @@ class ProductAttributeOption extends Model
         return "product_attribute_option_{$this->option_id}_store_".self::getCurrentStoreId();
     }
 
-    public function scopeRunwaySearch(Builder $query, string $search)
+    /**
+     * @param Builder<ProductAttributeOption> $query
+     * @return Builder<ProductAttributeOption>
+     */
+    public function scopeRunwaySearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('eav_attribute_option.option_id', 'LIKE', "%{$search}%")

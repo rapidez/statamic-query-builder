@@ -9,10 +9,7 @@ use Statamic\Providers\AddonServiceProvider;
 class ServiceProvider extends AddonServiceProvider
 {
     protected $vite = [
-        'input' => [
-            'resources/js/statamic-query-builder.js',
-        ],
-        'publicDirectory' => 'resources/dist',
+        'resources/js/statamic-query-builder.js',
     ];
 
     protected $fieldtypes = [

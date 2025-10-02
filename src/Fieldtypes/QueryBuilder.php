@@ -6,11 +6,13 @@ use Statamic\Fields\Fieldtype;
 
 class QueryBuilder extends Fieldtype
 {
+    /** @var string */
     protected $icon = 'filter';
 
+    /** @var string */
     protected static $handle = 'query_builder';
 
-    protected $fields = [];
+    protected array $fields = [];
 
     public function setFields(array $fields): self
     {
@@ -19,7 +21,7 @@ class QueryBuilder extends Fieldtype
         return $this;
     }
 
-    public function defaultValue()
+    public function defaultValue(): array
     {
         return [
             'groups' => [
@@ -35,7 +37,7 @@ class QueryBuilder extends Fieldtype
         ];
     }
 
-    public function preload()
+    public function preload(): array
     {
         return [
             'fields' => $this->fields,

@@ -20,7 +20,7 @@ class ManualDateEqualsParser extends DateRangeParser
         }
     }
 
-    protected function buildRange($value): array
+    protected function buildRange(mixed $value): array
     {
         $parsedDate = $this->parseManualDate($value);
         if ($parsedDate === null) {

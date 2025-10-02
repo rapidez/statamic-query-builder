@@ -22,7 +22,8 @@ class ProductAttribute extends CoreAttribute
         'formatted_options',
     ];
 
-    public static $inputTypes = [
+    /** @var array<string, string> */
+    public static array $inputTypes = [
         'text' => 'Text Field',
         'textarea' => 'Text Area',
         'date' => 'Date',
@@ -80,7 +81,10 @@ class ProductAttribute extends CoreAttribute
     {
         return new class($query) extends \Illuminate\Database\Eloquent\Builder
         {
-            public function orderBy($column, $direction = 'asc')
+            /**
+             * @return \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>
+             */
+            public function orderBy(string $column, string $direction = 'asc'): \Illuminate\Database\Eloquent\Builder
             {
                 if ($column === 'attribute_id') {
                     $column = 'eav_attribute.attribute_id';
@@ -144,6 +148,9 @@ class ProductAttribute extends CoreAttribute
         return "product_attribute_{$this->attribute_id}_store_".config('rapidez.store');
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     public function frontendLabel(): Attribute
     {
         return Attribute::make(
@@ -151,6 +158,9 @@ class ProductAttribute extends CoreAttribute
         );
     }
 
+    /**
+     * @return Attribute<\Illuminate\Support\Collection<int, string>, never>
+     */
     public function options(): Attribute
     {
         return Attribute::make(
@@ -162,18 +172,16 @@ class ProductAttribute extends CoreAttribute
                 $optionIds = $this->attributes['option_ids'] ?? '';
                 $optionValues = $this->attributes['option_values'] ?? '';
 
-                return collect([$optionIds, $optionValues])
-                    ->map(fn ($value) => collect(explode(',', $value))->filter())
-                    ->pipe(function (Collection $collections) {
-                        $optionIds = $collections[0];
-                        $optionValues = $collections[1];
+                /** @var \Illuminate\Support\Collection<int, string> $optionIdsCollection */
+                $optionIdsCollection = collect(explode(',', $optionIds))->filter();
+                /** @var \Illuminate\Support\Collection<int, string> $optionValuesCollection */
+                $optionValuesCollection = collect(explode(',', $optionValues))->filter();
 
-                        if ($optionIds->count() === $optionValues->count()) {
-                            return $optionIds->combine($optionValues);
-                        }
+                if ($optionIdsCollection->count() === $optionValuesCollection->count()) {
+                    return $optionIdsCollection->combine($optionValuesCollection);
+                }
 
-                        return [];
-                    });
+                return collect([]);
             }
         );
     }
@@ -192,21 +200,38 @@ class ProductAttribute extends CoreAttribute
         $this->attributes['option_values'] = $options->pluck('value')->join(',');
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     public function formattedOptions(): Attribute
     {
         return Attribute::make(
-            get: fn () => empty($this->options) ? '' :
-                collect($this->options)
-                    ->map(fn ($value, $id) => "{$value} (ID: {$id})")
-                    ->join(', ')
+            get: function () {
+                if (empty($this->options)) {
+                    return '';
+                }
+
+                $formattedOptions = [];
+                foreach ($this->options as $id => $value) {
+                    $formattedOptions[] = "{$value} (ID: {$id})";
+                }
+                return implode(', ', $formattedOptions);
+            }
         );
     }
 
+    /**
+     * @return HasMany<ProductAttributeOption, $this>
+     */
     public function attributeOptions(): HasMany
     {
         return $this->hasMany(ProductAttributeOption::class, 'attribute_id', 'attribute_id');
     }
 
+    /**
+     * @param Builder<ProductAttribute> $query
+     * @return Builder<ProductAttribute>
+     */
     public function scopeRunwaySearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($query) use ($search) {

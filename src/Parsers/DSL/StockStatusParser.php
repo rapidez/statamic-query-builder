@@ -12,7 +12,7 @@ class StockStatusParser
 
     const VALUE_OUT_OF_STOCK = 'out_of_stock';
 
-    public function parse(string $field, $value, string $operator = '='): array
+    public function parse(string $field, mixed $value, string $operator = '='): array
     {
         $stockValue = $this->mapStockValue($value);
 
@@ -31,7 +31,7 @@ class StockStatusParser
         ];
     }
 
-    protected function mapStockValue($value): int
+    protected function mapStockValue(mixed $value): int
     {
         if ($value === self::VALUE_IN_STOCK) {
             return 1;

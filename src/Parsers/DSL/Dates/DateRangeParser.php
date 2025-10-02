@@ -8,7 +8,7 @@ abstract class DateRangeParser implements ParsesOperator
 {
     protected string $rangeClause;
 
-    public function parse(string $field, $value): array
+    public function parse(string $field, mixed $value): array
     {
         return ['bool' => ['should' => [['range' => [$field => $this->buildRange($value)]]]]];
     }
