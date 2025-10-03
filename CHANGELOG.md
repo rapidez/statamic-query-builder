@@ -1,6 +1,13 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.3...2.1.3)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.4...2.1.4)
+## [2.1.4](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.4) - 2025-10-03
+
+### Fixed
+
+- Fix nested query mapping (#17)
+- Use store_value for option values (#18)
+
 ## [2.1.3](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.3) - 2025-09-30
 
 ### Fixed
