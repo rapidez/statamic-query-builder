@@ -147,7 +147,10 @@ class OutputsDslQueryAction
             $conditions = [];
 
             foreach ($group['conditions'] as $condition) {
-                $conditions[] = $this->mapCondition($condition);
+                $processedCondition = $this->processCondition($condition);
+                if ($processedCondition) {
+                    $conditions[] = $processedCondition;
+                }
             }
 
             if (count($groups) === 1 && $groupKey === $globalKey) {
