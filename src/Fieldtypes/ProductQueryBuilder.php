@@ -35,7 +35,8 @@ class ProductQueryBuilder extends Fieldtype
     {
         $originalData = $data;
         $originalData['value'] = $this->getDsl($data);
-
+        $originalData['sorting'] = $this->getSorting($data);
+        
         $queryHash = md5(json_encode($originalData['value']));
         config(['frontend.productlist.'.$queryHash => $originalData['value']]);
 
@@ -48,6 +49,8 @@ class ProductQueryBuilder extends Fieldtype
             $value['value'] = $this->getDsl($value);
         }
 
+        $value['sorting'] = $this->getSorting($value);
+
         if (isset($value['value'])) {
             $value['hash'] = md5(json_encode($value['value']));
             config(['frontend.productlist.'.$value['hash'] => $value['value']]);
@@ -57,6 +60,18 @@ class ProductQueryBuilder extends Fieldtype
         $value['index'] = (new $model)->searchableAs();
 
         return $value;
+    }
+
+    protected function getSorting(array $data): string|bool
+    {
+        if (isset($data['sortField']) && $data['sortField'] != '') {
+            $sortField = collect(explode('.', $data['sortField']));
+            $sortDirection = $data['sortDirection'] ?? 'asc';
+
+            return strtolower($sortField->last()) . '_' . strtolower($sortDirection);
+        }
+
+        return false;
     }
 
     public function getDsl(array $value)
