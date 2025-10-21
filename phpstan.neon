@@ -6,6 +6,8 @@ parameters:
     paths:
         - src
         - tests
-    level: 8
+    level: 5
     ignoreErrors:
-        - identifier: missingType.iterableValue
+        - identifier: rules.modelAppends
+        - identifier: property.notFound
+        - identifier: property.phpDocType

@@ -105,7 +105,7 @@ class ProductAttribute extends CoreAttribute
     {
         if (isset(self::ATTRIBUTE_MAP[$key])) {
             $value = parent::getAttribute(self::ATTRIBUTE_MAP[$key]);
-            if ($value === null && $key !== self::ATTRIBUTE_MAP[$key]) {
+            if ($value === null) {
                 $value = parent::getAttribute($key);
             }
         } else {

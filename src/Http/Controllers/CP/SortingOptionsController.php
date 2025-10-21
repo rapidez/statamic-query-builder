@@ -16,6 +16,7 @@ class SortingOptionsController extends CpController
             })
             ->map(function ($directions, $field) {
                 $label = ucwords(str_replace('_', ' ', strtolower($field)));
+
                 return [
                     'label' => $label,
                     'value' => $field,
@@ -27,5 +28,3 @@ class SortingOptionsController extends CpController
         return response()->json($normalized);
     }
 }
-
-

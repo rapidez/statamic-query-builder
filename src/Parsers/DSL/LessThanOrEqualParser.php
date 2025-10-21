@@ -4,5 +4,5 @@ namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 
 class LessThanOrEqualParser extends RangeParser
 {
-    protected $operator = 'lte';
+    protected string $operator = 'lte';
 }
