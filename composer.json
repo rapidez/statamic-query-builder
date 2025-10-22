@@ -31,12 +31,17 @@
         "statamic/cms": "^5.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.7",
         "laravel/pint": "^1.22",
-        "orchestra/testbench": "^9.0"
+        "orchestra/testbench": "^9.0",
+        "pestphp/pest": "^4.1",
+        "phpstan/phpstan-mockery": "^2.0",
+        "phpunit/phpunit": "^12.3"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "pestphp/pest-plugin": true,
             "php-http/discovery": true,
             "pixelfear/composer-dist-plugin": true
         }
@@ -51,6 +56,17 @@
                 "Rapidez\\StatamicQueryBuilder\\ServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan",
+        "style": "pint --test",
+        "quality": [
+            "@test",
+            "@analyse",
+            "@style"
+        ],
+        "fix-style": "pint"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
