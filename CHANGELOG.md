@@ -1,6 +1,20 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.1.4...2.1.4)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.2.0...2.2.0)
+## [2.2.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.2.0) - 2025-10-23
+
+### Added
+
+- PHPStan + Pint (#21)
+
+### Changed
+
+- Changed sort attributes + hide limit for specific templates (#20)
+
+### Fixed
+
+- Editable product attributes + fixes (#22)
+
 ## [2.1.4](https://github.com/rapidez/statamic-query-builder/releases/tag/2.1.4) - 2025-10-03
 
 ### Fixed
