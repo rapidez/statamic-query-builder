@@ -3,18 +3,6 @@
         <div class="flex items-center justify-between mb-4">
             <div class="flex flex-col justify-between w-full space-x-4 gap-4">
                 <div class="flex gap-2">
-                    <div class="flex items-center space-x-2" v-if="showLimit">
-                        <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
-                        <input
-                            type="number"
-                            name="limit"
-                            id="limit"
-                            v-model="limit"
-                            class="input-text w-24"
-                            min="1"
-                            @input="updateSettingValues"
-                        >
-                    </div>
                     <div class="flex items-center space-x-2" v-if="builderTemplates">
                         <label for="template" class="text-sm">{{ __('Template') }}</label>
                         <v-select
@@ -25,6 +13,18 @@
                             class="w-36"
                             @input="updateSettingValues"
                         />
+                    </div>
+                    <div class="flex items-center space-x-2" v-if="isLimitVisible">
+                        <label for="limit" class="text-sm">{{ __('Limit results') }}</label>
+                        <input
+                            type="number"
+                            name="limit"
+                            id="limit"
+                            v-model="limit"
+                            class="input-text w-24"
+                            min="1"
+                            @input="updateSettingValues"
+                        >
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -355,6 +355,27 @@ export default {
             });
 
             return grouped;
+        },
+
+        currentTemplateConfig() {
+            if (!this.builderTemplates || !Array.isArray(this.builderTemplates)) {
+                return null;
+            }
+
+            return this.builderTemplates.find(template => (template.value || template) === this.builderTemplate) || null;
+        },
+
+        isLimitVisible() {
+            if (!this.showLimit) {
+                return false;
+            }
+
+            const config = this.currentTemplateConfig;
+            if (config && typeof config === 'object' && config.hideLimit) {
+                return false;
+            }
+
+            return true;
         }
     },
 

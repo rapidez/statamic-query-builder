@@ -2,7 +2,9 @@
 
 namespace Rapidez\StatamicQueryBuilder\Parsers\DSL;
 
-class StockStatusParser
+use Rapidez\StatamicQueryBuilder\Contracts\ParsesOperator;
+
+class StockStatusParser implements ParsesOperator
 {
     const FIELD_STOCK_STATUS = 'stock_status';
 
@@ -12,7 +14,7 @@ class StockStatusParser
 
     const VALUE_OUT_OF_STOCK = 'out_of_stock';
 
-    public function parse(string $field, $value, string $operator = '='): array
+    public function parse(string $field, mixed $value, string $operator = '='): array
     {
         $stockValue = $this->mapStockValue($value);
 

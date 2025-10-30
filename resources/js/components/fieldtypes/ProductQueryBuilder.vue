@@ -1,8 +1,8 @@
 <template>
     <query-builder
         :fields="groupedFields"
-        :sort-fields="attributes"
-        :default-sort-field="attributes[0]?.value"
+        :sort-fields="sortingOptions"
+        :default-sort-field="sortingOptions[0]?.value"
         :default-limit="100"
         :show-limit="true"
         :builder-templates="templates"
@@ -26,9 +26,10 @@ export default {
         return {
             attributes: [],
             groupedFields: [],
+            sortingOptions: [],
             templates: [
                 { label: 'Slider', value: 'slider' },
-                { label: 'Listing', value: 'listing' }
+                { label: 'Listing', value: 'listing', hideLimit: true }
             ],
             fieldGroups: [
                 {
@@ -71,6 +72,25 @@ export default {
                 this.buildGroupedFields();
             } catch (error) {
                 console.error('Error fetching attributes:', error);
+            }
+        },
+
+        async fetchSortingOptions() {
+            try {
+                const response = await this.$axios.get('/cp/rapidez/sorting-options');
+                const options = Array.isArray(response.data) ? response.data : [];
+
+                if (!options.length) {
+                    return;
+                }
+
+                this.sortingOptions = options.filter(option => option && option.value);
+            } catch (e) {
+                console.error('Error fetching sorting options:', e);
+                this.sortingOptions = [
+                    { label: 'Newest', value: 'created_at' },
+                    { label: 'Oldest', value: 'created_at' },
+                ];
             }
         },
 
@@ -127,6 +147,7 @@ export default {
 
     mounted() {
         this.fetchAttributes();
+        this.fetchSortingOptions();
     }
 }
 </script>

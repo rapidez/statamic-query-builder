@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Rapidez\Core\Models\Attribute as CoreAttribute;
+use Rapidez\Statamic\Models\Traits\HasContentEntry;
 use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
+use Rapidez\Statamic\Observers\RunwayObserver;
 use StatamicRadPack\Runway\Traits\HasRunwayResource;
 
 #[ObservedBy(ProductAttributeObserver::class)]
+#[ObservedBy(RunwayObserver::class)]
 class ProductAttribute extends CoreAttribute
 {
-    use HasRunwayResource;
+    use HasRunwayResource, HasContentEntry;
 
     protected $appends = [
         'options',
@@ -59,6 +62,9 @@ class ProductAttribute extends CoreAttribute
         'is_visible_on_front', 'is_html_allowed_on_front',
     ];
 
+    public string $linkField = 'linked_product_attribute';
+    public string $collection = 'product_attributes';
+
     protected static function booting(): void
     {
         parent::booting();
@@ -98,14 +104,14 @@ class ProductAttribute extends CoreAttribute
 
     public function getRouteKeyName(): string
     {
-        return 'id';
+        return 'attribute_id';
     }
 
     public function getAttribute($key)
     {
         if (isset(self::ATTRIBUTE_MAP[$key])) {
             $value = parent::getAttribute(self::ATTRIBUTE_MAP[$key]);
-            if ($value === null && $key !== self::ATTRIBUTE_MAP[$key]) {
+            if ($value === null) {
                 $value = parent::getAttribute($key);
             }
         } else {

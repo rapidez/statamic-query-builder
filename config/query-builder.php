@@ -11,7 +11,6 @@ return [
     'models' => [
         ProductAttribute::class => [
             'name' => 'Product Attributes',
-            'read_only' => true,
             'title_field' => 'frontend_label',
             'listing' => [
                 'columns' => [

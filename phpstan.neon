@@ -1,0 +1,13 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+    - ./vendor/phpstan/phpstan-mockery/extension.neon
+
+parameters:
+    paths:
+        - src
+        - tests
+    level: 5
+    ignoreErrors:
+        - identifier: rules.modelAppends
+        - identifier: property.notFound
+        - identifier: property.phpDocType
