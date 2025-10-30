@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Rapidez\Core\Models\Attribute as CoreAttribute;
 use Rapidez\Statamic\Models\Traits\HasContentEntry;
-use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
 use Rapidez\Statamic\Observers\RunwayObserver;
+use Rapidez\StatamicQueryBuilder\Observers\ProductAttributeObserver;
 use StatamicRadPack\Runway\Traits\HasRunwayResource;
 
 #[ObservedBy(ProductAttributeObserver::class)]
 #[ObservedBy(RunwayObserver::class)]
 class ProductAttribute extends CoreAttribute
 {
-    use HasRunwayResource, HasContentEntry;
+    use HasContentEntry, HasRunwayResource;
 
     protected $appends = [
         'options',
@@ -63,6 +63,7 @@ class ProductAttribute extends CoreAttribute
     ];
 
     public string $linkField = 'linked_product_attribute';
+
     public string $collection = 'product_attributes';
 
     protected static function booting(): void

@@ -36,7 +36,7 @@ class ProductQueryBuilder extends Fieldtype
         $originalData = $data;
         $originalData['value'] = $this->getDsl($data);
         $originalData['sorting'] = $this->getSorting($data);
-        
+
         $queryHash = md5(json_encode($originalData['value']));
         config(['frontend.productlist.'.$queryHash => $originalData['value']]);
 
@@ -49,8 +49,6 @@ class ProductQueryBuilder extends Fieldtype
             $value['value'] = $this->getDsl($value);
         }
 
-        $value['sorting'] = $this->getSorting($value);
-
         if (isset($value['value'])) {
             $value['hash'] = md5(json_encode($value['value']));
             config(['frontend.productlist.'.$value['hash'] => $value['value']]);
@@ -58,6 +56,10 @@ class ProductQueryBuilder extends Fieldtype
 
         $model = config('rapidez.models.product');
         $value['index'] = (new $model)->searchableAs();
+
+        if ($value['sorting'] = $this->getSorting($value)) {
+            $value['index'] = $value['index'].'_'.$value['sorting'];
+        }
 
         return $value;
     }
@@ -68,7 +70,7 @@ class ProductQueryBuilder extends Fieldtype
             $sortField = collect(explode('.', $data['sortField']));
             $sortDirection = $data['sortDirection'] ?? 'asc';
 
-            return strtolower($sortField->last()) . '_' . strtolower($sortDirection);
+            return strtolower($sortField->last()).'_'.strtolower($sortDirection);
         }
 
         return false;
@@ -98,6 +100,10 @@ class ProductQueryBuilder extends Fieldtype
         $indexName = (new $model)->searchableAs();
         $queryHash = md5(json_encode($query));
         config(['frontend.productlist.'.$queryHash => $query]);
+
+        if ($sorting = $this->getSorting($value)) {
+            $indexName = $indexName.'_'.$sorting;
+        }
 
         /** @var View $view */
         $view = view($templatePath)->with([

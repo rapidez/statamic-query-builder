@@ -159,7 +159,7 @@ class OutputsDslQueryAction
                 $clauses[] = ['bool' => [$groupKey => $conditions]];
             }
         }
-        
+
         return ['bool' => [$globalKey => $clauses]];
     }
 
