@@ -3,6 +3,15 @@
         <div class="flex items-center justify-between mb-4">
             <div class="flex flex-col justify-between w-full space-x-4 gap-4">
                 <div class="flex gap-2">
+                    <div class="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="useDefaultQuery"
+                            v-model="useDefaultQuery"
+                            @change="updateSettingValues"
+                        >
+                        <label for="useDefaultQuery" class="text-sm">{{ __('Use default Query') }}</label>
+                    </div>
                     <div class="flex items-center space-x-2" v-if="builderTemplates">
                         <label for="template" class="text-sm">{{ __('Template') }}</label>
                         <v-select
@@ -312,6 +321,7 @@ export default {
             groups: [],
             builderTemplate: '',
             limit: 100,
+            useDefaultQuery: true,
             globalConjunction: 'AND',
             logicalOperators: ['AND', 'OR'],
             sortField: '',
@@ -556,6 +566,13 @@ export default {
             return this.defaultSortDirection;
         },
 
+        initializeUseDefaultQuery() {
+            if (typeof this.value?.useDefaultQuery !== 'undefined') {
+                return Boolean(this.value.useDefaultQuery);
+            }
+            return true;
+        },
+
         initializeBuilderTemplate() {
             if (this.value?.builderTemplate) {
                 return this.value.builderTemplate;
@@ -689,6 +706,7 @@ export default {
                 groups: this.groups,
                 globalConjunction: this.globalConjunction,
                 limit: this.limit,
+                useDefaultQuery: this.useDefaultQuery,
                 builderTemplate: this.builderTemplate,
                 sortField: this.sortField,
                 sortDirection: this.sortDirection,
@@ -698,6 +716,7 @@ export default {
 
         updateSettingValues() {
             this.value.limit = parseInt(this.limit) || this.defaultLimit;
+            this.value.useDefaultQuery = Boolean(this.useDefaultQuery);
             this.value.builderTemplate = this.builderTemplate || this.defaultBuilderTemplate;
             this.value.sortField = this.sortField || this.defaultSortField;
             this.value.sortDirection = this.sortDirection || this.defaultSortDirection;
@@ -710,6 +729,7 @@ export default {
         this.sortField = this.initializeSortField();
         this.sortDirection = this.initializeSortDirection();
         this.builderTemplate = this.initializeBuilderTemplate();
+        this.useDefaultQuery = this.initializeUseDefaultQuery();
         this.fetchPresets();
     }
 }

@@ -28,6 +28,7 @@ class ProductQueryBuilder extends Fieldtype
             'products' => [],
             'sortField' => '',
             'sortDirection' => '',
+            'useDefaultQuery' => true,
         ];
     }
 
@@ -61,7 +62,31 @@ class ProductQueryBuilder extends Fieldtype
 
     public function getDsl(array $value)
     {
+        $value = $this->mergeDefaultQueryIfEnabled($value);
+
         return $this->outputsDslQueryAction->build($value);
+    }
+
+    protected function mergeDefaultQueryIfEnabled(array $value): array
+    {
+        if (! ($value['useDefaultQuery'] ?? false)) {
+            return $value;
+        }
+
+        $configEnabled = (bool) (config('rapidez.query-builder.default_query.enabled') ?? true);
+        $defaultQuery = config('rapidez.query-builder.default_query.query');
+
+        if (! $configEnabled || ! is_array($defaultQuery)) {
+            return $value;
+        }
+
+        $defaultGroups = $defaultQuery['groups'] ?? [];
+        $groups = array_merge($defaultGroups, $value['groups'] ?? []);
+
+        $value['groups'] = $groups;
+        $value['globalConjunction'] = $value['globalConjunction'] ?? ($defaultQuery['globalConjunction'] ?? 'AND');
+
+        return $value;
     }
 
     public function getTemplate(array $value)
