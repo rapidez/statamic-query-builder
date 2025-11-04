@@ -1,4 +1,7 @@
-@if($hash = $product_query_builder->value()['hash'])
+@php
+$queryBuilder = $product_query_builder->value();
+@endphp
+@if($hash = $queryBuilder['hash'])
     <x-rapidez::productlist
             :value="false"
             v-bind:base-filters="() => [window.config.productlist['{{ $hash }}']]"
