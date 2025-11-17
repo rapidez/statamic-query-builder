@@ -357,7 +357,7 @@ The addon automatically maps Elasticsearch field types:
 - Laravel ^9.0|^10.0|^11.0
 - Statamic ^4.0|^5.0
 - Rapidez framework
-- Elasticsearch (via MailerLite Laravel Elasticsearch package)
+- Elasticsearch (via [Rapidez Laravel Elasticsearch package](https://github.com/rapidez/laravel-scout-elasticsearch))
 
 ## Contributing
 

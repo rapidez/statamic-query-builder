@@ -27,6 +27,7 @@
     "require": {
         "elasticsearch/elasticsearch": "^8.19",
         "rapidez/core": "^4.0",
+        "rapidez/laravel-scout-elasticsearch": "^1.0",
         "rapidez/statamic": "^5.0|^6.0",
         "statamic/cms": "^5.0"
     },

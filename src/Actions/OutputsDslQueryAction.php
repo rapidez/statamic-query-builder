@@ -2,9 +2,10 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
-use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
+use Rapidez\ScoutElasticSearch\Creator\Helper;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
@@ -270,8 +271,8 @@ class OutputsDslQueryAction
         $model = config('rapidez.models.product');
         $indexName = (new $model)->searchableAs();
 
-        $client = ClientBuilder::create()->build();
-        $esMappings = $client->indices()->getMapping(['index' => $indexName])->asArray();
+        $client = resolve(ProxyClient::class);
+        $esMappings = Helper::convertToArray($client->indices()->getMapping(['index' => $indexName]));
         $mappings = data_get($esMappings, '*.mappings.properties', []);
 
         return Arr::last($mappings) ?? [];
