@@ -271,6 +271,7 @@ class OutputsDslQueryAction
         $model = config('rapidez.models.product');
         $indexName = (new $model)->searchableAs();
 
+        /** @var \Elastic\Elasticsearch\Client|\OpenSearch\Client $client */
         $client = resolve(ProxyClient::class);
         $esMappings = Helper::convertToArray($client->indices()->getMapping(['index' => $indexName]));
         $mappings = data_get($esMappings, '*.mappings.properties', []);
