@@ -1,6 +1,17 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.2.0...2.2.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.3.0...2.3.0)
+## [2.3.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.3.0) - 2025-11-18
+
+### Added
+
+- OpenSearch support (#24)
+- Default query option (#23)
+
+### Fixed
+
+- Sorting in slider (#19)
+
 ## [2.2.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.2.0) - 2025-10-23
 
 ### Added
