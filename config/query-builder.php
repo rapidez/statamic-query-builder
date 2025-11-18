@@ -4,6 +4,29 @@ use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
 use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
 
 return [
+    'default_query' => [
+        'enabled' => true,
+        'query' => [
+            'groups' => [
+                [
+                    'conjunction' => 'AND',
+                    'conditions' => [
+                        [
+                            'attribute' => 'attribute.visibility',
+                            'operator' => '!=',
+                            'value' => '1',
+                        ],
+                        [
+                            'attribute' => 'stock_status',
+                            'operator' => '=',
+                            'value' => 'in_stock',
+                        ],
+                    ],
+                ],
+            ],
+            'globalConjunction' => 'AND',
+        ],
+    ],
     'default_models' => [
         'product_attribute' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttribute',
         'product_attribute_option' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption',
