@@ -28,8 +28,8 @@
         "elasticsearch/elasticsearch": "^8.19",
         "rapidez/core": "^4.0",
         "rapidez/laravel-scout-elasticsearch": "^1.0",
-        "rapidez/statamic": "^5.0|^6.0",
-        "statamic/cms": "^5.0"
+        "rapidez/statamic": "@dev",
+        "statamic/cms": "^6.0.0-alpha.18"
     },
     "require-dev": {
         "larastan/larastan": "^3.7",
@@ -39,6 +39,12 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpunit/phpunit": "^12.3"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/Users/kevinmeijer/sites/statamic-packages/statamic"
+        }
+    ],
     "config": {
         "sort-packages": true,
         "allow-plugins": {
