@@ -14,10 +14,10 @@ class ProductAttributeController extends CpController
                 return [];
             }
 
-            return $model::with('attributeOptions')->get();    
+            return $model::with('attributeOptions')->get();
         } catch (\Throwable $th) {
             dd($th);
         }
-        
+
     }
 }
