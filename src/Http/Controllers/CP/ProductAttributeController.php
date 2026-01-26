@@ -8,16 +8,11 @@ class ProductAttributeController extends CpController
 {
     public function index()
     {
-        try {
-            $model = config('rapidez.query-builder.default_models.product_attribute');
-            if (! $model) {
-                return [];
-            }
-
-            return $model::with('attributeOptions')->get();
-        } catch (\Throwable $th) {
-            dd($th);
+        $model = config('rapidez.query-builder.default_models.product_attribute');
+        if (! $model) {
+            return [];
         }
 
+        return $model::with('attributeOptions')->get();
     }
 }
