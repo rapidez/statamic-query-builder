@@ -3,8 +3,8 @@
 namespace Rapidez\StatamicQueryBuilder\Observers;
 
 use Illuminate\Support\Facades\Cache;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
+use Rapidez\Statamic\Models\ProductAttribute;
+use Rapidez\Statamic\Models\ProductAttributeOption;
 
 class ProductAttributeObserver
 {
