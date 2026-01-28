@@ -1,7 +1,7 @@
 <?php
 
-use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
-use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
+use Rapidez\Statamic\Models\ProductAttribute;
+use Rapidez\Statamic\Models\ProductAttributeOption;
 
 return [
     'default_query' => [
@@ -28,8 +28,8 @@ return [
         ],
     ],
     'default_models' => [
-        'product_attribute' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttribute',
-        'product_attribute_option' => 'Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption',
+        'product_attribute' => 'Rapidez\Statamic\Models\ProductAttribute',
+        'product_attribute_option' => 'Rapidez\Statamic\Models\ProductAttributeOption',
     ],
     'models' => [
         ProductAttribute::class => [

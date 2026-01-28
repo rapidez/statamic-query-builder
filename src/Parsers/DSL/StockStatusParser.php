@@ -33,16 +33,16 @@ class StockStatusParser implements ParsesOperator
         ];
     }
 
-    protected function mapStockValue($value): int
+    protected function mapStockValue($value): string
     {
         if ($value === self::VALUE_IN_STOCK) {
-            return 1;
+            return 'true';
         }
 
         if ($value === self::VALUE_OUT_OF_STOCK) {
-            return 0;
+            return 'false';
         }
 
-        return (int) $value;
+        return (string) $value;
     }
 }

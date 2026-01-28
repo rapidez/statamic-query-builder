@@ -63,9 +63,9 @@ export default {
             try {
                 const response = await this.$axios.get('/cp/rapidez/product-attributes');
                 this.attributes = response.data.map(attr => ({
-                    label: attr.frontend_label ? (attr.frontend_label + (` (${attr.code})`)) : attr.code,
-                    value: `attribute.${attr.code}`,
-                    type: this.mapAttributeType(attr.input),
+                    label: attr.frontend_label ? (attr.frontend_label + (` (${attr.attribute_code})`)) : attr.attribute_code,
+                    value: `attribute.${attr.attribute_code}`,
+                    type: this.mapAttributeType(attr.frontend_input),
                     options: this.mapAttributeOptions(attr.attribute_options)
                 }));
 
