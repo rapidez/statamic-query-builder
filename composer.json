@@ -31,7 +31,7 @@
     },
     "require": {
         "elasticsearch/elasticsearch": "^8.19",
-        "rapidez/core": "^4.0",
+        "rapidez/core": "^5.0",
         "rapidez/laravel-scout-elasticsearch": "^1.0",
         "rapidez/statamic": "dev-feature/statamic-6",
         "statamic/cms": "^6.0"
@@ -44,12 +44,6 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpunit/phpunit": "^12.3"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:kevinmeijer97/statamic-builder.git"
-        }
-    ],
     "config": {
         "sort-packages": true,
         "allow-plugins": {
