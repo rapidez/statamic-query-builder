@@ -2,8 +2,8 @@
 
 namespace Rapidez\StatamicQueryBuilder\Http\Controllers\CP;
 
-use Rapidez\StatamicQueryBuilder\Http\Requests\DefaultQueryRequest;
 use Inertia\Inertia;
+use Rapidez\StatamicQueryBuilder\Http\Requests\DefaultQueryRequest;
 use Rapidez\StatamicQueryBuilder\Services\DefaultQueryService;
 use Statamic\Http\Controllers\CP\CpController;
 

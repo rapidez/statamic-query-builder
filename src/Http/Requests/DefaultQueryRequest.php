@@ -3,10 +3,9 @@
 namespace Rapidez\StatamicQueryBuilder\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\UploadedFile;
 
 /**
- * @property boolean $enabled
+ * @property bool $enabled
  * @property array $query
  * @property array $groups
  * @property string $globalConjunction
