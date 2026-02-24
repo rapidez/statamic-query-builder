@@ -61,8 +61,8 @@ const fetchAttributes = async () => {
     try {
         const response = await axios.get('/cp/rapidez/product-attributes');
         attributes.value = response.data.map(attr => ({
-            label: attr.frontend_label ? (attr.frontend_label + (` (${attr.code})`)) : attr.code,
-            value: `attribute.${attr.code}`,
+            label: attr.frontend_label ? (attr.frontend_label + (` (${attr.attribute_code})`)) : attr.attribute_code,
+            value: `attribute.${attr.attribute_code}`,
             type: mapAttributeType(attr.input),
             options: mapAttributeOptions(attr.attribute_options)
         }));
