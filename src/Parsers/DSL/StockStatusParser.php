@@ -8,7 +8,7 @@ class StockStatusParser implements ParsesOperator
 {
     const FIELD_STOCK_STATUS = 'stock_status';
 
-    const FIELD_IN_STOCK = 'in_stock';
+    const FIELD_IN_STOCK = 'stock.is_in_stock';
 
     const VALUE_IN_STOCK = 'in_stock';
 
@@ -33,16 +33,16 @@ class StockStatusParser implements ParsesOperator
         ];
     }
 
-    protected function mapStockValue($value): int
+    protected function mapStockValue($value): bool
     {
         if ($value === self::VALUE_IN_STOCK) {
-            return 1;
+            return true;
         }
 
         if ($value === self::VALUE_OUT_OF_STOCK) {
-            return 0;
+            return false;
         }
 
-        return (int) $value;
+        return boolval($value);
     }
 }
