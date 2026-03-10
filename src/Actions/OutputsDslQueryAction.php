@@ -4,8 +4,8 @@ namespace Rapidez\StatamicQueryBuilder\Actions;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
 use Rapidez\ScoutElasticSearch\Creator\Helper;
+use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
