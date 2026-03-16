@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Rapidez\Core\Models\Attribute as CoreAttribute;
 use Rapidez\Statamic\Models\Traits\HasContentEntry;
 use Rapidez\Statamic\Observers\RunwayObserver;
@@ -85,7 +86,7 @@ class ProductAttribute extends CoreAttribute
 
     public function newEloquentBuilder($query)
     {
-        return new class($query) extends \Illuminate\Database\Eloquent\Builder
+        return new class($query) extends Builder
         {
             public function orderBy($column, $direction = 'asc')
             {
@@ -187,7 +188,7 @@ class ProductAttribute extends CoreAttribute
 
     protected function loadOptions(): void
     {
-        $options = \Illuminate\Support\Facades\DB::table('eav_attribute_option')
+        $options = DB::table('eav_attribute_option')
             ->join('eav_attribute_option_value', 'eav_attribute_option.option_id', '=', 'eav_attribute_option_value.option_id')
             ->where('eav_attribute_option.attribute_id', $this->getAttribute('id'))
             ->where('eav_attribute_option_value.store_id', 0)

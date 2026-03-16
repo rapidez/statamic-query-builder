@@ -2,6 +2,7 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
+use Illuminate\Support\Collection;
 use Rapidez\Core\Models\Attribute;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
@@ -169,7 +170,7 @@ class OutputsDslQueryAction
             ->all();
     }
 
-    protected function flattenSingleGroupClauses($collection): \Illuminate\Support\Collection
+    protected function flattenSingleGroupClauses($collection): Collection
     {
         return $collection->flatMap(function ($groupClause) {
             if (isset($groupClause['bool'])) {
