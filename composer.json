@@ -30,9 +30,7 @@
         }
     },
     "require": {
-        "elasticsearch/elasticsearch": "^8.19",
         "rapidez/core": "^5.0",
-        "rapidez/laravel-scout-elasticsearch": "^1.0",
         "rapidez/statamic": "dev-feature/statamic-6",
         "statamic/cms": "^6.0"
     },

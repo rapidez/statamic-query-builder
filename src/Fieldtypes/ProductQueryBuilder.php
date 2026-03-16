@@ -30,6 +30,7 @@ class ProductQueryBuilder extends Fieldtype
             'products' => [],
             'sortField' => '',
             'sortDirection' => '',
+            'builderTemplate' => 'slider',
             'useDefaultQuery' => true,
         ];
     }
