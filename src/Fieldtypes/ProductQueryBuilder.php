@@ -4,6 +4,7 @@ namespace Rapidez\StatamicQueryBuilder\Fieldtypes;
 
 use Illuminate\View\View;
 use Rapidez\StatamicQueryBuilder\Actions\OutputsDslQueryAction;
+use Rapidez\StatamicQueryBuilder\Services\DefaultQueryService;
 use Statamic\Fields\Fieldtype;
 
 class ProductQueryBuilder extends Fieldtype
@@ -11,7 +12,8 @@ class ProductQueryBuilder extends Fieldtype
     protected $icon = 'filter';
 
     public function __construct(
-        protected OutputsDslQueryAction $outputsDslQueryAction
+        protected OutputsDslQueryAction $outputsDslQueryAction,
+        protected DefaultQueryService $defaultQueryService
     ) {}
 
     public function defaultValue()
@@ -90,10 +92,10 @@ class ProductQueryBuilder extends Fieldtype
             return $value;
         }
 
-        $configEnabled = (bool) (config('rapidez.query-builder.default_query.enabled') ?? true);
-        $defaultQuery = config('rapidez.query-builder.default_query.query');
+        $defaultEnabled = $this->defaultQueryService->getDefaultEnabled();
+        $defaultQuery = $this->defaultQueryService->getDefaultQuery();
 
-        if (! $configEnabled || ! is_array($defaultQuery)) {
+        if (! $defaultEnabled || empty($defaultQuery)) {
             return $value;
         }
 

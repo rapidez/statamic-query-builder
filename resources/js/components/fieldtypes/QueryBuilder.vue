@@ -3,7 +3,7 @@
         
             <div class="flex flex-col justify-between w-full space-x-4 gap-4">
                 <div class="flex gap-2">
-                    <Field class="self-end">
+                    <Field v-if="showUseDefaultQueryToggle" class="self-end">
                         <Checkbox
                             id="useDefaultQuery"
                             :label="__('Use default Query')"
@@ -304,6 +304,10 @@ const props = defineProps({
         default: 100
     },
     showLimit: {
+        type: Boolean,
+        default: true
+    },
+    showUseDefaultQueryToggle: {
         type: Boolean,
         default: true
     },
