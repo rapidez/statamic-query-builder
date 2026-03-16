@@ -12,6 +12,11 @@
             "name": "Kevin Meijer",
             "email": "kevin@justbetter.nl",
             "role": "Developer"
+        },
+        {
+            "name": "Bob Wezelman",
+            "email": "bob@justbetter.nl",
+            "role": "Developer"
         }
     ],
     "autoload": {
@@ -26,15 +31,15 @@
     },
     "require": {
         "elasticsearch/elasticsearch": "^8.19",
-        "rapidez/core": "^4.0",
+        "rapidez/core": "^5.0",
         "rapidez/laravel-scout-elasticsearch": "^1.0",
-        "rapidez/statamic": "^5.0|^6.0",
-        "statamic/cms": "^5.0"
+        "rapidez/statamic": "dev-feature/statamic-6",
+        "statamic/cms": "^6.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.7",
         "laravel/pint": "^1.22",
-        "orchestra/testbench": "^9.0",
+        "orchestra/testbench": "^10.0",
         "pestphp/pest": "^4.1",
         "phpstan/phpstan-mockery": "^2.0",
         "phpunit/phpunit": "^12.3"
