@@ -3,10 +3,7 @@
 
         <div class="p-4 border mb-6 rounded">
             <div class="flex flex-wrap items-end gap-4 justify-between">
-                <Field
-                    v-if="showUseDefaultQueryToggle"
-                    class="mb-2"
-                >
+                <Field v-if="showUseDefaultQueryToggle" class="mb-2">
                     <Checkbox
                         id="useDefaultQuery"
                         :label="__('Use default Query')"
@@ -15,18 +12,10 @@
                     />
                 </Field>
 
-                <div
-                    v-if="showUseDefaultQueryToggle"
-                    class="h-8 border-r mx-2 hidden md:block"
-                ></div>
+                <div v-if="showUseDefaultQueryToggle" class="h-8 border-r mx-2 hidden md:block"></div>
 
                 <Field v-if="builderTemplates">
-                    <Label
-                        for="template"
-                        class="text-2xs uppercase tracking-wider mb-1"
-                    >
-                        {{ __('Template') }}
-                    </Label>
+                    <Label for="template" class="text-2xs uppercase tracking-wider mb-1">{{ __('Template') }}</Label>
                     <Select
                         name="builderTemplate"
                         :model-value="builderTemplate"
@@ -38,12 +27,7 @@
                 </Field>
 
                 <Field v-if="isLimitVisible">
-                    <Label
-                        for="limit"
-                        class="text-xs uppercase tracking-wider mb-1 leading-none h-3 whitespace-nowrap"
-                    >
-                        {{ __('Limit results') }}
-                    </Label>
+                    <Label for="limit" class="text-xs uppercase tracking-wider mb-1 leading-none h-3 whitespace-nowrap">{{ __('Limit results') }}</Label>
                     <Input
                         type="number"
                         name="limit"
@@ -58,12 +42,7 @@
                 <div class="h-8 border-r mx-2 hidden md:block"></div>
 
                 <Field v-if="sortFields">
-                    <Label
-                        for="sortField"
-                        class="text-2xs uppercase tracking-wider mb-1"
-                    >
-                        {{ __('Sort') }}
-                    </Label>
+                    <Label for="sortField" class="text-2xs uppercase tracking-wider mb-1">{{ __('Sort') }}</Label>
                     <div class="flex gap-1">
                         <Select
                             name="sortField"
@@ -84,9 +63,7 @@
                 </Field>
 
                 <Field v-if="groupedPresets.length > 0">
-                    <Label class="text-2xs uppercase tracking-wider mb-1">
-                        {{ __('Presets') }}
-                    </Label>
+                    <Label class="text-2xs uppercase tracking-wider mb-1">{{ __('Presets') }}</Label>
                     <Select
                         :options="groupedPresets"
                         :reduce="preset => preset"
@@ -96,10 +73,7 @@
                         @update:model-value="handlePresetSelection"
                     >
                         <template #option="{ name, isHeader, description }">
-                            <div
-                                v-if="isHeader"
-                                class="font-bold uppercase px-2 pb-2 text-left border-b mt-0 w-full first:mt-0 select-none"
-                            >
+                            <div v-if="isHeader" class="font-bold uppercase px-2 pb-2 text-left border-b mt-0 w-full first:mt-0 select-none">
                                 {{ name }}
                             </div>
                             <div
@@ -108,22 +82,9 @@
                                 class="flex items-center px-2 w-full transition-colors cursor-pointer group"
                             >
                                 {{ name }}
-                                <div
-                                    v-if="description"
-                                    class="ml-2 opacity-50 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <svg
-                                        class="h-3 w-3"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
+                                <div v-if="description" class="ml-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
                             </div>
@@ -133,23 +94,10 @@
 
                 <div class="flex-grow"></div>
 
-                <Button
-                    class="btn-primary"
-                    @click="addGroup"
-                >
+                <Button class="btn-primary" @click="addGroup">
                     <span class="flex items-center">
-                        <svg
-                            class="w-4 h-4 mr-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         {{ __('Add Group') }}
                     </span>
@@ -158,27 +106,14 @@
         </div>
 
         <div class="space-y-6">
-            <div
-                v-if="groups.length > 0"
-                class="flex justify-center"
-            >
+            <div v-if="groups.length > 0" class="flex justify-center">
                 <Button
                     class="insert-group-btn"
                     @click="insertGroupAt(0)"
                     :title="__('Insert group here')"
                 >
-                    <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                 </Button>
             </div>
@@ -208,47 +143,25 @@
                     @remove-nested-condition="removeNestedCondition"
                 />
 
-                <div
-                    v-if="groupIndex < groups.length"
-                    :key="`separator-${groupIndex}`"
-                    class="flex flex-col items-center space-y-2"
-                >
+                <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
                     <Button
                         class="insert-group-btn"
                         @click="insertGroupAt(groupIndex + 1)"
                         :title="__('Insert group here')"
                     >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                     </Button>
                 </div>
             </template>
         </div>
 
-        <div
-            v-if="!groups.length"
-            class="text-center py-8 bg-gray-50 rounded-lg"
-        >
-            <p class="text-gray-500 mb-4">
-                {{ __('No groups added yet. Click "Add Group" to start building your query.') }}
-            </p>
+        <div v-if="!groups.length" class="text-center py-8 bg-gray-50 rounded-lg">
+            <p class="text-gray-500 mb-4">{{ __('No groups added yet. Click "Add Group" to start building your query.') }}</p>
         </div>
 
-        <div
-            v-if="groups.length > 1"
-            class="mt-6 pt-4 border-t border-gray-200"
-        >
+        <div v-if="groups.length > 1" class="mt-6 pt-4 border-t border-gray-200">
             <Field>
                 <Label class="font-bold">{{ __('Combine Groups with:') }}</Label>
                 <Select
@@ -260,10 +173,7 @@
             </Field>
         </div>
 
-        <div
-            v-if="showConflictModal"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
+        <div v-if="showConflictModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
                 <h3 class="text-lg font-semibold mb-4">{{ __('Apply Preset') }}</h3>
                 <p class="text-gray-600 mb-6">
@@ -298,7 +208,7 @@
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import QueryGroup from '../QueryBuilder/QueryGroup.vue';
-import { Select, Input, Field, Label, Checkbox, Button } from '@statamic/cms/ui';;
+import { Select, Input, Field, Label, Checkbox, Button } from '@statamic/cms/ui';
 
 const props = defineProps({
     fields: {
