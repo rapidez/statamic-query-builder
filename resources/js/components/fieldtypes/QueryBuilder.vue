@@ -1,138 +1,108 @@
 <template>
     <div class="query-builder max-w-4xl mx-auto">
-        
-            <div class="flex flex-col justify-between w-full space-x-4 gap-4">
-                <div class="flex gap-2">
-                    <Field v-if="showUseDefaultQueryToggle" class="self-end">
-                        <Checkbox
-                            id="useDefaultQuery"
-                            :label="__('Use default Query')"
-                            v-model="useDefaultQuery"
-                            @change="(e) => { useDefaultQuery = e.target.checked; updateSettingValues(); }"
-                        />
-                    </Field>
-                    <Field v-if="builderTemplates">
-                        <Label for="template" class="text-sm">{{ __('Template') }}</Label>
-                        <Select
-                            name="builderTemplate"
-                            :model-value="builderTemplate"
-                            :options="builderTemplates"
-                            :reduce="field => field.value"
-                            class="w-36"
-                            @update:model-value="(val) => { builderTemplate = val; updateSettingValues(); }"
-                        />
-                    </Field>
-                    <Field v-if="isLimitVisible">
-                        <Label for="limit" class="text-sm">{{ __('Limit results') }}</Label>
-                        <Input
-                            type="number"
-                            name="limit"
-                            id="limit"
-                            :value="limit"
-                            class="input-text w-24"
-                            min="1"
-                            @input="(e) => { limit = parseInt(e.target.value) || props.defaultLimit; updateSettingValues(); }"
-                        />
-                    </Field>
-                </div>
-                <div class="flex gap-2">
-                    <Field v-if="sortFields">
-                        <Label for="template" class="text-sm">{{ __('Sort') }}</Label>
-                        <Select
-                            name="sortField"
-                            :model-value="sortField"
-                            :options="sortFields"
-                            :reduce="field => field.value"
-                            class="w-36"
-                            @update:model-value="(val) => { sortField = val; updateSettingValues(); }"
-                        />
-                    </Field>
-                    <Field v-if="sortFields">
-                        <Label for="template" class="text-sm">{{ __('Sort Direction') }}</Label>
-                        <Select
-                            name="sortDirection"
-                            :model-value="sortDirection"
-                            :options="sortDirections"
-                            class="w-36"
-                            @update:model-value="(val) => { sortDirection = val; updateSettingValues(); }"
-                        />
-                    </Field>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
+
+        <div class="p-4 border  mb-6 rounded">
+            <div class="flex flex-wrap items-end gap-4 justify-between">
+                <Field v-if="showUseDefaultQueryToggle" class="mb-2">
+                    <Checkbox id="useDefaultQuery" :label="__('Use default Query')" v-model="useDefaultQuery"
+                        @change="(e) => { useDefaultQuery = e.target.checked; updateSettingValues(); }" />
+                </Field>
+
+                <div class="h-8 border-r  mx-2 hidden md:block" v-if="showUseDefaultQueryToggle"></div>
+
+                <Field v-if="builderTemplates">
+                    <Label for="template" class="text-2xs uppercase tracking-wider mb-1">{{ __('Template') }}</Label>
+                    <Select name="builderTemplate" :model-value="builderTemplate" :options="builderTemplates"
+                        :reduce="field => field.value" class="w-40"
+                        @update:model-value="(val) => { builderTemplate = val; updateSettingValues(); }" />
+                </Field>
+
+                <Field v-if="isLimitVisible">
+                    <Label for="limit"
+                        class="text-xs uppercase tracking-wider mb-1 leading-none h-3 whitespace-nowrap">{{ __('Limit results') }}</Label>
+                    <Input type="number" name="limit" id="limit" :value="limit" class="w-24" min="1"
+                        @input="(e) => { limit = parseInt(e.target.value) || props.defaultLimit; updateSettingValues(); }" />
+                </Field>
+
+                <div class="h-8 border-r  mx-2 hidden md:block"></div>
+
+                <Field v-if="sortFields">
+                    <Label for="sortField" class="text-2xs uppercase tracking-wider mb-1">{{ __('Sort') }}</Label>
+                    <div class="flex gap-1">
+                        <Select name="sortField" :model-value="sortField" :options="sortFields"
+                            :reduce="field => field.value" class="w-40"
+                            @update:model-value="(val) => { sortField = val; updateSettingValues(); }" />
+                        <Select name="sortDirection" :model-value="sortDirection" :options="sortDirections" class="w-24"
+                            @update:model-value="(val) => { sortDirection = val; updateSettingValues(); }" />
+                    </div>
+                </Field>
+
                 <Field v-if="groupedPresets.length > 0">
-                    <Label class="text-sm">{{ __('Presets') }}</Label>
-                    <Select
-                        :options="groupedPresets"
-                        :reduce="preset => preset"
-                        label="name"
-                        :placeholder="__('Select Preset')"
-                        class="w-48"
-                        @update:model-value="handlePresetSelection"
-                    >
-                        <template #option="{ name, isHeader, description  }">
-                            <div v-if="isHeader" class="font-semibold text-gray-600 px-2 py-1 bg-gray-50 border-b">
+                    <Label class="text-2xs uppercase tracking-wider mb-1">{{ __('Presets') }}</Label>
+                    <Select :options="groupedPresets" :reduce="preset => preset" label="name"
+                        :placeholder="__('Select Preset')" class="w-64" @update:model-value="handlePresetSelection">
+                        <template #option="{ name, isHeader, description }">
+                            <div v-if="isHeader"
+                                class="font-bold uppercase px-2 pb-2 text-left border-b mt-0 w-full first:mt-0 select-none">
                                 {{ name }}
                             </div>
-                            <div v-else class="px-4 py-2 hover:bg-blue-50">
-                                <div class="font-medium">{{ name }}</div>
-                                <div v-if="description" class="text-sm text-gray-500 mt-1">
-                                    {{ description }}
+                            <div v-else v-tooltip="description"
+                                class="flex items-center px-2 w-full transition-colors cursor-pointer group">
+                                {{ name }}
+                                <div v-if="description"
+                                    class="ml-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                 </div>
                             </div>
                         </template>
                     </Select>
                 </Field>
-                <Button class="btn-primary" @click="addGroup">{{ __('Add Group') }}</Button>
-            </div>
 
+                <div class="flex-grow"></div>
+
+                <Button class="btn-primary" @click="addGroup">
+                    <span class="flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        {{ __('Add Group') }}
+                    </span>
+                </Button>
+            </div>
+        </div>
 
         <div class="space-y-6">
             <div v-if="groups.length > 0" class="flex justify-center">
-                <Button
-                    class="insert-group-btn"
-                    @click="insertGroupAt(0)"
-                    :title="__('Insert group here')"
-                >
+                <Button class="insert-group-btn" @click="insertGroupAt(0)" :title="__('Insert group here')">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                 </Button>
             </div>
 
             <template v-for="(group, groupIndex) in groups" :key="`group-${groupIndex}`">
-                <query-group
-                    :group="group"
-                    :group-index="groupIndex"
-                    :fields="flattenedFields"
-                    :operators="operators"
-                    :display-index="groupIndex + 1"
-                    :can-move-up="groupIndex > 0"
-                    :can-move-down="groupIndex < groups.length - 1"
-                    :can-remove="groups.length > 1"
-                    @update-group="updateGroup"
-                    @remove-group="removeGroup"
-                    @duplicate-group="duplicateGroup"
-                    @move-group-up="moveGroupUp"
-                    @move-group-down="moveGroupDown"
-                    @add-condition="addConditionToGroup"
-                    @add-nested-group="addNestedGroupToGroup"
-                    @add-condition-to-nested="addConditionToNestedGroup"
-                    @add-nested-group-to-nested="addNestedGroupToNestedGroup"
-                    @update-condition="updateCondition"
-                    @update-nested-condition="updateNestedCondition"
-                    @remove-condition="removeCondition"
-                    @remove-nested-condition="removeNestedCondition"
-                />
+                <query-group :group="group" :group-index="groupIndex" :fields="flattenedFields" :operators="operators"
+                    :display-index="groupIndex + 1" :can-move-up="groupIndex > 0"
+                    :can-move-down="groupIndex < groups.length - 1" :can-remove="groups.length > 1"
+                    @update-group="updateGroup" @remove-group="removeGroup" @duplicate-group="duplicateGroup"
+                    @move-group-up="moveGroupUp" @move-group-down="moveGroupDown" @add-condition="addConditionToGroup"
+                    @add-nested-group="addNestedGroupToGroup" @add-condition-to-nested="addConditionToNestedGroup"
+                    @add-nested-group-to-nested="addNestedGroupToNestedGroup" @update-condition="updateCondition"
+                    @update-nested-condition="updateNestedCondition" @remove-condition="removeCondition"
+                    @remove-nested-condition="removeNestedCondition" />
 
-                <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
-                    <Button
-                        class="insert-group-btn"
-                        @click="insertGroupAt(groupIndex + 1)"
-                        :title="__('Insert group here')"
-                    >
+                <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`"
+                    class="flex flex-col items-center space-y-2">
+                    <Button class="insert-group-btn" @click="insertGroupAt(groupIndex + 1)"
+                        :title="__('Insert group here')">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                     </Button>
                 </div>
@@ -140,44 +110,34 @@
         </div>
 
         <div v-if="!groups.length" class="text-center py-8 bg-gray-50 rounded-lg">
-            <p class="text-gray-500 mb-4">{{ __('No groups added yet. Click "Add Group" to start building your query.') }}</p>
+            <p class="text-gray-500 mb-4">
+                {{ __('No groups added yet. Click "Add Group" to start building your query.') }}
+            </p>
         </div>
 
         <div v-if="groups.length > 1" class="mt-6 pt-4 border-t border-gray-200">
             <Field>
                 <Label class="font-bold">{{ __('Combine Groups with:') }}</Label>
-                <Select
-                    :model-value="globalConjunction"
-                    :options="logicalOperators"
-                    class="w-32"
-                    @update:model-value="(val) => { globalConjunction = val; updateValue(); }"
-                />
+                <Select :model-value="globalConjunction" :options="logicalOperators" class="w-32"
+                    @update:model-value="(val) => { globalConjunction = val; updateValue(); }" />
             </Field>
         </div>
 
-        <div v-if="showConflictModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div v-if="showConflictModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
                 <h3 class="text-lg font-semibold mb-4">{{ __('Apply Preset') }}</h3>
                 <p class="text-gray-600 mb-6">
                     {{ __('You have an existing query. How would you like to apply this preset?') }}
                 </p>
                 <div class="flex space-x-3">
-                    <Button
-                        class="btn flex-1"
-                        @click="applyPreset('merge')"
-                    >
+                    <Button class="btn flex-1" @click="applyPreset('merge')">
                         {{ __('Merge') }}
                     </Button>
-                    <Button
-                        class="btn-primary flex-1"
-                        @click="applyPreset('override')"
-                    >
+                    <Button class="btn-primary flex-1" @click="applyPreset('override')">
                         {{ __('Override') }}
                     </Button>
-                    <Button
-                        class="btn flex-1"
-                        @click="cancelPresetApplication"
-                    >
+                    <Button class="btn flex-1" @click="cancelPresetApplication">
                         {{ __('Cancel') }}
                     </Button>
                 </div>
