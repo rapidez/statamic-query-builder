@@ -1,9 +1,9 @@
 <template>
     <div :class="[
         'border rounded-lg p-4',
-        isNested ? 'border-blue-200 bg-blue-50/30' : 'border-gray-300'
+        isNested ? 'border-blue-200 bg-blue-50/30' : ''
     ]">
-        <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b">
             <div class="flex items-center space-x-4">
                 <div class="flex items-center space-x-2">
                     <span v-if="isNested" class="text-blue-600">⚬</span>
