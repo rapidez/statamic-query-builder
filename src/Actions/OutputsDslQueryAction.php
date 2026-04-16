@@ -65,7 +65,7 @@ class OutputsDslQueryAction
 
     const STOCK_STATUS_FIELD = 'stock_status';
 
-    const STOCK_STATUS_ES_FIELD = 'in_stock';
+    const STOCK_STATUS_ES_FIELD = 'stock.is_in_stock';
 
     protected array $operators = [
         '=' => TermParser::class,
