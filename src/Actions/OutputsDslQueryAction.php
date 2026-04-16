@@ -3,7 +3,9 @@
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use OpenSearch\Client;
 use Rapidez\ScoutElasticSearch\Creator\Helper;
 use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
@@ -177,7 +179,7 @@ class OutputsDslQueryAction
             ->all();
     }
 
-    protected function flattenSingleGroupClauses($collection): \Illuminate\Support\Collection
+    protected function flattenSingleGroupClauses($collection): Collection
     {
         return $collection->flatMap(function ($groupClause) {
             if (isset($groupClause['bool'])) {
@@ -271,7 +273,7 @@ class OutputsDslQueryAction
         $model = config('rapidez.models.product');
         $indexName = (new $model)->searchableAs();
 
-        /** @var \Elastic\Elasticsearch\Client|\OpenSearch\Client $client */
+        /** @var \Elastic\Elasticsearch\Client|Client $client */
         $client = resolve(ProxyClient::class);
         $esMappings = Helper::convertToArray($client->indices()->getMapping(['index' => $indexName]));
         $mappings = data_get($esMappings, '*.mappings.properties', []);
