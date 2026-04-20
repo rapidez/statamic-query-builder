@@ -73,7 +73,7 @@ export const buildGroupedFields = (attributes, fieldGroups = FIELD_GROUPS) => {
 const transformAttributeToField = (attr) => ({
     label: attr.frontend_label ? (attr.frontend_label + ` (${attr.attribute_code})`) : attr.attribute_code,
     value: `attribute.${attr.attribute_code}`,
-    type: mapAttributeType(attr.input),
+    type: mapAttributeType(attr.input || attr.frontend_input),
     options: mapAttributeOptions(attr.attribute_options)
 });
 
@@ -91,7 +91,12 @@ export const fetchSortingOptions = async () => {
             return [];
         }
 
-        return options.filter((option) => option && option.value);
+        return options
+            .filter((option) => option && option.value)
+            .map((option) => ({
+                ...option,
+                type: option.type || 'text'
+            }));
     } catch (error) {
         console.error('Error fetching sorting options:', error);
         return [
