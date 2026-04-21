@@ -2,8 +2,13 @@
 
 namespace Rapidez\StatamicQueryBuilder\Actions;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use OpenSearch\Client;
 use Rapidez\Core\Models\Attribute;
+use Rapidez\ScoutElasticSearch\Creator\Helper;
+use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\LastXDaysParser;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\Dates\ManualDateAfterOrEqualParser;
