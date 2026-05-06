@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use OpenSearch\Client;
+use Rapidez\Core\Models\Attribute;
 use Rapidez\ScoutElasticSearch\Creator\Helper;
 use Rapidez\ScoutElasticSearch\Creator\ProxyClient;
 use Rapidez\StatamicQueryBuilder\Parsers\DSL\BetweenParser;
@@ -131,16 +132,11 @@ class OutputsDslQueryAction
         'manual_!=' => ManualDateNotEqualsParser::class,
     ];
 
-    protected array $mappings;
-
     public function build(array $config): array
     {
-        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
-
         $groups = $config['groups'] ?? [];
         $limit = (int) ($config['limit'] ?? 10);
 
-        $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
         $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');
         $globalKey = strtoupper($config['globalConjunction'] ?? 'AND') === 'OR' ? 'should' : 'must';
 
@@ -268,19 +264,6 @@ class OutputsDslQueryAction
         return "{$value['type']}_{$value['value']}_{$operator}";
     }
 
-    protected function getMappings(): array
-    {
-        $model = config('rapidez.models.product');
-        $indexName = (new $model)->searchableAs();
-
-        /** @var \Elastic\Elasticsearch\Client|Client $client */
-        $client = resolve(ProxyClient::class);
-        $esMappings = Helper::convertToArray($client->indices()->getMapping(['index' => $indexName]));
-        $mappings = data_get($esMappings, '*.mappings.properties', []);
-
-        return Arr::last($mappings) ?? [];
-    }
-
     protected function getQueryFieldName(string $attribute): string
     {
         if (str_starts_with($attribute, self::ATTRIBUTE_PREFIX)) {
@@ -291,13 +274,7 @@ class OutputsDslQueryAction
             return self::STOCK_STATUS_ES_FIELD;
         }
 
-        if (! isset($this->mappings[$attribute])) {
-            return $attribute;
-        }
-
-        $mapping = $this->mappings[$attribute];
-
-        $keyword = $mapping['type'] === 'text' && $mapping['fields']['keyword']['type'] === 'keyword';
+        $keyword = Attribute::hasKeyword($attribute);
 
         return $keyword ? $attribute.'.keyword' : $attribute;
     }
