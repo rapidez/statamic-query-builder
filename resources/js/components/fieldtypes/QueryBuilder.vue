@@ -65,31 +65,13 @@
                 <Field v-if="groupedPresets.length > 0">
                     <Label class="text-2xs uppercase tracking-wider mb-1">{{ __('Presets') }}</Label>
                     <Select
+                        :model-value="selectedPresetKey"
                         :options="groupedPresets"
-                        :reduce="preset => preset"
-                        label="name"
+                        :reduce="preset => preset.value"
                         :placeholder="__('Select Preset')"
                         class="w-64"
                         @update:model-value="handlePresetSelection"
-                    >
-                        <template #option="{ name, isHeader, description }">
-                            <div v-if="isHeader" class="font-bold uppercase px-2 pb-2 text-left border-b mt-0 w-full first:mt-0 select-none">
-                                {{ name }}
-                            </div>
-                            <div
-                                v-else
-                                v-tooltip="description"
-                                class="flex items-center px-2 w-full transition-colors cursor-pointer group"
-                            >
-                                {{ name }}
-                                <div v-if="description" class="ml-2 opacity-50 group-hover:opacity-100 transition-opacity">
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </template>
-                    </Select>
+                    />
                 </Field>
 
                 <div class="flex-grow"></div>
@@ -244,8 +226,7 @@ const props = defineProps({
         validator: (value) => {
             return value.every(field =>
                 'label' in field &&
-                'value' in field &&
-                'type' in field
+                'value' in field
             );
         }
     },
@@ -350,6 +331,7 @@ const sortField = ref('');
 const sortDirection = ref('');
 const sortDirections = ['ASC', 'DESC'];
 const presets = ref({});
+const selectedPresetKey = ref('');
 const showConflictModal = ref(false);
 const pendingPreset = ref(null);
 
@@ -361,24 +343,41 @@ const flattenedFields = computed(() => {
 });
 
 const groupedPresets = computed(() => {
-    const grouped = [];
+    const flatPresets = [];
     Object.keys(presets.value).forEach(categoryKey => {
         const category = presets.value[categoryKey];
-        grouped.push({
-            name: category.label,
-            category: category.label,
-            disabled: true,
-            isHeader: true
-        });
         category.presets.forEach(preset => {
-            grouped.push({
+            flatPresets.push({
                 ...preset,
                 categoryKey,
-                isHeader: false
+                label: `${category.label}: ${preset.name}`,
+                value: preset.key
             });
         });
     });
-    return grouped;
+    return flatPresets;
+});
+
+const hasConfiguredQuery = computed(() => {
+    if (!Array.isArray(groups.value) || groups.value.length === 0) {
+        return false;
+    }
+
+    const hasConditions = (group) => {
+        if (!Array.isArray(group?.conditions) || group.conditions.length === 0) {
+            return false;
+        }
+
+        return group.conditions.some((condition) => {
+            if (condition?.type === 'group') {
+                return hasConditions(condition);
+            }
+
+            return Boolean(condition?.attribute && condition?.operator);
+        });
+    };
+
+    return groups.value.some(hasConditions);
 });
 
 const currentTemplateConfig = computed(() => {
@@ -413,10 +412,20 @@ const fetchPresets = async () => {
     }
 };
 
-const handlePresetSelection = (preset) => {
-    if (!preset || preset.disabled || preset.isHeader) return;
+const handlePresetSelection = (presetKey) => {
+    if (!presetKey) {
+        return;
+    }
 
-    if (groups.value.length > 0) {
+    const preset = groupedPresets.value.find((item) => item.value === presetKey);
+
+    selectedPresetKey.value = '';
+
+    if (!preset) {
+        return;
+    }
+
+    if (hasConfiguredQuery.value) {
         pendingPreset.value = preset;
         showConflictModal.value = true;
     } else {
@@ -509,16 +518,22 @@ const validateCondition = (condition, validationIssues) => {
     const field = flattenedFields.value.find(f => f.value === condition.attribute);
 
     if (!field) {
-        validationIssues.push(`Field "${condition.attribute}" not found - skipping condition`);
-        return null;
+        return { ...condition };
     }
 
     const validatedCondition = { ...condition };
 
     const fieldOperators = getOperatorsForField(field);
     const operatorExists = fieldOperators.some(op => op.value === condition.operator);
+    const globalOperators = [
+        ...props.operators.text,
+        ...props.operators.select,
+        ...props.operators.number,
+        ...props.operators.date
+    ];
+    const isGlobalKnownOperator = globalOperators.some(op => op.value === condition.operator);
 
-    if (!operatorExists) {
+    if (!operatorExists && !isGlobalKnownOperator) {
         const fallbackOperator = fieldOperators[0]?.value || '=';
         validationIssues.push(`Operator "${condition.operator}" not valid for field "${field.label}" - using "${fallbackOperator}"`);
         validatedCondition.operator = fallbackOperator;
