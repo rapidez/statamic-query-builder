@@ -1,6 +1,18 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/2.3.0...2.3.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.0.0...3.0.0)
+## [3.0.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.0.0) - 2026-06-25
+
+### Added
+
+- Statamic 6 support and Vue 3 (#25)
+
+## [2.3.1](https://github.com/rapidez/statamic-query-builder/releases/tag/2.3.1) - 2026-03-10
+
+### Fixed
+
+- Stock variable fixes (#28)
+
 ## [2.3.0](https://github.com/rapidez/statamic-query-builder/releases/tag/2.3.0) - 2025-11-18
 
 ### Added
