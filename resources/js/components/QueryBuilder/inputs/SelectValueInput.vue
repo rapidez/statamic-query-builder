@@ -1,44 +1,45 @@
 <template>
     <div class="flex-1 min-w-0">
-        <v-select
+        <Select
             v-if="isMultiSelect"
-            :value="condition.value"
+            :model-value="condition.value"
             :options="field.options || []"
             :reduce="option => option.value"
             label="label"
             multiple
             :placeholder="__('Select Values')"
-            @input="$emit('update-value', $event)"
+            @update:model-value="$emit('update-value', $event)"
         />
-        <v-select
+        <Select
             v-else
-            :value="condition.value"
+            :model-value="condition.value"
             :options="field.options || []"
             :reduce="option => option.value"
             label="label"
             :placeholder="__('Select Value')"
-            @input="$emit('update-value', $event)"
+            @update:model-value="$emit('update-value', $event)"
         />
     </div>
 </template>
 
-<script>
-export default {
-    props: {
-        condition: {
-            type: Object,
-            required: true
-        },
-        field: {
-            type: Object,
-            required: true
-        }
-    },
+<script setup>
+import { computed } from 'vue';
+import { Select } from '@statamic/cms/ui';
 
-    computed: {
-        isMultiSelect() {
-            return this.field?.type === 'select' && ['IN', 'NOT IN'].includes(this.condition.operator);
-        }
+const props = defineProps({
+    condition: {
+        type: Object,
+        required: true
+    },
+    field: {
+        type: Object,
+        required: true
     }
-}
+});
+
+defineEmits(['update-value']);
+
+const isMultiSelect = computed(() => {
+    return props.field?.type === 'select' && ['IN', 'NOT IN'].includes(props.condition.operator);
+});
 </script>
