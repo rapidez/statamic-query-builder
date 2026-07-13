@@ -329,7 +329,10 @@ const globalConjunction = ref('AND');
 const logicalOperators = ['AND', 'OR'];
 const sortField = ref('');
 const sortDirection = ref('');
-const sortDirections = ['ASC', 'DESC'];
+const sortDirections = [
+    { label: __('Ascending'), value: 'ASC' },
+    { label: __('Descending'), value: 'DESC' },
+];
 const presets = ref({});
 const selectedPresetKey = ref('');
 const showConflictModal = ref(false);
@@ -593,11 +596,20 @@ const initializeSortField = () => {
     return props.defaultSortField;
 };
 
+const normalizeSortDirection = (direction) => {
+    if (!direction) {
+        return 'DESC';
+    }
+
+    return direction.toUpperCase();
+};
+
 const initializeSortDirection = () => {
     if (props.value?.sortDirection) {
-        return props.value.sortDirection;
+        return normalizeSortDirection(props.value.sortDirection);
     }
-    return props.defaultSortDirection;
+
+    return normalizeSortDirection(props.defaultSortDirection);
 };
 
 const initializeUseDefaultQuery = () => {
@@ -754,7 +766,7 @@ const updateSettingValues = () => {
     currentValue.useDefaultQuery = Boolean(useDefaultQuery.value);
     currentValue.builderTemplate = builderTemplate.value || props.defaultBuilderTemplate;
     currentValue.sortField = sortField.value || props.defaultSortField;
-    currentValue.sortDirection = sortDirection.value || props.defaultSortDirection;
+    currentValue.sortDirection = normalizeSortDirection(sortDirection.value || props.defaultSortDirection);
     emit('update:model-value', currentValue);
 };
 

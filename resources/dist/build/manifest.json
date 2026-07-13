@@ -1,11 +1,11 @@
 {
   "resources/js/statamic-query-builder.js": {
-    "file": "assets/statamic-query-builder-n4Uu0CtO.js",
+    "file": "assets/statamic-query-builder-CtTi0d62.js",
     "name": "statamic-query-builder",
     "src": "resources/js/statamic-query-builder.js",
     "isEntry": true,
     "css": [
-      "assets/statamic-query-builder-tftOhOw7.css"
+      "assets/statamic-query-builder-BPvBUYxs.css"
     ]
   }
 }
