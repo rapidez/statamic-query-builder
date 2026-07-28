@@ -1,6 +1,12 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.0.0...3.0.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.0.1...3.0.1)
+## [3.0.1](https://github.com/rapidez/statamic-query-builder/releases/tag/3.0.1) - 2026-07-28
+
+### Fixed
+
+- Fixed sort dropdown (#32)
+
 ## [3.0.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.0.0) - 2026-06-25
 
 ### Added
