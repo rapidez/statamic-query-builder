@@ -236,7 +236,7 @@ const props = defineProps({
     },
     defaultSortDirection: {
         type: String,
-        default: 'desc'
+        default: 'DESC'
     },
     defaultBuilderTemplate: {
         type: String,
@@ -326,10 +326,16 @@ const builderTemplate = ref('');
 const limit = ref(100);
 const useDefaultQuery = ref(true);
 const globalConjunction = ref('AND');
-const logicalOperators = ['AND', 'OR'];
+const logicalOperators = [
+    { label: 'AND', value: 'AND' },
+    { label: 'OR', value: 'OR' },
+];
 const sortField = ref('');
 const sortDirection = ref('');
-const sortDirections = ['ASC', 'DESC'];
+const sortDirections = [
+    { label: __('Ascending'), value: 'ASC' },
+    { label: __('Descending'), value: 'DESC' },
+];
 const presets = ref({});
 const selectedPresetKey = ref('');
 const showConflictModal = ref(false);
@@ -594,10 +600,7 @@ const initializeSortField = () => {
 };
 
 const initializeSortDirection = () => {
-    if (props.value?.sortDirection) {
-        return props.value.sortDirection;
-    }
-    return props.defaultSortDirection;
+    return props.value?.sortDirection || props.defaultSortDirection;
 };
 
 const initializeUseDefaultQuery = () => {
