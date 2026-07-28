@@ -198,7 +198,10 @@ const emit = defineEmits([
     'remove-nested-condition'
 ]);
 
-const logicalOperators = ['AND', 'OR'];
+const logicalOperators = [
+    { label: 'AND', value: 'AND' },
+    { label: 'OR', value: 'OR' },
+];
 const isCollapsed = ref(false);
 const localGroup = ref({ ...props.group });
 
