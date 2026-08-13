@@ -215,6 +215,15 @@ class ProductAttribute extends CoreAttribute
         return $this->hasMany(ProductAttributeOption::class, 'attribute_id', 'attribute_id');
     }
 
+    public function scopeFilterable(Builder $query): Builder
+    {
+        return $query->whereIn('eav_attribute.attribute_id', function ($subQuery) {
+            $subQuery->select('attribute_id')
+                ->from('catalog_eav_attribute')
+                ->where('is_filterable', '>', 0);
+        });
+    }
+
     public function scopeRunwaySearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($query) use ($search) {

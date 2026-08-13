@@ -13,6 +13,12 @@ class ProductAttributeController extends CpController
             return [];
         }
 
-        return $model::with('attributeOptions')->get();
+        return $model::with('attributeOptions')
+            ->whereIn('eav_attribute.attribute_id', function ($query) {
+                $query->select('attribute_id')
+                    ->from('catalog_eav_attribute')
+                    ->where('is_filterable', '>', 0);
+            })
+            ->get();
     }
 }

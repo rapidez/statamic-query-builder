@@ -1,103 +1,92 @@
 <template>
-    <div class="query-builder max-w-4xl mx-auto">
+    <div class="query-builder space-y-4">
+        <Card>
+            <div class="space-y-4">
+                <div class="flex flex-wrap items-end gap-4">
+                    <Field v-if="builderTemplates" :label="__('Template')" class="w-48">
+                        <Select
+                            name="builderTemplate"
+                            :model-value="builderTemplate"
+                            :options="builderTemplates"
+                            :adaptive-width="true"
+                            @update:model-value="(val) => { builderTemplate = val; updateSettingValues(); }"
+                        />
+                    </Field>
 
-        <div class="p-4 border mb-6 rounded">
-            <div class="flex flex-wrap items-end gap-4 justify-between">
-                <Field v-if="showUseDefaultQueryToggle" class="mb-2">
+                    <Field v-if="isLimitVisible" :label="__('Limit results')" class="w-32">
+                        <Input
+                            id="limit"
+                            type="number"
+                            name="limit"
+                            :model-value="limit"
+                            min="1"
+                            @update:model-value="(val) => { limit = parseInt(val) || props.defaultLimit; updateSettingValues(); }"
+                        />
+                    </Field>
+
+                    <Field v-if="sortFields" :label="__('Sort')" class="min-w-72 flex-1">
+                        <div class="flex gap-2">
+                            <Select
+                                name="sortField"
+                                :model-value="sortField"
+                                :options="sortFields"
+                                :placeholder="__('Select...')"
+                                :adaptive-width="true"
+                                class="min-w-0 flex-1"
+                                @update:model-value="(val) => { sortField = val; updateSettingValues(); }"
+                            />
+                            <Select
+                                name="sortDirection"
+                                :model-value="sortDirection"
+                                :options="sortDirections"
+                                class="w-36 shrink-0"
+                                @update:model-value="(val) => { sortDirection = val; updateSettingValues(); }"
+                            />
+                        </div>
+                    </Field>
+
+                    <Field v-if="groupedPresets.length > 0" :label="__('Presets')" class="min-w-64 flex-1">
+                        <Select
+                            :model-value="selectedPresetKey"
+                            :options="groupedPresets"
+                            :placeholder="__('Select Preset')"
+                            :adaptive-width="true"
+                            @update:model-value="handlePresetSelection"
+                        />
+                    </Field>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4">
                     <Checkbox
+                        v-if="showUseDefaultQueryToggle"
                         id="useDefaultQuery"
                         :label="__('Use default Query')"
                         v-model="useDefaultQuery"
-                        @change="(e) => { useDefaultQuery = e.target.checked; updateSettingValues(); }"
+                        @update:model-value="updateSettingValues"
                     />
-                </Field>
 
-                <div v-if="showUseDefaultQueryToggle" class="h-8 border-r mx-2 hidden md:block"></div>
-
-                <Field v-if="builderTemplates">
-                    <Label for="template" class="text-2xs uppercase tracking-wider mb-1">{{ __('Template') }}</Label>
-                    <Select
-                        name="builderTemplate"
-                        :model-value="builderTemplate"
-                        :options="builderTemplates"
-                        :reduce="field => field.value"
-                        class="w-40"
-                        @update:model-value="(val) => { builderTemplate = val; updateSettingValues(); }"
-                    />
-                </Field>
-
-                <Field v-if="isLimitVisible">
-                    <Label for="limit" class="text-xs uppercase tracking-wider mb-1 leading-none h-3 whitespace-nowrap">{{ __('Limit results') }}</Label>
-                    <Input
-                        type="number"
-                        name="limit"
-                        id="limit"
-                        :value="limit"
-                        class="w-24"
-                        min="1"
-                        @input="(e) => { limit = parseInt(e.target.value) || props.defaultLimit; updateSettingValues(); }"
-                    />
-                </Field>
-
-                <div class="h-8 border-r mx-2 hidden md:block"></div>
-
-                <Field v-if="sortFields">
-                    <Label for="sortField" class="text-2xs uppercase tracking-wider mb-1">{{ __('Sort') }}</Label>
-                    <div class="flex gap-1">
-                        <Select
-                            name="sortField"
-                            :model-value="sortField"
-                            :options="sortFields"
-                            :reduce="field => field.value"
-                            class="w-40"
-                            @update:model-value="(val) => { sortField = val; updateSettingValues(); }"
-                        />
-                        <Select
-                            name="sortDirection"
-                            :model-value="sortDirection"
-                            :options="sortDirections"
-                            class="w-24"
-                            @update:model-value="(val) => { sortDirection = val; updateSettingValues(); }"
-                        />
-                    </div>
-                </Field>
-
-                <Field v-if="groupedPresets.length > 0">
-                    <Label class="text-2xs uppercase tracking-wider mb-1">{{ __('Presets') }}</Label>
-                    <Select
-                        :model-value="selectedPresetKey"
-                        :options="groupedPresets"
-                        :reduce="preset => preset.value"
-                        :placeholder="__('Select Preset')"
-                        class="w-64"
-                        @update:model-value="handlePresetSelection"
-                    />
-                </Field>
-
-                <div class="flex-grow"></div>
-
-                <Button class="btn-primary" @click="addGroup">
-                    <span class="flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
+                    <Button
+                        class="ms-auto"
+                        variant="primary"
+                        icon="plus"
+                        @click="addGroup"
+                    >
                         {{ __('Add Group') }}
-                    </span>
-                </Button>
+                    </Button>
+                </div>
             </div>
-        </div>
+        </Card>
 
-        <div class="space-y-6">
+        <div class="space-y-4">
             <div v-if="groups.length > 0" class="flex justify-center">
                 <Button
-                    class="insert-group-btn"
-                    @click="insertGroupAt(0)"
+                    variant="subtle"
+                    size="sm"
+                    round
+                    icon="plus"
                     :title="__('Insert group here')"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </Button>
+                    @click="insertGroupAt(0)"
+                />
             </div>
 
             <template v-for="(group, groupIndex) in groups" :key="`group-${groupIndex}`">
@@ -125,64 +114,50 @@
                     @remove-nested-condition="removeNestedCondition"
                 />
 
-                <div v-if="groupIndex < groups.length" :key="`separator-${groupIndex}`" class="flex flex-col items-center space-y-2">
+                <div class="flex justify-center">
                     <Button
-                        class="insert-group-btn"
-                        @click="insertGroupAt(groupIndex + 1)"
+                        variant="subtle"
+                        size="sm"
+                        round
+                        icon="plus"
                         :title="__('Insert group here')"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                    </Button>
+                        @click="insertGroupAt(groupIndex + 1)"
+                    />
                 </div>
             </template>
         </div>
 
-        <div v-if="!groups.length" class="text-center py-8 bg-gray-50 rounded-lg">
-            <p class="text-gray-500 mb-4">{{ __('No groups added yet. Click "Add Group" to start building your query.') }}</p>
-        </div>
+        <Card v-if="!groups.length">
+            <Description>
+                {{ __('No groups added yet. Click "Add Group" to start building your query.') }}
+            </Description>
+        </Card>
 
-        <div v-if="groups.length > 1" class="mt-6 pt-4 border-t border-gray-200">
-            <Field>
-                <Label class="font-bold">{{ __('Combine Groups with:') }}</Label>
-                <Select
-                    :model-value="globalConjunction"
-                    :options="logicalOperators"
-                    class="w-32"
-                    @update:model-value="(val) => { globalConjunction = val; updateValue(); }"
-                />
-            </Field>
-        </div>
+        <Field v-if="groups.length > 1" :label="__('Combine Groups with:')" class="w-40">
+            <Select
+                :model-value="globalConjunction"
+                :options="logicalOperators"
+                @update:model-value="(val) => { globalConjunction = val; updateValue(); }"
+            />
+        </Field>
 
-        <div v-if="showConflictModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
-                <h3 class="text-lg font-semibold mb-4">{{ __('Apply Preset') }}</h3>
-                <p class="text-gray-600 mb-6">
-                    {{ __('You have an existing query. How would you like to apply this preset?') }}
-                </p>
-                <div class="flex space-x-3">
-                    <Button
-                        class="btn flex-1"
-                        @click="applyPreset('merge')"
-                    >
-                        {{ __('Merge') }}
-                    </Button>
-                    <Button
-                        class="btn-primary flex-1"
-                        @click="applyPreset('override')"
-                    >
-                        {{ __('Override') }}
-                    </Button>
-                    <Button
-                        class="btn flex-1"
-                        @click="cancelPresetApplication"
-                    >
-                        {{ __('Cancel') }}
-                    </Button>
+        <Modal
+            :open="showConflictModal"
+            :title="__('Apply Preset')"
+            @update:open="(open) => { if (!open) cancelPresetApplication(); }"
+            @dismissed="cancelPresetApplication"
+        >
+            <Description>
+                {{ __('You have an existing query. How would you like to apply this preset?') }}
+            </Description>
+            <template #footer>
+                <div class="flex items-center justify-end space-x-3 pt-3 pb-1">
+                    <Button @click="cancelPresetApplication">{{ __('Cancel') }}</Button>
+                    <Button @click="applyPreset('merge')">{{ __('Merge') }}</Button>
+                    <Button variant="primary" @click="applyPreset('override')">{{ __('Override') }}</Button>
                 </div>
-            </div>
-        </div>
+            </template>
+        </Modal>
     </div>
 </template>
 
@@ -190,7 +165,7 @@
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import QueryGroup from '../QueryBuilder/QueryGroup.vue';
-import { Select, Input, Field, Label, Checkbox, Button } from '@statamic/cms/ui';
+import { Select, Input, Field, Checkbox, Button, Card, Modal, Description } from '@statamic/cms/ui';
 
 const props = defineProps({
     fields: {
@@ -771,13 +746,3 @@ onMounted(() => {
     fetchPresets();
 });
 </script>
-
-<style scoped>
-.insert-group-btn {
-    @apply flex items-center justify-center w-8 h-8 bg-blue-50 border-2 border-dashed border-blue-300 rounded-full text-blue-500 hover:bg-blue-100 hover:border-blue-400 transition-colors duration-200;
-}
-
-.insert-group-btn:hover {
-    @apply shadow-sm;
-}
-</style>
