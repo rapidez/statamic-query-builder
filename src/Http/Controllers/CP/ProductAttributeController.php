@@ -14,11 +14,7 @@ class ProductAttributeController extends CpController
         }
 
         return $model::with('attributeOptions')
-            ->whereIn('eav_attribute.attribute_id', function ($query) {
-                $query->select('attribute_id')
-                    ->from('catalog_eav_attribute')
-                    ->where('is_filterable', '>', 0);
-            })
+            ->filterable()
             ->get();
     }
 }
