@@ -41,10 +41,10 @@
                     :reduce="option => option.value"
                     label="label"
                     :placeholder="__('Add...')"
-                    class="w-40"
+                    class="w-56"
+                    :adaptive-width="true"
                     @update:model-value="handleAddSelection"
-                >
-                </Select>
+                />
                 <div class="flex items-center space-x-1">
                     <Button
                         v-if="canMoveUp"

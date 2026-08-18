@@ -1,12 +1,11 @@
 <template>
     <div class="flex items-center space-x-4 p-3 rounded-md">
-        <Select
+        <Combobox
             :model-value="condition.attribute"
             :options="fields"
-            :reduce="field => field.value"
-            label="label"
             class="w-1/3"
             :placeholder="__('Select Field')"
+            :search-keys="['label', 'value']"
             @update:model-value="updateAttribute"
         />
 
@@ -40,7 +39,7 @@
 </template>
 
 <script setup>
-import { Select, Button } from '@statamic/cms/ui';
+import { Combobox, Select, Button } from '@statamic/cms/ui';
 import DateValueInput from './inputs/DateValueInput.vue';
 import SelectValueInput from './inputs/SelectValueInput.vue';
 import BetweenValueInput from './inputs/BetweenValueInput.vue';
