@@ -13,6 +13,11 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class DefaultQueryRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return $this->user()?->can('manage default query') ?? false;
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
