@@ -1,6 +1,16 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.0.1...3.0.1)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.1.0...3.1.0)
+## [3.1.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.1.0) - 2026-08-18
+
+### Added
+
+- Default query page permission (#34)
+
+### Changed
+
+- Improve control panel usability (#33)
+
 ## [3.0.1](https://github.com/rapidez/statamic-query-builder/releases/tag/3.0.1) - 2026-07-28
 
 ### Fixed
