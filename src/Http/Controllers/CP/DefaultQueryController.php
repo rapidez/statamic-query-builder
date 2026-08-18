@@ -15,6 +15,8 @@ class DefaultQueryController extends CpController
 
     public function index()
     {
+        $this->authorize('manage default query');
+
         $settings = $this->defaultQueryService->getDefaultQuerySettings();
 
         return Inertia::render('statamic-query-builder::DefaultPreset', [
