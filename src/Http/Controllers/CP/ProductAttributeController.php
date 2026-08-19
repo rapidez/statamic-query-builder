@@ -2,6 +2,7 @@
 
 namespace Rapidez\StatamicQueryBuilder\Http\Controllers\CP;
 
+use Rapidez\StatamicQueryBuilder\Models\ProductAttribute as QueryBuilderProductAttribute;
 use Statamic\Http\Controllers\CP\CpController;
 
 class ProductAttributeController extends CpController
@@ -16,7 +17,7 @@ class ProductAttributeController extends CpController
         $query = $model::with('attributeOptions');
 
         // Pick the correct filter strategy for the configured model.
-        if (is_a($model, \Rapidez\StatamicQueryBuilder\Models\ProductAttribute::class, true)) {
+        if (is_a($model, QueryBuilderProductAttribute::class, true)) {
             $query->filterable();
         } else {
             $query->whereIn('eav_attribute.attribute_id', function ($subQuery) {
