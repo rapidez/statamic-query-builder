@@ -4,6 +4,8 @@ use Rapidez\StatamicQueryBuilder\Models\ProductAttribute;
 use Rapidez\StatamicQueryBuilder\Models\ProductAttributeOption;
 
 return [
+    'default_limit' => 100,
+
     'default_query' => [
         'enabled' => true,
         'query' => [

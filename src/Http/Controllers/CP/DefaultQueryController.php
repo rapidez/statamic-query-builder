@@ -22,6 +22,7 @@ class DefaultQueryController extends CpController
         return Inertia::render('statamic-query-builder::DefaultPreset', [
             'enabled' => $settings['enabled'],
             'query' => $settings['query'],
+            'defaultLimit' => (int) config('rapidez.query-builder.default_limit', 100),
             'saveUrl' => cp_route('rapidez.default-query.store'),
         ]);
     }
