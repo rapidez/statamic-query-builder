@@ -16,14 +16,14 @@ class ProductAttributeController extends CpController
 
         $query = $model::with('attributeOptions');
 
-        // Pick the correct filter strategy for the configured model.
+        // Prefer the package scope; otherwise filter catalog_eav_attribute.is_used_for_promo_rules.
         if (is_a($model, QueryBuilderProductAttribute::class, true)) {
-            $query->filterable();
+            $query->usedForPromoRules();
         } else {
             $query->whereIn('eav_attribute.attribute_id', function ($subQuery) {
                 $subQuery->select('attribute_id')
                     ->from('catalog_eav_attribute')
-                    ->where('is_filterable', '>', 0);
+                    ->where('is_used_for_promo_rules', '>', 0);
             });
         }
 
