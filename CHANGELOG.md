@@ -1,6 +1,16 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.1.0...3.1.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.2.0...3.2.0)
+## [3.2.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.2.0) - 2026-08-26
+
+### Added
+
+- Configurable product limit (#36)
+
+### Fixed
+
+- Filterable check in query fix (#35)
+
 ## [3.1.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.1.0) - 2026-08-18
 
 ### Added
