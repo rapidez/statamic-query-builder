@@ -2,6 +2,7 @@
 
 namespace Rapidez\StatamicQueryBuilder\Http\Controllers\CP;
 
+use Rapidez\StatamicQueryBuilder\Models\ProductAttribute as QueryBuilderProductAttribute;
 use Statamic\Http\Controllers\CP\CpController;
 
 class ProductAttributeController extends CpController
@@ -13,8 +14,19 @@ class ProductAttributeController extends CpController
             return [];
         }
 
-        return $model::with('attributeOptions')
-            ->filterable()
-            ->get();
+        $query = $model::with('attributeOptions');
+
+        // Prefer the package scope; otherwise filter catalog_eav_attribute.is_used_for_promo_rules.
+        if (is_a($model, QueryBuilderProductAttribute::class, true)) {
+            $query->usedForPromoRules();
+        } else {
+            $query->whereIn('eav_attribute.attribute_id', function ($subQuery) {
+                $subQuery->select('attribute_id')
+                    ->from('catalog_eav_attribute')
+                    ->where('is_used_for_promo_rules', '>', 0);
+            });
+        }
+
+        return $query->get();
     }
 }
