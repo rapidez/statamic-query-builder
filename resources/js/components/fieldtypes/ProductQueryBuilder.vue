@@ -4,7 +4,7 @@
         :fields="groupedFields"
         :sort-fields="sortingOptions"
         :default-sort-field="sortingOptions[0]?.value"
-        :default-limit="100"
+        :default-limit="defaultLimit"
         :show-limit="true"
         :builder-templates="templates"
         :default-builder-template="'slider'"
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { Fieldtype } from '@statamic/cms';
 import QueryBuilder from './QueryBuilder.vue';
 import {
@@ -29,6 +29,12 @@ const emit = defineEmits(Fieldtype.emits);
 const props = defineProps(Fieldtype.props);
 const { expose, update } = Fieldtype.use(emit, props);
 defineExpose(expose);
+
+const defaultLimit = computed(() => Number(
+    props.meta?.defaultLimit
+    ?? props.config?.default_limit
+    ?? 100
+));
 
 const groupedFields = ref([]);
 const sortingOptions = ref([]);

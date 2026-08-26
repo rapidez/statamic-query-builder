@@ -29,7 +29,7 @@ class QueryBuilder extends Fieldtype
                 ],
             ],
             'globalConjunction' => 'AND',
-            'limit' => 100,
+            'limit' => $this->defaultLimit(),
             'sortField' => '',
             'sortDirection' => '',
         ];
@@ -45,8 +45,13 @@ class QueryBuilder extends Fieldtype
                 'number' => ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'IS_NULL', 'IS_NOT_NULL'],
                 'date' => ['=', '!=', '>', '<', '>=', '<=', 'BETWEEN', 'NOT_BETWEEN', 'LAST_X_DAYS', 'NEXT_X_DAYS', 'THIS_WEEK', 'THIS_MONTH'],
             ],
-            'defaultLimit' => 100,
+            'defaultLimit' => $this->defaultLimit(),
             'showLimit' => true,
         ];
+    }
+
+    protected function defaultLimit(): int
+    {
+        return (int) config('rapidez.query-builder.default_limit', 100);
     }
 }

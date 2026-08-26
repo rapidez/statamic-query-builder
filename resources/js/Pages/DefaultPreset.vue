@@ -32,7 +32,7 @@
                     :fields="groupedFields"
                     :sort-fields="sortingOptions"
                     :default-sort-field="sortingOptions[0]?.value"
-                    :default-limit="100"
+                    :default-limit="defaultLimit"
                     :show-limit="false"
                     :builder-templates="[]"
                     :show-use-default-query-toggle="false"
@@ -60,7 +60,7 @@ import {
     normalizeQuery
 } from '../helpers/productQueryBuilder';
 
-const { enabled: initialEnabled, query: initialQuery, saveUrl } = defineProps({
+const { enabled: initialEnabled, query: initialQuery, defaultLimit, saveUrl } = defineProps({
     enabled: {
         type: Boolean,
         default: true
@@ -68,6 +68,10 @@ const { enabled: initialEnabled, query: initialQuery, saveUrl } = defineProps({
     query: {
         type: Object,
         default: () => ({ groups: [], globalConjunction: 'AND' })
+    },
+    defaultLimit: {
+        type: Number,
+        default: 100
     },
     saveUrl: {
         type: String,

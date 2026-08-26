@@ -138,7 +138,7 @@ class OutputsDslQueryAction
         $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
 
         $groups = $config['groups'] ?? [];
-        $limit = (int) ($config['limit'] ?? 10);
+        $limit = (int) ($config['limit'] ?? config('rapidez.query-builder.default_limit', 100));
 
         $this->mappings = Cache::remember('rapidez-query-mappings', now()->addDay(), fn (): array => $this->getMappings());
         $clauses = $this->buildQueryClauses($groups, $config['globalConjunction'] ?? 'AND');

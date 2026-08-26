@@ -298,7 +298,7 @@ const $toast = instance?.appContext.config.globalProperties.$toast;
 
 const groups = ref([]);
 const builderTemplate = ref('');
-const limit = ref(100);
+const limit = ref(props.defaultLimit);
 const useDefaultQuery = ref(true);
 const globalConjunction = ref('AND');
 const logicalOperators = [

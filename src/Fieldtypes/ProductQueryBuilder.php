@@ -16,6 +16,30 @@ class ProductQueryBuilder extends Fieldtype
         protected DefaultQueryService $defaultQueryService
     ) {}
 
+    protected function configFieldItems(): array
+    {
+        return [
+            [
+                'display' => __('Query Builder'),
+                'fields' => [
+                    'default_limit' => [
+                        'display' => __('Default Limit'),
+                        'instructions' => __('The default number of products returned by this query builder.'),
+                        'type' => 'integer',
+                        'default' => config('rapidez.query-builder.default_limit', 100),
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function preload()
+    {
+        return [
+            'defaultLimit' => $this->defaultLimit(),
+        ];
+    }
+
     public function defaultValue()
     {
         return [
@@ -26,13 +50,21 @@ class ProductQueryBuilder extends Fieldtype
                 ],
             ],
             'globalConjunction' => 'AND',
-            'limit' => 100,
+            'limit' => $this->defaultLimit(),
             'products' => [],
             'sortField' => '',
             'sortDirection' => '',
             'builderTemplate' => 'slider',
             'useDefaultQuery' => true,
         ];
+    }
+
+    protected function defaultLimit(): int
+    {
+        return (int) $this->config(
+            'default_limit',
+            config('rapidez.query-builder.default_limit', 100)
+        );
     }
 
     public function process($data)
