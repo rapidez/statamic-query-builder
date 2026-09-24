@@ -12,6 +12,7 @@ class StartsWithParser implements ParsesOperator
             'wildcard' => [
                 $field => [
                     'value' => "{$value}*",
+                    'case_insensitive' => true,
                 ],
             ],
         ];

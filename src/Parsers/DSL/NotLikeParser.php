@@ -15,6 +15,7 @@ class NotLikeParser implements ParsesOperator
                         'wildcard' => [
                             $field => [
                                 'value' => "*{$value}*",
+                                'case_insensitive' => true,
                             ],
                         ],
                     ],
