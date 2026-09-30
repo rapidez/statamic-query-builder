@@ -10,7 +10,10 @@ class LikeParser implements ParsesOperator
     {
         return [
             'wildcard' => [
-                $field => "*{$value}*",
+                $field => [
+                    'value' => "*{$value}*",
+                    'case_insensitive' => true,
+                ],
             ],
         ];
     }
