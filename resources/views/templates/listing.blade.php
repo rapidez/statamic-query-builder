@@ -7,6 +7,7 @@ if (is_array($product_query_builder)) {
 @endphp
 @if($hash = $queryBuilder['hash'])
     <x-rapidez::listing
+        snapshot="query-builder-{{ md5($hash . ($queryBuilder['index'] ?? '')) }}"
         v-bind:base-filters="() => [window.config.productlist['{{ $hash }}']]"
         ::index="'{{ $queryBuilder['index'] }}' ?? config.index.product"
     />
