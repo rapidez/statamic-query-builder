@@ -1,6 +1,18 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.2.0...3.2.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.3.0...3.3.0)
+## [3.3.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.3.0) - 2026-10-08
+
+### Added
+
+- SSR on listings (#38)
+
+### Changed
+
+- Make wildcard conditions case-insensitive (#37)
+
+
+
 ## [3.2.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.2.0) - 2026-08-26
 
 ### Added
