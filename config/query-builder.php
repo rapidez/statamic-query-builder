@@ -96,4 +96,37 @@ return [
         'vendor/rapidez/statamic-query-builder/resources/presets/product-visibility.json',
         'vendor/rapidez/statamic-query-builder/resources/presets/pricing-filters.json',
     ],
+
+    /*
+      Shown in the Product Query Builder CP sort dropdown. Applied per
+      productlist/listing instance via config-callback (not via
+      rapidez.searchkit.sorting), so category listing SortBy stays clean.
+
+      - cast: cast the root field when indexing (float|int)
+      - index_attribute: ensure Magento attribute gets a typed ES mapping
+    */
+    'sorting_options' => [
+        [
+            'label' => 'most_viewed',
+            'value' => 'popularity',
+            'field' => 'popularity',
+        ],
+        [
+            'label' => 'most_sold',
+            'value' => 'sales_factor',
+            'field' => 'sales_factor',
+            'cast' => 'float',
+            'index_attribute' => true,
+        ],
+        [
+            'label' => 'most_reviews',
+            'value' => 'review_summary.reviews_count',
+            'field' => 'review_summary.reviews_count',
+        ],
+        [
+            'label' => 'best_review_score',
+            'value' => 'review_summary.rating_summary',
+            'field' => 'review_summary.rating_summary',
+        ],
+    ],
 ];
