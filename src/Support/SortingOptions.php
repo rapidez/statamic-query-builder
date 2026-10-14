@@ -2,7 +2,6 @@
 
 namespace Rapidez\StatamicQueryBuilder\Support;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Js;
 
 class SortingOptions
@@ -115,7 +114,7 @@ class SortingOptions
     {
         foreach (static::packageOptions() as $option) {
             $cast = $option['cast'] ?? null;
-            $field = $option['field'] ?? null;
+            $field = $option['field'];
 
             if (! $cast || ! $field || str_contains($field, '.') || ! array_key_exists($field, $data)) {
                 continue;
@@ -143,19 +142,5 @@ class SortingOptions
     public static function sortingCode(string $value): string
     {
         return strtolower(collect(explode('.', $value))->last());
-    }
-
-    /**
-     * @return Collection<int, string>
-     */
-    public static function searchkitKeys(): Collection
-    {
-        return collect(static::packageOptions())
-            ->flatMap(function (array $option) {
-                $code = static::sortingCode($option['value']);
-
-                return ["_{$code}_asc", "_{$code}_desc"];
-            })
-            ->values();
     }
 }

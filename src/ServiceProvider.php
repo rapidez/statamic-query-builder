@@ -12,9 +12,7 @@ use TorMorten\Eventy\Facades\Eventy;
 
 class ServiceProvider extends AddonServiceProvider
 {
-    /**
-     * @var array{input: list<string>, publicDirectory: string}
-     */
+    /** @phpstan-ignore-next-line */
     protected $vite = [
         'input' => [
             'resources/js/statamic-query-builder.js',
