@@ -49,7 +49,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
-            "pixelfear/composer-dist-plugin": true
+            "pixelfear/composer-dist-plugin": true,
+            "rapidez/composer-template-diff-plugin": true
         }
     },
     "extra": {
