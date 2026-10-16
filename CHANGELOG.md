@@ -1,6 +1,14 @@
 # Changelog 
 
-[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.3.0...3.3.0)
+[Unreleased changes](https://github.com/rapidez/statamic-query-builder/compare/3.4.0...3.4.0)
+## [3.4.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.4.0) - 2026-10-16
+
+### Added
+
+- Added additional sortings (#39)
+
+
+
 ## [3.3.0](https://github.com/rapidez/statamic-query-builder/releases/tag/3.3.0) - 2026-10-08
 
 ### Added
