@@ -4,3 +4,5 @@ composer.lock
 .phpunit.result.cache
 yarn.lock
 .vite
+pnpm-lock.yaml
+pnpm-workspace.yaml

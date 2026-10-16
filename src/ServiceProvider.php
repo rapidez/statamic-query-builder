@@ -4,15 +4,14 @@ namespace Rapidez\StatamicQueryBuilder;
 
 use Rapidez\StatamicQueryBuilder\Actions\OutputsDslQueryAction;
 use Rapidez\StatamicQueryBuilder\Fieldtypes\ProductQueryBuilder;
+use Rapidez\StatamicQueryBuilder\Support\SortingOptions;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
+use TorMorten\Eventy\Facades\Eventy;
 
 class ServiceProvider extends AddonServiceProvider
 {
-    /**
-     * @var array{input: list<string>, publicDirectory: string}
-     */
     protected $vite = [
         'input' => [
             'resources/js/statamic-query-builder.js',
@@ -29,9 +28,38 @@ class ServiceProvider extends AddonServiceProvider
         $this->app->singleton(OutputsDslQueryAction::class);
 
         $this->bootConfig()
+            ->bootTranslations()
             ->bootModels()
             ->bootPermissions()
-            ->bootNavigation();
+            ->bootNavigation()
+            ->bootIndexing();
+    }
+
+    protected function bootTranslations(): self
+    {
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'rapidez-query-builder');
+
+        return $this;
+    }
+
+    protected function bootIndexing(): self
+    {
+        if (! class_exists(Eventy::class)) {
+            return $this;
+        }
+
+        Eventy::addFilter('index.product.attributes', function (array $attributes): array {
+            return array_values(array_unique([
+                ...$attributes,
+                ...SortingOptions::indexAttributes(),
+            ]));
+        });
+
+        Eventy::addFilter('index.product.data', function (array $data, $product): array {
+            return SortingOptions::castIndexData($data);
+        }, 20, 2);
+
+        return $this;
     }
 
     protected function bootConfig(): self
