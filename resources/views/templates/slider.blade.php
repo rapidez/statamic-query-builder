@@ -1,3 +1,4 @@
+@use('Rapidez\StatamicQueryBuilder\Support\SortingOptions')
 @php
 if (is_array($product_query_builder)) {
     $queryBuilder = $product_query_builder;
@@ -5,7 +6,7 @@ if (is_array($product_query_builder)) {
     $queryBuilder = $product_query_builder;
 }
 
-$queryBuilderSorting = \Rapidez\StatamicQueryBuilder\Support\SortingOptions::forSearchkitJavaScript();
+$queryBuilderSorting = SortingOptions::forSearchkitJavaScript();
 @endphp
 @if($hash = $queryBuilder['hash'])
     <x-rapidez::productlist

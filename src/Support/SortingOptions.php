@@ -6,9 +6,6 @@ use Illuminate\Support\Js;
 
 class SortingOptions
 {
-    /**
-     * @return list<array{label: string, value: string, field: string, cast?: string, index_attribute?: bool}>
-     */
     public static function packageOptions(): array
     {
         return array_values(array_filter(
@@ -20,11 +17,6 @@ class SortingOptions
         ));
     }
 
-    /**
-     * Options for the Product Query Builder CP sort dropdown.
-     *
-     * @return list<array{label: string, value: string}>
-     */
     public static function forControlPanel(): array
     {
         $packageOptions = collect(static::packageOptions())
@@ -48,11 +40,6 @@ class SortingOptions
             ->all();
     }
 
-    /**
-     * Searchkit sorting entries keyed by suffix (e.g. _popularity_desc).
-     *
-     * @return array<string, array{label: string, code: string, field: string, order: string, value: string, key: string}>
-     */
     public static function forSearchkit(?string $productIndex = null): array
     {
         $productIndex ??= (new (config('rapidez.models.product')))->searchableAs();
@@ -80,19 +67,11 @@ class SortingOptions
             ->all();
     }
 
-    /**
-     * JSON for merging into a productlist/listing config-callback.
-     */
     public static function forSearchkitJavaScript(?string $productIndex = null): Js
     {
         return Js::from(static::forSearchkit($productIndex));
     }
 
-    /**
-     * Magento attribute codes that need a typed ES mapping.
-     *
-     * @return list<string>
-     */
     public static function indexAttributes(): array
     {
         return collect(static::packageOptions())
@@ -104,12 +83,6 @@ class SortingOptions
             ->all();
     }
 
-    /**
-     * Cast configured root-level sort fields when indexing.
-     *
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
     public static function castIndexData(array $data): array
     {
         foreach (static::packageOptions() as $option) {
@@ -136,9 +109,6 @@ class SortingOptions
         return $data;
     }
 
-    /**
-     * Last path segment used by ProductQueryBuilder::getSorting().
-     */
     public static function sortingCode(string $value): string
     {
         return strtolower(collect(explode('.', $value))->last());
